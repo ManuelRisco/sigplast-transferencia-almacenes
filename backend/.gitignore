@@ -1,0 +1,16 @@
+# Configuración local de base de datos o contraseñas si las hay en el futuro
+# config/conexion.php # (Descomenta esto si no quieres subir tus credenciales a GitHub)
+
+# Archivos de Logs
+*.log
+error_log
+php_errors.log
+
+# Archivos del Sistema Operativo
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

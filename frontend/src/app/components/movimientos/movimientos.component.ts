@@ -1,0 +1,357 @@
+import { Component, OnInit, inject, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { ApiService } from '../../services/api.service';
+import { SidebarComponent } from '../sidebar/sidebar.component';
+
+@Component({
+  selector: 'app-movimientos',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterLink, SidebarComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <app-sidebar></app-sidebar>
+
+    <div class="max-w-screen-2xl mx-auto px-4 md:px-6 pb-12">
+      <h2 class="text-2xl font-bold text-brandDark mb-4">Notas de Salidas</h2>
+
+      <!-- Filtros -->
+      <div class="bg-blue-50 border border-blue-300 rounded-lg p-4 mb-4 flex flex-col md:flex-row items-start md:items-center gap-4 shadow-sm">
+        
+        <div class="flex items-center gap-2 w-full md:w-auto">
+          <label class="font-bold text-gray-900 text-sm uppercase whitespace-nowrap">Almacen</label>
+          <select aria-label="Seleccionar Almacén" [(ngModel)]="filtroAlmacen" (change)="alCambiarFiltro()" class="border border-gray-400 rounded px-3 py-1.5 text-sm w-full md:w-auto bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 font-semibold">
+            @for (a of almacenes; track a.alm_codigo) {
+              <option [value]="a.alm_codigo">{{ a.alm_nombre }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2 w-full md:w-auto">
+          <label class="font-bold text-gray-900 text-sm uppercase whitespace-nowrap">Año</label>
+          <select aria-label="Seleccionar Año" [(ngModel)]="filtroAnho" (change)="alCambiarFiltro()" class="border border-gray-400 rounded px-3 py-1.5 text-sm w-full md:w-auto bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 font-semibold">
+            @for (a of anios; track a) {
+              <option [value]="a">{{ a }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2 w-full md:w-auto">
+          <label class="font-bold text-gray-900 text-sm uppercase whitespace-nowrap">Mes</label>
+          <select aria-label="Seleccionar Mes" [(ngModel)]="filtroMes" (change)="alCambiarFiltro()" class="border border-gray-400 rounded px-3 py-1.5 text-sm w-full md:w-auto bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 font-semibold">
+            @for (m of meses; track m.codigo) {
+              <option [value]="m.codigo">{{ m.nombre }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="md:ml-auto flex w-full md:w-auto gap-3 mt-2 md:mt-0">
+          <a [routerLink]="['/nuevo-registro']" [queryParams]="{ alm_codigo: filtroAlmacen }" 
+             class="flex-1 md:flex-none flex justify-center items-center bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-1.5 px-4 rounded text-sm transition-colors shadow shadow-cyan-900/20">
+            ➕ Nuevo Registro
+          </a>
+          <button type="button" (click)="copiarDatosExcel()" class="flex-1 md:flex-none bg-green-600 hover:bg-green-700 text-white font-bold py-1.5 px-4 rounded text-sm transition-colors shadow shadow-green-900/20">
+            📋 Excel
+          </button>
+        </div>
+      </div>
+
+      <!-- Contenedor de Tabla con Scroll Estilo Hoja de Cálculo -->
+      <div class="bg-white border-2 border-gray-400 border-b-0 rounded-t shadow-md w-full h-[65vh] overflow-auto">
+        <table class="w-full text-sm text-left whitespace-nowrap border-collapse text-gray-900">
+          <thead class="text-white uppercase bg-brandDark sticky top-0 z-10">
+            <tr>
+              <th class="sticky-col bg-[#003a6c] px-4 py-3 border-2 border-gray-400 text-center z-20">Acción</th>
+              <th class="px-4 py-3 border-2 border-gray-400">Nro. ID</th>
+              <th class="px-4 py-3 border-2 border-gray-400">No.Vale</th>
+              <th class="px-4 py-3 border-2 border-gray-400">Fec.Emi.</th>
+              <th class="px-4 py-3 border-2 border-gray-400">Fec-Trasl</th>
+              <th class="px-4 py-3 border-2 border-gray-400">Tipo de Movimiento</th>
+              <th class="px-4 py-3 border-2 border-gray-400">Doc_Ref</th>
+              <th class="px-4 py-3 border-2 border-gray-400">Est</th>
+              <th class="px-4 py-3 border-2 border-gray-400">Dst</th>
+              <th class="px-4 py-3 border-2 border-gray-400">Doc.Venta</th>
+              <th class="px-4 py-3 border-2 border-gray-400">N.Pedido</th>
+              <th class="px-4 py-3 border-2 border-gray-400">Cliente/Proveedor</th>
+              <th class="px-4 py-3 border-2 border-gray-400">Usuario</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-300">
+            @if (loading) {
+              <tr>
+                <td colspan="13" class="py-12 text-center text-gray-500 font-medium">Cargando información del ERP...</td>
+              </tr>
+            } @else if (movimientos.length === 0) {
+              <tr>
+                <td colspan="13" class="py-12 text-center text-gray-500 font-medium">No se encontraron movimientos registrados para el almacén y período seleccionado.</td>
+              </tr>
+            } @else {
+              @for (m of movimientos; track m.raw_mov_id) {
+                <tr class="hover:bg-blue-50 transition-colors border-b border-gray-300">
+                  <td class="sticky-col bg-white border-b-2 border-gray-400 px-4 py-2 text-center shadow-[2px_0_4px_-1px_rgba(0,0,0,0.1)]">
+                    <button aria-label="Ver u ocultar artículos" (click)="toggleDetail(m)" 
+                            [class]="m.expanded ? 'bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded shadow transition-colors' : 'bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded shadow transition-colors'">
+                      {{ m.expanded ? 'Ocultar' : 'Ver Artículos' }}
+                    </button>
+                  </td>
+                  <td class="px-4 py-2 border-b-2 border-gray-400 font-mono font-bold text-brandDark">{{ m.nro_id }}</td>
+                  <td class="px-4 py-2 border-b-2 border-gray-400 font-bold">{{ m.no_vale || '-' }}</td>
+                  <td class="px-4 py-2 border-b-2 border-gray-400">{{ m.fec_emi || '-' }}</td>
+                  <td class="px-4 py-2 border-b-2 border-gray-400">{{ m.fec_trasl === '01/01/1900' ? '-' : (m.fec_trasl || '-') }}</td>
+                  <td class="px-4 py-2 border-b-2 border-gray-400 font-medium">{{ m.tipo_movimiento || '-' }}</td>
+                  <td class="px-4 py-2 border-b-2 border-gray-400">{{ m.doc_ref || '-' }}</td>
+                  <td class="px-4 py-2 border-b-2 border-gray-400 text-center">{{ m.est || '-' }}</td>
+                  <td class="px-4 py-2 border-b-2 border-gray-400 text-center">{{ m.dst || '-' }}</td>
+                  <td class="px-4 py-2 border-b-2 border-gray-400">{{ m.doc_venta || '-' }}</td>
+                  <td class="px-4 py-2 border-b-2 border-gray-400">{{ m.n_pedido || '-' }}</td>
+                  <td class="px-4 py-2 border-b-2 border-gray-400 font-medium">{{ m.cliente_proveedor || '-' }}</td>
+                  <td class="px-4 py-2 border-b-2 border-gray-400 text-xs font-mono text-gray-700">{{ m.usuario || '-' }}</td>
+                </tr>
+
+                <!-- Fila oculta Maestro-Detalle -->
+                @if (m.expanded) {
+                  <tr class="bg-blue-50 border-b-2 border-gray-400">
+                    <td colspan="13" class="p-0 border-b-2 border-gray-400">
+                      <div class="bg-blue-50 p-4 border border-blue-200 m-2 rounded shadow-inner">
+                        <h3 class="text-blue-900 font-bold mb-3 border-b-2 border-blue-200 pb-2">
+                          Detalle de Artículos para MOV_ID: {{ m.raw_mov_id }}
+                        </h3>
+
+                        @if (m.loadingDetail) {
+                          <p class="p-4 text-gray-600 font-medium animate-pulse">Cargando información de artículos...</p>
+                        } @else if (!m.detalles || m.detalles.length === 0) {
+                          <p class="p-4 text-gray-600 font-medium italic">No hay artículos asociados a este movimiento.</p>
+                        } @else {
+                          <div class="overflow-x-auto w-full rounded border border-blue-200 shadow-sm">
+                            <table class="w-full text-sm text-left whitespace-nowrap border-collapse">
+                              <thead class="bg-blue-100 text-blue-900 uppercase font-bold text-xs">
+                                <tr>
+                                  <th class="px-4 py-2 border-b-2 border-blue-200">Item</th>
+                                  <th class="px-4 py-2 border-b-2 border-blue-200">Código</th>
+                                  <th class="px-4 py-2 border-b-2 border-blue-200">Descripción</th>
+                                  <th class="px-4 py-2 border-b-2 border-blue-200">U/M</th>
+                                  <th class="px-4 py-2 border-b-2 border-blue-200">ID.Lote</th>
+                                  <th class="px-4 py-2 border-b-2 border-blue-200">Lote</th>
+                                  <th class="px-4 py-2 border-b-2 border-blue-200 text-right">Cantidad</th>
+                                  <th class="px-4 py-2 border-b-2 border-blue-200 text-center">No O/T</th>
+                                </tr>
+                              </thead>
+                              <tbody class="divide-y divide-blue-100 bg-white text-xs">
+                                @for (d of m.detalles; track d.Item) {
+                                  <tr class="hover:bg-blue-50 transition-colors">
+                                    <td class="px-4 py-2 font-mono text-gray-500">#{{ d.Item }}</td>
+                                    <td class="px-4 py-2 font-bold text-brandDark">{{ d.Codigo }}</td>
+                                    <td class="px-4 py-2 font-medium">{{ d.Descripcion }}</td>
+                                    <td class="px-4 py-2 text-gray-600">{{ d.UM }}</td>
+                                    <td class="px-4 py-2 font-mono text-cyan-800">{{ d.IDLote }}</td>
+                                    <td class="px-4 py-2 font-mono text-cyan-800">{{ d.Lote }}</td>
+                                    <td class="px-4 py-2 text-right font-bold text-gray-900">{{ d.Cantidad }}</td>
+                                    <td class="px-4 py-2 text-center">{{ d.NoOT }}</td>
+                                  </tr>
+                                }
+                              </tbody>
+                            </table>
+                          </div>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Barra de Paginación Unificada Inferior -->
+      <div class="bg-gray-50 border-2 border-gray-400 rounded-b p-3 flex flex-col sm:flex-row justify-between items-center gap-3 shadow-md">
+        <div class="text-xs sm:text-sm font-semibold text-gray-700">
+          Mostrando <span class="font-bold text-brandDark">{{ inicioRegistro }}</span> - <span class="font-bold text-brandDark">{{ finRegistro }}</span> de <span class="font-bold text-brandDark">{{ totalRegistros }}</span> registros
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1.5">
+            <label class="text-xs font-bold text-gray-700 uppercase">Filas:</label>
+            <select aria-label="Filas por página" [ngModel]="itemsPorPagina" (ngModelChange)="cambiarItemsPorPagina($event)" class="border border-gray-400 rounded px-2 py-1 text-xs bg-white font-semibold">
+              <option [value]="10">10</option>
+              <option [value]="20">20</option>
+              <option [value]="50">50</option>
+              <option [value]="100">100</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-1">
+            <button aria-label="Página Anterior" (click)="cambiarPagina(paginaActual - 1)" [disabled]="paginaActual === 1" class="px-3 py-1 text-xs font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed">
+              ‹ Anterior
+            </button>
+            <span class="px-2.5 py-1 text-xs font-bold text-brandDark bg-blue-50 border border-blue-200 rounded">
+              {{ paginaActual }} / {{ totalPaginas }}
+            </span>
+            <button aria-label="Página Siguiente" (click)="cambiarPagina(paginaActual + 1)" [disabled]="paginaActual === totalPaginas" class="px-3 py-1 text-xs font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed">
+              Siguiente ›
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  `
+})
+export class MovimientosComponent implements OnInit {
+  apiService = inject(ApiService);
+  cdr = inject(ChangeDetectorRef);
+
+  filtroAlmacen = localStorage.getItem('sigris_mov_almacen') || '001';
+  filtroAnho = localStorage.getItem('sigris_mov_anho') || '2026';
+  filtroMes = localStorage.getItem('sigris_mov_mes') || '01';
+
+  almacenes = [
+    { alm_codigo: '001', alm_nombre: 'ALMACEN VERDE MP' },
+    { alm_codigo: '002', alm_nombre: 'ALMACEN MP 02' },
+    { alm_codigo: '016', alm_nombre: 'ALMACEN 016' }
+  ];
+
+  anios: string[] = ['2026', '2025'];
+
+  meses = [
+    { codigo: '01', nombre: 'ENERO' },
+    { codigo: '02', nombre: 'FEBRERO' },
+    { codigo: '03', nombre: 'MARZO' },
+    { codigo: '04', nombre: 'ABRIL' },
+    { codigo: '05', nombre: 'MAYO' },
+    { codigo: '06', nombre: 'JUNIO' },
+    { codigo: '07', nombre: 'JULIO' },
+    { codigo: '08', nombre: 'AGOSTO' },
+    { codigo: '09', nombre: 'SETIEMBRE' },
+    { codigo: '10', nombre: 'OCTUBRE' },
+    { codigo: '11', nombre: 'NOVIEMBRE' },
+    { codigo: '12', nombre: 'DICIEMBRE' }
+  ];
+
+  movimientos: any[] = [];
+  totalRegistros = 0;
+  loading = false;
+
+  // Paginación con persistencia
+  paginaActual = Number(localStorage.getItem('sigris_mov_pagina')) || 1;
+  itemsPorPagina = Number(localStorage.getItem('sigris_mov_filas')) || 20;
+
+  get totalPaginas(): number {
+    return Math.ceil(this.totalRegistros / this.itemsPorPagina) || 1;
+  }
+
+  get inicioRegistro(): number {
+    return this.totalRegistros === 0 ? 0 : (this.paginaActual - 1) * this.itemsPorPagina + 1;
+  }
+
+  get finRegistro(): number {
+    return Math.min(this.paginaActual * this.itemsPorPagina, this.totalRegistros);
+  }
+
+  cambiarPagina(nuevaPagina: number) {
+    if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
+      this.paginaActual = nuevaPagina;
+      localStorage.setItem('sigris_mov_pagina', this.paginaActual.toString());
+      this.cargarDatos();
+    }
+  }
+
+  cambiarItemsPorPagina(cantidad: any) {
+    this.itemsPorPagina = Number(cantidad);
+    this.paginaActual = 1;
+    localStorage.setItem('sigris_mov_filas', this.itemsPorPagina.toString());
+    localStorage.setItem('sigris_mov_pagina', '1');
+    this.cargarDatos();
+  }
+
+  alCambiarFiltro() {
+    localStorage.setItem('sigris_mov_almacen', this.filtroAlmacen);
+    localStorage.setItem('sigris_mov_anho', this.filtroAnho);
+    localStorage.setItem('sigris_mov_mes', this.filtroMes);
+    this.paginaActual = 1;
+    localStorage.setItem('sigris_mov_pagina', '1');
+    this.cargarDatos();
+  }
+
+  ngOnInit() {
+    this.cargarDatos();
+  }
+
+  cargarDatos() {
+    this.loading = true;
+    this.cdr.detectChanges();
+
+    this.apiService.getMovimientos(this.filtroAlmacen, this.filtroAnho, this.filtroMes, this.paginaActual, this.itemsPorPagina).subscribe({
+      next: (res) => {
+        this.loading = false;
+        if (res.success) {
+          if (res.almacenes && res.almacenes.length > 0) {
+            this.almacenes = res.almacenes;
+          }
+          if (res.anios && res.anios.length > 0) {
+            this.anios = res.anios;
+          }
+          if (!localStorage.getItem('sigris_mov_anho') && res.filtro_anho) {
+            this.filtroAnho = res.filtro_anho;
+            localStorage.setItem('sigris_mov_anho', this.filtroAnho);
+          }
+          if (!localStorage.getItem('sigris_mov_mes') && res.filtro_mes) {
+            this.filtroMes = res.filtro_mes;
+            localStorage.setItem('sigris_mov_mes', this.filtroMes);
+          }
+          
+          this.totalRegistros = res.total_records || 0;
+          this.movimientos = res.movimientos.map((m: any) => ({ ...m, expanded: false, detalles: [] }));
+          
+          if (this.paginaActual > this.totalPaginas && this.totalPaginas > 0) {
+            this.paginaActual = 1;
+            localStorage.setItem('sigris_mov_pagina', '1');
+            this.cargarDatos(); // Recargar con página válida
+            return;
+          }
+        }
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  toggleDetail(mov: any) {
+    mov.expanded = !mov.expanded;
+    if (mov.expanded && (!mov.detalles || mov.detalles.length === 0)) {
+      mov.loadingDetail = true;
+      this.cdr.detectChanges();
+
+      this.apiService.getDetalle(mov.emp_codigo, mov.raw_mov_id).subscribe({
+        next: (res) => {
+          mov.loadingDetail = false;
+          if (res.success) {
+            mov.detalles = res.detalle;
+          }
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          mov.loadingDetail = false;
+          this.cdr.detectChanges();
+        }
+      });
+    } else {
+      this.cdr.detectChanges();
+    }
+  }
+
+  copiarDatosExcel() {
+    let tsv = "Nro. ID\tNo.Vale\tFec.Emi.\tFec-Trasl\tTipo de Movimiento\tDoc_Ref\tEst\tDst\tDoc.Venta\tN.Pedido\tCliente/Proveedor\tUsuario\n";
+    this.movimientos.forEach(m => {
+      tsv += `${m.nro_id}\t${m.no_vale || '-'}\t${m.fec_emi || '-'}\t${m.fec_trasl || '-'}\t${m.tipo_movimiento || '-'}\t${m.doc_ref || '-'}\t${m.est || '-'}\t${m.dst || '-'}\t${m.doc_venta || '-'}\t${m.n_pedido || '-'}\t${m.cliente_proveedor || '-'}\t${m.usuario || '-'}\n`;
+    });
+    navigator.clipboard.writeText(tsv).then(() => {
+      alert('¡Datos copiados al portapapeles en formato Excel!');
+    });
+  }
+}
