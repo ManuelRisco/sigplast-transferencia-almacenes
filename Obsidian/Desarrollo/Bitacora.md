@@ -121,3 +121,18 @@ Proyecto cliente independiente construido con el cliente de Angular 22, utilizan
 
 > [!WARNING] **Troubleshooting: Sincronización XAMPP**
 > Si el frontend de Angular (al consultar la API en `localhost/sigris` o `localhost/prueba/sigris`) recibe datos masivos ignorando la paginación, asegúrese de que los archivos PHP modificados en el entorno de desarrollo (ej. `Desktop`) hayan sido copiados/sincronizados al directorio activo de XAMPP (`c:\xampp\htdocs\sigris` o `c:\xampp\htdocs\prueba\sigris`). La falta de sincronización provoca que el frontend nuevo reciba la respuesta de la API antigua (sin `total_records`), rompiendo la tabla y mostrando todos los registros en una sola vista.
+
+---
+
+### 🔹 Fase 8: Accesibilidad (A11y), SEO y Estructura de Entorno
+- **Accesibilidad y W3C (100% Lighthouse):**
+  - Incorporación de etiquetas invisibles `aria-label` en botones de acción iconográficos y en todos los selectores de los filtros (`<select>`) para compatibilidad total con lectores de pantalla.
+  - Implementación de la etiqueta semántica `<main>` envolviendo el contenido enrutado (Router Outlet) cumpliendo los estándares estructurales HTML5.
+- **Optimización para Motores de Búsqueda (SEO):**
+  - Adición de la etiqueta `<meta name="description">` principal en `index.html` para describir el sistema ERP y facilitar su indexación.
+- **Configuración Profesional del Entorno Local (XAMPP):**
+  - **Junctions (Enlaces Simbólicos):** Se eliminó la tediosa duplicidad de carpetas entre el Escritorio y `htdocs`. El servidor Apache ahora apunta directamente al código fuente del Escritorio mediante puertos NTFS Junction, logrando que los cambios en el código PHP se reflejen instantáneamente sin necesidad de copiar y pegar.
+- **Estructura Definitiva del Repositorio Git:**
+  - **Corrección de Repositorio Incrustado (Embedded Repo):** Se destruyó la carpeta oculta `.git` que Angular había inicializado por error dentro del frontend, la cual impedía el rastreo de archivos.
+  - Se crearon archivos `.gitignore` globales y para el backend, omitiendo cachés de Windows (`Thumbs.db`, `.DS_Store`) y logs de errores PHP.
+  - **Primer Despliegue Oficial:** El repositorio completo fue inicializado de cero en la raíz `SIGRIS` y empujado de manera segura hacia GitHub.
