@@ -1,3 +1,67 @@
 /* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&display=swap');
 
 @import 'tailwindcss';
+
+/* =========================================================
+   ESTILOS Y FILTROS DE ACCESIBILIDAD UNIVERSAL - SIGRIS ERP
+   ========================================================= */
+
+/* 1. Modo Fuente para Dislexia */
+html.font-dyslexic,
+html.font-dyslexic body,
+html.font-dyslexic button,
+html.font-dyslexic input,
+html.font-dyslexic select,
+html.font-dyslexic textarea,
+html.font-dyslexic table,
+html.font-dyslexic th,
+html.font-dyslexic td,
+html.font-dyslexic span,
+html.font-dyslexic p,
+html.font-dyslexic h1,
+html.font-dyslexic h2,
+html.font-dyslexic h3,
+html.font-dyslexic a {
+  font-family: 'Lexend', 'Comic Sans MS', sans-serif !important;
+  letter-spacing: 0.05em !important;
+  word-spacing: 0.1em !important;
+  line-height: 1.6 !important;
+}
+
+/* 2. Filtros de Daltonismo (Color Blindness Filters) */
+html.filter-protanopia {
+  filter: url('#protanopia-filter') !important;
+}
+
+html.filter-deuteranopia {
+  filter: url('#deuteranopia-filter') !important;
+}
+
+html.filter-tritanopia {
+  filter: url('#tritanopia-filter') !important;
+}
+
+/* 3. Filtros de Contraste y Monocromático */
+html.filter-monochrome {
+  filter: grayscale(100%) !important;
+}
+
+html.filter-high-contrast {
+  filter: contrast(150%) brightness(105%) !important;
+}
+
+html.filter-inverted {
+  filter: invert(100%) hue-rotate(180deg) !important;
+}
+
+html.filter-inverted img,
+html.filter-inverted video {
+  filter: invert(100%) hue-rotate(180deg) !important;
+}
+
+/* 4. Espaciado Adicional de Lectura */
+html.enhanced-spacing * {
+  letter-spacing: 0.08em !important;
+  line-height: 1.8 !important;
+}

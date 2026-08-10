@@ -24,13 +24,8 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.css"
-            ],
-            "allowedCommonJsDependencies": [
-              "crypto-js",
-              "sweetalert2"
-            ]
+            "styles": ["src/styles.css"],
+            "allowedCommonJsDependencies": ["crypto-js", "sweetalert2"]
           },
           "configurations": {
             "production": {
@@ -70,6 +65,9 @@
         },
         "test": {
           "builder": "@angular/build:unit-test"
+        },
+        "deploy": {
+          "builder": "angular-cli-ghpages:deploy"
         }
       }
     }

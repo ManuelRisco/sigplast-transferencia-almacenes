@@ -35,3 +35,6 @@ El componente **`SidebarComponent`** (`src/app/components/sidebar/sidebar.compon
 
 5. **Perfil del Usuario:**
    - Muestra el nombre completo, inicial del avatar y badge del rol (`Administrador` o `Usuario`) en la parte inferior del menú lateral.
+
+6. **Módulo de Accesibilidad Integrado en el Navbar:**
+   - Incluye el botón y dropdown de accesibilidad universal (`AccessibilityWidgetComponent`) en la barra superior derecha, con diseño unificado en color Dark Slate/Navy a tono con el encabezado.

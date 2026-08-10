@@ -77,3 +77,16 @@ Todos los componentes del sistema tienen sus vistas desacopladas en archivos HTM
 - **Archivos:** `login.component.ts`, `login.component.html`, `registro.component.ts`, `registro.component.html`
 - **Propósito:** Autenticación y registro de nuevos usuarios en el sistema.
 - **Seguridad:** Asignación automática del rol `Usuario` (id: 2) y validación de hash BCRYPT.
+
+---
+
+### 6. `AccessibilityWidgetComponent` (Módulo de Accesibilidad Universal)
+- **Ubicación:** Integrado en la barra superior (Navbar) de `SidebarComponent`.
+- **Archivos:** `accessibility-widget.component.ts`, `accessibility-widget.component.html`
+- **Propósito:** Ofrecer herramientas universales de adaptación visual, tamaño de fuente, tipografía para dislexia y filtros de daltonismo.
+- **Características Clave:**
+  - **Diseño Unificado (Dark Slate):** Menú desplegable con paleta de un solo tono elegante a juego con la barra superior de SIGRIS.
+  - **Zoom de Texto:** Escalamiento porcentual (`90%` a `140%`).
+  - **Filtros de Visión:** Matrices de color SVG para Protanopía, Deuteranopía, Tritanopía, Monocromático, Alto Contraste e Invertido.
+  - **Modo Dislexia:** Activación de fuente Lexend con espaciado optimizado.
+  - **Persistencia Reactiva:** Vinculado con `AccessibilityService` y guardado en `localStorage`.

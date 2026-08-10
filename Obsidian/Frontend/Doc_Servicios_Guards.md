@@ -44,6 +44,21 @@ Gestiona el estado reactivo del usuario conectado utilizando **Angular Signals**
 
 ---
 
+### 3. `AccessibilityService` (`src/app/services/accessibility.service.ts`)
+Controla de forma reactiva y centralizada todos los ajustes de accesibilidad de la aplicación:
+- **Signals y Estado:**
+  - `fontSize = signal<number>(100)`: Tamaño relativo de fuente (`90%` a `140%`).
+  - `colorFilter = signal<ColorFilterType>('none')`: Filtro de daltonismo o contraste activo.
+  - `dyslexicFont = signal<boolean>(false)`: Indicador de fuente adaptada para dislexia (Lexend).
+  - `enhancedSpacing = signal<boolean>(false)`: Mayor separación de líneas y caracteres.
+  - `isMenuOpen = signal<boolean>(false)`: Estado de apertura del panel emergente.
+- **Efectos DOM Reactivos (`effect`):**
+  - Aplica dinámicamente las clases de filtros (`filter-protanopia`, `filter-deuteranopia`, etc.) y fuentes al elemento raíz `<html>`.
+- **Persistencia:**
+  - Guarda y restaura automáticamente las preferencias desde `localStorage` bajo la clave `sigris_accessibility`.
+
+---
+
 ## 🛡️ Guards de Enrutamiento
 
 ### 1. `userGuard` (`src/app/guards/auth.guard.ts`)

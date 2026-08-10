@@ -167,6 +167,27 @@ Proyecto cliente independiente construido con el cliente de Angular 22, utilizan
 
 ---
 
+### 🔹 Fase 11: Módulo de Accesibilidad Universal (Bottom-Left Widget)
+- **Widget Flotante Global e Interactivo (`app-accessibility-widget`)**:
+  - Implementación de un botón de accesibilidad universal fijado en la esquina inferior izquierda (`fixed bottom-5 left-5 z-50`), disponible en todas las vistas de la aplicación.
+  - Indicador visual pulsante (badge verde) cuando existen opciones de accesibilidad personalizadas activas.
+- **Control Reactivo de Tamaño de Fuente**:
+  - Zoom dinámico del texto de toda la aplicación (`90%`, `100%`, `110%`, `120%`, `130%`, `140%`) con botones rápidos y controles incremento/decremento `A-` / `A+`.
+- **Filtros de Visión y Daltonismo**:
+  - Integración de matrices de color SVG precisas (`feColorMatrix`) y filtros CSS para asistir a usuarios con condiciones visuales:
+    - **Protanopía** (Deficiencia de rojo)
+    - **Deuteranopía** (Deficiencia de verde)
+    - **Tritanopía** (Deficiencia de azul)
+    - **Monocromático** (Escala de grises)
+    - **Alto Contraste** y **Modo Invertido**.
+- **Tipografía Adaptada para Dislexia**:
+  - Incorporación de la fuente tipográfica de alta legibilidad **Lexend** con formas de letras diferenciadas, espaciado de palabras y tracking optimizado para lectores con dislexia.
+  - Opción de mayor espaciado e interlineado para lectura descansada.
+- **Persistencia en LocalStorage**:
+  - El estado se gestiona mediante `AccessibilityService` con Angular Signals y se sincroniza automáticamente bajo la clave `sigris_accessibility`, preservando las preferencias del usuario tras recargar o navegar entre módulos.
+
+---
+
 ## 🚀 Próximos Pasos (To-Do)
 - Integración de la vista **Nuevo Registro** contra el Backend PHP para efectuar la rebaja real del inventario en SQL Server al grabar una "Transferencia entre Almacenes".
 - Implementación de validación de cantidades (el usuario no debería poder transferir más de la cantidad existente en `log_stkart`).
