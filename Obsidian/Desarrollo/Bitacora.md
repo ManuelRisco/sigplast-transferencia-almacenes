@@ -136,3 +136,38 @@ Proyecto cliente independiente construido con el cliente de Angular 22, utilizan
   - **Corrección de Repositorio Incrustado (Embedded Repo):** Se destruyó la carpeta oculta `.git` que Angular había inicializado por error dentro del frontend, la cual impedía el rastreo de archivos.
   - Se crearon archivos `.gitignore` globales y para el backend, omitiendo cachés de Windows (`Thumbs.db`, `.DS_Store`) y logs de errores PHP.
   - **Primer Despliegue Oficial:** El repositorio completo fue inicializado de cero en la raíz `SIGRIS` y empujado de manera segura hacia GitHub.
+
+---
+
+### Fase 9: Refactorizacion y Separacion de Responsabilidades (Templates)
+- **Separacion de Vistas y Controladores en Angular 22:**
+  - Se refactorizaron todos los componentes (login, registro, admin-usuarios, sidebar, movimientos, y nuevo-registro) que utilizaban plantillas en linea excesivamente largas.
+  - El HTML se extrajo a sus respectivos archivos fisicos (.component.html) y se modifico el decorador @Component de cada uno para utilizar templateUrl. Esto garantiza un codigo mucho mas limpio, mejora la legibilidad, facilita el mantenimiento y potencia la separacion de responsabilidades.
+  - El proyecto compila correctamente validando que la inyeccion de dependencias standalone y los estilos permanezcan intactos tras la migracion estructural.
+
+---
+
+### 🔹 Fase 10: Seguridad Avanzada (AES), Validación y UX Interactivo
+- **Seguridad y Encriptación del Lado del Cliente**:
+  - Implementación de **Encriptación AES (Grado Militar)** mediante la librería `crypto-js` para ofuscar y proteger el almacenamiento de la sesión del usuario (`localStorage`).
+  - Creación de variables de entorno de Angular (`src/environments/environment.ts`) para almacenar la clave criptográfica privada.
+  - Exclusión de los archivos de entorno mediante `.gitignore` impidiendo que la clave se filtre hacia GitHub.
+- **Validación Sensible al Contexto en Nuevo Registro**:
+  - Refactorización del campo "Almacén de Origen" para convertirlo en un selector (`<select>`) completamente interactivo. Al cambiar de origen, se limpia el destino automáticamente para evitar bucles.
+  - Prevención de desincronización: Si el usuario cambia el almacén de origen mientras ya tenía artículos cargados, la grilla se vacía y se advierte inmediatamente, garantizando la integridad de los stocks.
+  - Restricción estricta del "Tipo de Movimiento": Por regla de negocio actual, solo se autorizan Transferencias. Cualquier intento de seleccionar una salida distinta es revertido al instante.
+- **Modal de Selección de Lotes (Replicación Fiel de ERP)**:
+  - Al buscar y seleccionar cualquier producto del catálogo o lector de código de barras, se agrega inmediatamente a la grilla principal con valores iniciales (`-`), permitiendo agregar productos incluso si aún no tienen lote asignado.
+  - En la tabla de artículos agregados, las celdas **ID.Lote** y **Lote** son completamente interactivas (con cursor, subrayado punteado y efecto hover). Al hacer clic sobre el lote de cualquier fila, el sistema consulta en tiempo real `log_lote` en SQL Server.
+  - Si el artículo cuenta con lotes, se despliega el modal flotante con la estética exacta del ERP (`ID-Lote`, `Lote-O/T`, `Stock` con 3 decimales), soporte para selección, doble clic y filtro de búsqueda inferior. Al confirmar, actualiza esa fila específica.
+  - Si no cuenta con lotes registrados en el almacén, **SweetAlert2** muestra una advertencia informativa clara.
+- **Estandarización de UX con SweetAlert2**:
+  - Se reemplazaron todas las ventanas de diálogo nativas obsoletas (`alert()`, `confirm()`) del navegador por la librería interactiva de alta fidelidad visual **SweetAlert2**.
+  - Este estándar rige ahora notificaciones, advertencias de vaciado de tablas, validaciones de código de barras no encontrados y bloqueos preventivos por omisión de selección de almacén de origen o artículos sin lotes.
+
+---
+
+## 🚀 Próximos Pasos (To-Do)
+- Integración de la vista **Nuevo Registro** contra el Backend PHP para efectuar la rebaja real del inventario en SQL Server al grabar una "Transferencia entre Almacenes".
+- Implementación de validación de cantidades (el usuario no debería poder transferir más de la cantidad existente en `log_stkart`).
+- Impresión o exportación de la boleta de movimiento tras guardar con éxito el registro.

@@ -1,6 +1,6 @@
 # Servicios y Guards - Frontend Angular 22
 
-Este documento detalla la capa de comunicación HTTP, manejo reactivo del estado de sesión y protección de rutas del frontend.
+Este documento detalla la capa de comunicación HTTP, manejo reactivo del estado de sesión con encriptación AES y protección de rutas del frontend.
 
 ---
 
@@ -8,7 +8,7 @@ Este documento detalla la capa de comunicación HTTP, manejo reactivo del estado
 - **Consumido por Componentes:** [[Frontend/Doc_Componentes_Angular]].
 - **Utilizado en Navegación:** [[Frontend/Doc_Sidebar_Navegacion]].
 - **Endpoints de Conexión:** [[Backend/Doc_API_Endpoints_JSON]].
-- **Políticas de Seguridad y Token:** [[Backend/Doc_Seguridad_BCRYPT]].
+- **Políticas de Seguridad y Hash:** [[Backend/Doc_Seguridad_BCRYPT]].
 
 ---
 
@@ -20,29 +20,40 @@ Encargado de centralizar todas las peticiones hacia la API REST en PHP.
 - **Métodos Principales:**
   - `login(payload)`: Envío de credenciales a `api/auth/login.php`.
   - `registro(payload)`: Creación de cuentas en `api/auth/registro.php`.
-  - `getMovimientos(alm, anho, mes)`: Consulta a `api/erp/movimientos.php`.
+  - `getMovimientos(alm, anho, mes, page, limit)`: Consulta paginada a `api/erp/movimientos.php`.
   - `getDetalle(emp_codigo, mov_id)`: Consulta a `api/erp/detalle.php`.
   - `getTiposMovimiento()`: Consulta tipos a `api/erp/articulos.php?accion=tipos_mov`.
-  - `buscarArticulos(alm, query)`: Búsqueda paginada en `api/erp/articulos.php`.
+  - `buscarArticulos(alm, query, page, limit)`: Búsqueda paginada en `api/erp/articulos.php`.
+  - `getLotes(alm, art)`: Consulta en tiempo real de lotes disponibles con stock en `api/erp/articulos.php?accion=lotes`.
   - `getUsuarios()` y `procesarUsuario()`: Gestión de cuentas en `api/admin/usuarios.php`.
 
 ---
 
 ### 2. `AuthService` (`src/app/services/auth.service.ts`)
-Gestiona el estado reactivo del usuario conectado utilizando **Angular Signals** y `localStorage`:
-- **Signal `usuarioActual`**: Señal reactiva que almacena `{ id, username, rol, id_rol, nombre_completo }`.
-- **Signal `estaAutenticado`**: Estado booleano computado en tiempo real.
-- **Signal `esAdmin`**: Verifica si `id_rol === 1` para habilitar accesos de administración.
-- **`cerrarSesion()`**: Limpia el almacenamiento local y redirige a `/login`.
+Gestiona el estado reactivo del usuario conectado utilizando **Angular Signals** y **Encriptación Criptográfica AES**:
+- **Encriptación AES (CryptoJS):**
+  - Los datos del usuario en `localStorage` (`sigris_user`) se almacenan encriptados bajo el algoritmo militar **AES** usando `crypto-js`.
+  - La clave secreta privada reside en las variables de entorno de Angular (`src/environments/environment.ts`), archivo que se encuentra protegido y excluido de GitHub mediante `.gitignore`.
+  - En el almacenamiento local del navegador, la sesión se observa como un hash indescifrable (`U2FsdGVkX19...`).
+- **Signals y Métodos:**
+  - `currentUser = signal<User | null>`: Almacena la sesión activa del usuario desencriptada en memoria.
+  - `isLoggedIn()`: Comprueba si el usuario tiene una sesión válida.
+  - `isAdmin()`: Verifica si `id_rol === 1` o rol 'Administrador'.
+  - `saveSession(user, token)`: Encripta y persiste la sesión y el token.
+  - `clearSession()`: Destruye las llaves de sesión y resetea la señal reactiva.
 
 ---
 
 ## 🛡️ Guards de Enrutamiento
 
 ### 1. `userGuard` (`src/app/guards/auth.guard.ts`)
-- **Protege:** `/erp`, `/nuevo-registro` y rutas protegidas generales.
-- **Regla:** Verifica que `authService.estaAutenticado()` sea `true`. Si no lo está, redirige inmediatamente a `/login`.
+- **Protege:** `/erp`, `/nuevo-registro` y rutas del sistema.
+- **Regla:** Verifica que `authService.isLoggedIn()` sea `true`. Si no lo está, redirige a `/login`.
 
 ### 2. `adminGuard` (`src/app/guards/admin.guard.ts`)
 - **Protege:** `/admin` (Panel de Usuarios).
-- **Regla:** Verifica que el usuario autenticado tenga `id_rol === 1`. Si no es administrador, bloquea el acceso y redirige a `/erp`.
+- **Regla:** Verifica que el usuario autenticado tenga permisos de administrador con `authService.isAdmin()`. Si no lo es, redirige a `/erp`.
+
+### 3. `guestGuard` (`src/app/guards/guest.guard.ts`)
+- **Protege:** `/login`, `/registro`.
+- **Regla:** Impide que usuarios ya autenticados vuelvan a ingresar al login, redirigiéndolos al `/erp`.

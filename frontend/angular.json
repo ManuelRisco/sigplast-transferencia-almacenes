@@ -26,6 +26,10 @@
             ],
             "styles": [
               "src/styles.css"
+            ],
+            "allowedCommonJsDependencies": [
+              "crypto-js",
+              "sweetalert2"
             ]
           },
           "configurations": {

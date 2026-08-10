@@ -42,3 +42,8 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Environments & Private Keys
+src/environments/*
+.env
+.env.*

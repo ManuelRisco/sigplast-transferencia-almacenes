@@ -6,278 +6,14 @@ import { ApiService } from '../../services/api.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-nuevo-registro',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, SidebarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <app-sidebar></app-sidebar>
-
-    <div class="max-w-screen-2xl mx-auto px-2 sm:px-4 bg-white border border-gray-400 shadow-lg rounded-lg overflow-hidden flex flex-col min-h-[80vh] h-auto mb-12">
-      <!-- Header Window -->
-      <div class="bg-[#eef5fa] p-3 border-b-2 border-brandDark flex justify-between items-center">
-        <div class="flex items-center gap-3">
-          <h2 class="m-0 text-base font-bold text-[#002d5a]">Nuevo Registro</h2>
-          <span class="text-xs bg-green-100 text-green-800 font-semibold px-2 py-0.5 rounded border border-green-300">
-            💾 Autoguardado activo
-          </span>
-        </div>
-        <div class="flex items-center gap-3">
-          <button type="button" (click)="limpiarFormulario()" title="Limpiar y reiniciar formulario" class="text-xs text-red-600 hover:text-red-800 font-bold border border-red-200 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded transition-colors">
-            🗑️ Limpiar Todo
-          </button>
-          <a routerLink="/erp" [queryParams]="{ alm_codigo: almOrigen }" class="text-brandDark font-bold hover:text-blue-900">✕ Cerrar</a>
-        </div>
-      </div>
-
-      <!-- Header General -->
-      <div class="flex flex-col sm:flex-row flex-wrap gap-3 p-3 md:px-4 bg-gray-50 border-b border-gray-400 items-start sm:items-center shadow-sm">
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-          <label class="font-bold text-brandDark text-sm w-16 sm:w-auto">Almacen</label>
-          <input type="text" [value]="almOrigen + ' - ' + almNombre" readonly class="form-input flex-1 sm:w-80 bg-gray-200 border-gray-400 cursor-not-allowed text-gray-900 border rounded px-2 py-1 text-sm font-semibold">
-        </div>
-        
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-          <label class="font-bold text-brandDark text-sm w-16 sm:w-auto">Año</label>
-          <select class="form-input flex-1 sm:w-24 bg-white border-gray-400 border rounded px-2 py-1 text-sm font-semibold">
-            <option>{{ anhoActual }}</option>
-          </select>
-        </div>
-
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-          <label class="font-bold text-brandDark text-sm w-16 sm:w-auto">Mes</label>
-          <select class="form-input flex-1 sm:w-32 bg-white border-gray-400 border rounded px-2 py-1 text-sm font-semibold">
-            <option>{{ mesActualNombre }}</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Scrollable Content Area -->
-      <div class="flex-1 overflow-y-auto">
-        <!-- Formulario Cabecera -->
-        <div class="p-3 md:p-4 border-b border-gray-400 space-y-3">
-          <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-start sm:items-center">
-            <div class="flex items-center gap-2 w-full md:w-auto">
-              <label class="w-24 font-bold text-gray-900 text-sm text-left sm:text-right">Tipo Mov.</label>
-              <select [(ngModel)]="tipoMov" (ngModelChange)="alCambiarTipoMov()" class="form-input flex-1 md:w-80 bg-white border border-gray-400 text-gray-900 rounded px-2 py-1.5 text-sm font-medium">
-                <option value="">-- Seleccione Tipo de Movimiento --</option>
-                @for (t of tiposMovimiento; track t.tmo_codigo) {
-                  <option [value]="t.tmo_codigo">{{ t.tmo_codigo }} - {{ t.tmo_nombre }}</option>
-                }
-              </select>
-            </div>
-            <div class="flex items-center gap-2 w-full md:w-auto">
-              <label class="w-24 font-bold text-gray-900 text-sm text-left sm:text-right">Fec.Emisión</label>
-              <input type="date" [(ngModel)]="fechaEmision" (ngModelChange)="guardarEstado()" class="form-input flex-1 md:w-36 bg-white border border-gray-400 text-gray-900 rounded px-2 py-1 text-sm">
-            </div>
-          </div>
-
-          <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-start sm:items-center">
-            <div class="flex items-center gap-2 w-full md:w-auto">
-              <label class="w-24 font-bold text-gray-900 text-sm text-left sm:text-right">C.Costos</label>
-              <input type="text" class="form-input w-16 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs" readonly>
-              <input type="text" class="form-input flex-1 sm:w-48 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs" readonly>
-            </div>
-            @if (esTransferencia) {
-              <div class="flex items-center gap-2 w-full md:w-auto">
-                <label class="w-32 font-bold text-gray-900 text-sm text-left sm:text-right">Almacen Destino</label>
-                <select [(ngModel)]="almDestino" (ngModelChange)="guardarEstado()" class="form-input flex-1 md:w-72 bg-white border border-gray-400 text-gray-900 rounded px-2 py-1 text-sm">
-                  <option value="">-- Seleccione Destino --</option>
-                  @for (d of almacenesDestino; track d.alm_codigo) {
-                    <option [value]="d.alm_codigo">{{ d.alm_codigo }} - {{ d.alm_nombre }}</option>
-                  }
-                </select>
-              </div>
-            }
-          </div>
-          
-          <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-start sm:items-center">
-            <div class="flex items-center gap-2 w-full md:w-auto">
-              <label class="w-24 font-bold text-gray-900 text-sm text-left sm:text-right">Trabajador</label>
-              <input type="text" class="form-input w-16 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs" readonly>
-              <input type="text" class="form-input flex-1 sm:w-48 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs" readonly>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pestañas -->
-        <div class="flex bg-gray-200 border-b-2 border-gray-400 pt-2 px-2 gap-1">
-          <div class="px-6 py-2 font-bold text-sm cursor-pointer bg-white text-brandDark border-t-2 border-brandDark border-x border-gray-400 rounded-t-sm -mb-[2px]">Detalle</div>
-          <div class="px-6 py-2 font-bold text-sm cursor-pointer text-gray-600 hover:text-gray-900">Datos Adicionales</div>
-          <div class="px-6 py-2 font-bold text-sm cursor-pointer text-gray-600 hover:text-gray-900">Datos de Exportación</div>
-        </div>
-
-        <!-- Detalle Grid -->
-        <div class="p-0 bg-white flex flex-col border border-gray-300">
-          <div class="flex flex-col md:flex-row flex-wrap gap-3 items-center justify-between py-1.5 px-3 border-b border-gray-300 bg-[#f4f4f4]">
-            <div class="flex flex-col sm:flex-row items-center gap-6 w-full md:w-auto">
-              <div class="flex items-center gap-2">
-                <label class="font-bold text-[#004b87] text-sm">Stock Seguridad:</label>
-                <input type="text" value="0.00000" readonly class="form-input w-24 text-right bg-[#eaf2fa] border border-[#90bced] text-[#004b87] font-semibold p-1 outline-none rounded">
-              </div>
-              <div class="flex items-center gap-2">
-                <label class="font-bold text-[#004b87] text-sm">Codigo de Barras :</label>
-                <input type="text" [(ngModel)]="barcodeInput" (keyup.enter)="buscarCodigoBarras()" class="form-input w-full sm:w-56 bg-white border border-gray-400 p-1 rounded text-sm">
-              </div>
-            </div>
-            <div class="flex gap-2 w-full md:w-auto p-1">
-              <button type="button" (click)="abrirModalArticulos()" class="px-5 py-1 text-sm text-[#004b87] bg-white border border-gray-300 shadow-sm hover:bg-gray-50 rounded-sm font-bold"><u>N</u>uevo</button>
-              <button type="button" (click)="eliminarSeleccionados()" class="px-5 py-1 text-sm text-[#004b87] bg-white border border-gray-300 shadow-sm hover:bg-gray-50 rounded-sm font-bold"><u>E</u>liminar</button>
-            </div>
-          </div>
-
-          <div class="flex-1 overflow-auto bg-white min-h-[300px]">
-            <table class="w-full border-collapse text-xs whitespace-nowrap">
-              <thead class="bg-white text-gray-800 border-b border-gray-300">
-                <tr>
-                  <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">Sele.</th>
-                  <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">Item</th>
-                  <th class="px-2 py-1 border-r border-gray-300 font-bold text-center">Codigo</th>
-                  <th class="px-2 py-1 border-r border-gray-300 font-bold text-center">Descripción</th>
-                  <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">U/M</th>
-                  <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">ID.Lote</th>
-                  <th class="px-2 py-1 border-r border-gray-300 font-bold text-center">Lote</th>
-                  <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">No O/T</th>
-                  <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">Cantidad</th>
-                  <th class="px-2 py-1 border-r border-gray-300 text-center font-bold whitespace-normal w-12 leading-none">Cant.<br>Und.Vta</th>
-                  <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">Millares</th>
-                  <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">C.Costo</th>
-                  <th class="px-2 py-1 border-gray-300 text-center font-bold">Metraje</th>
-                </tr>
-              </thead>
-              <tbody class="text-gray-900 divide-y divide-gray-200">
-                @if (items.length === 0) {
-                  <tr>
-                    <td colspan="13" class="py-8 text-center text-gray-500 font-medium">No hay ítems agregados aún. Usa el campo "Código de Barras" o el botón "Nuevo" para añadir.</td>
-                  </tr>
-                } @else {
-                  @for (item of items; track $index) {
-                    <tr class="hover:bg-blue-50">
-                      <td class="px-2 py-1 border-r border-gray-300 text-center">
-                        <input type="checkbox" [(ngModel)]="item.selected">
-                      </td>
-                      <td class="px-2 py-1 border-r border-gray-300 text-center font-mono text-gray-600">#{{ $index + 1 }}</td>
-                      <td class="px-2 py-1 border-r border-gray-300 font-bold text-brandDark text-center">{{ item.art_codigo }}</td>
-                      <td class="px-2 py-1 border-r border-gray-300 font-medium">{{ item.art_nombre }}</td>
-                      <td class="px-2 py-1 border-r border-gray-300 text-center text-gray-600">{{ item.art_uniing }}</td>
-                      <td class="px-2 py-1 border-r border-gray-300 text-center font-mono text-cyan-800">{{ item.lot_id || '-' }}</td>
-                      <td class="px-2 py-1 border-r border-gray-300 text-center font-mono text-cyan-800">{{ item.lot_numlote || '-' }}</td>
-                      <td class="px-2 py-1 border-r border-gray-300 text-center">{{ item.mov_numord || '-' }}</td>
-                      <td class="px-2 py-1 border-r border-gray-300 text-right">
-                        <input type="number" [(ngModel)]="item.cantidad" (ngModelChange)="guardarEstado()" min="1" step="0.001" class="w-24 border border-gray-300 rounded px-1 text-right font-bold">
-                      </td>
-                      <td class="px-2 py-1 border-r border-gray-300 text-right">{{ item.cantidad }}</td>
-                      <td class="px-2 py-1 border-r border-gray-300 text-right">0.000</td>
-                      <td class="px-2 py-1 border-r border-gray-300 text-center">-</td>
-                      <td class="px-2 py-1 text-right">0.000</td>
-                    </tr>
-                  }
-                }
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="flex flex-col md:flex-row flex-wrap items-center justify-between p-3 bg-gray-50 border-t border-gray-400 gap-3">
-          <div class="flex flex-col sm:flex-row flex-wrap gap-3 w-full md:w-auto">
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-              <label class="font-bold text-sm text-gray-900 w-24 text-left sm:text-right">Glosa</label>
-              <input type="text" [(ngModel)]="glosa" (ngModelChange)="guardarEstado()" placeholder="Ingrese una glosa o comentario..." class="form-input flex-1 md:w-72 bg-white border border-gray-400 rounded px-2 py-1 text-sm">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal Buscador de Artículos con Paginación Unificada -->
-    @if (modalArticulosVisible) {
-      <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-gray-200 flex flex-col">
-          <div class="bg-slate-800 text-white px-6 py-4 flex justify-between items-center sticky top-0 z-10 shrink-0">
-            <h3 class="font-bold text-base md:text-lg">Catálogo de Artículos ({{ almOrigen }} - {{ almNombre }})</h3>
-            <button (click)="modalArticulosVisible = false" class="text-gray-400 hover:text-white font-bold text-xl">&times;</button>
-          </div>
-
-          <div class="p-4 md:p-6 space-y-4 flex-1 overflow-y-auto">
-            <div class="flex gap-2">
-              <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchQueryChange($event)" (keyup.enter)="buscarArticulos()" placeholder="Buscar por código o descripción de artículo..." class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-600">
-              <button (click)="buscarArticulos()" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shrink-0">Buscar</button>
-            </div>
-
-            @if (buscando) {
-              <div class="py-12 text-center text-gray-500 text-sm font-medium animate-pulse">Cargando catálogo del almacén...</div>
-            } @else if (articulosEncontrados.length > 0) {
-              <div class="border border-gray-300 rounded-xl overflow-hidden shadow-sm flex flex-col">
-                <div class="overflow-x-auto max-h-[50vh]">
-                  <table class="w-full text-xs text-left whitespace-nowrap">
-                    <thead class="bg-slate-100 text-slate-800 uppercase font-bold border-b border-gray-300 sticky top-0 z-10">
-                      <tr>
-                        <th class="py-2.5 px-4">Código</th>
-                        <th class="py-2.5 px-4">Descripción</th>
-                        <th class="py-2.5 px-4">U/M</th>
-                        <th class="py-2.5 px-4 text-right">Stock Actual</th>
-                        <th class="py-2.5 px-4 text-center">Acción</th>
-                      </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 bg-white">
-                      @for (a of articulosEncontrados; track a.art_codigo) {
-                        <tr class="hover:bg-cyan-50/50 transition-colors">
-                          <td class="py-2 px-4 font-bold text-brandDark font-mono">{{ a.art_codigo }}</td>
-                          <td class="py-2 px-4 font-medium text-gray-900">{{ a.art_nombre }}</td>
-                          <td class="py-2 px-4 text-gray-600">{{ a.art_uniing }}</td>
-                          <td class="py-2 px-4 text-right font-mono font-bold text-gray-900">{{ a.stock_actual }}</td>
-                          <td class="py-2 px-4 text-center">
-                            <button (click)="seleccionarArticulo(a)" class="bg-brandTeal hover:bg-teal-700 text-white font-bold px-3 py-1 rounded-lg text-xs transition-colors shadow">
-                              Seleccionar
-                            </button>
-                          </td>
-                        </tr>
-                      }
-                    </tbody>
-                  </table>
-                </div>
-
-                <!-- Barra de Paginación Unificada en el Modal -->
-                <div class="bg-gray-50 border-t border-gray-300 p-3 flex flex-col sm:flex-row justify-between items-center gap-3">
-                  <div class="text-xs font-semibold text-gray-700">
-                    Mostrando <span class="font-bold text-brandDark">{{ modalInicioRegistro }}</span> - <span class="font-bold text-brandDark">{{ modalFinRegistro }}</span> de <span class="font-bold text-brandDark">{{ modalTotalRegistros }}</span> artículos
-                  </div>
-
-                  <div class="flex items-center gap-3">
-                    <div class="flex items-center gap-1.5">
-                      <label class="text-xs font-bold text-gray-700 uppercase">Filas:</label>
-                      <select [ngModel]="modalItemsPorPagina" (ngModelChange)="cambiarModalItemsPorPagina($event)" class="border border-gray-400 rounded px-2 py-1 text-xs bg-white font-semibold">
-                        <option [value]="10">10</option>
-                        <option [value]="20">20</option>
-                        <option [value]="50">50</option>
-                      </select>
-                    </div>
-
-                    <div class="flex items-center gap-1">
-                      <button (click)="cambiarModalPagina(modalPaginaActual - 1)" [disabled]="modalPaginaActual === 1" class="px-3 py-1 text-xs font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed">
-                        ‹ Anterior
-                      </button>
-                      <span class="px-2.5 py-1 text-xs font-bold text-brandDark bg-blue-50 border border-blue-200 rounded">
-                        {{ modalPaginaActual }} / {{ modalTotalPaginas }}
-                      </span>
-                      <button (click)="cambiarModalPagina(modalPaginaActual + 1)" [disabled]="modalPaginaActual === modalTotalPaginas" class="px-3 py-1 text-xs font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed">
-                        Siguiente ›
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            } @else {
-              <div class="py-12 text-center text-gray-500 text-sm font-medium">No se encontraron artículos para este almacén.</div>
-            }
-          </div>
-        </div>
-      </div>
-    }
-  `
+  templateUrl: './nuevo-registro.component.html'
 })
 export class NuevoRegistroComponent implements OnInit, OnDestroy {
   apiService = inject(ApiService);
@@ -325,6 +61,23 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
 
   get modalFinRegistro(): number {
     return Math.min(this.modalPaginaActual * this.modalItemsPorPagina, this.modalTotalRegistros);
+  }
+
+  // Modal de Selección de Lotes
+  modalLotesVisible = false;
+  buscandoLotes = false;
+  itemSeleccionadoParaLote: any = null;
+  lotesEncontrados: any[] = [];
+  loteSeleccionado: any = null;
+  filtroLote = '';
+
+  get lotesFiltrados(): any[] {
+    if (!this.filtroLote.trim()) return this.lotesEncontrados;
+    const term = this.filtroLote.toLowerCase().trim();
+    return this.lotesEncontrados.filter(l => 
+      (l.lot_id && l.lot_id.toString().toLowerCase().includes(term)) ||
+      (l.lot_numlote && l.lot_numlote.toString().toLowerCase().includes(term))
+    );
   }
 
   onSearchQueryChange(query: string) {
@@ -406,7 +159,45 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
     });
   }
 
-  alCambiarTipoMov() {
+  alCambiarAlmacenOrigen() {
+    const actual = this.almacenesTodos.find((a: any) => a.alm_codigo === this.almOrigen);
+    this.almNombre = actual ? actual.alm_nombre : '';
+    this.almacenesDestino = this.almacenesTodos.filter((a: any) => a.alm_codigo !== this.almOrigen);
+    if (this.almOrigen === this.almDestino) {
+      this.almDestino = '';
+    }
+    
+    // Si cambia de almacén, debemos advertirle que se limpiará la grilla si hay items, o lo limpiamos directo
+    if (this.items.length > 0) {
+      Swal.fire({
+        title: 'Almacén cambiado',
+        text: 'Al cambiar el almacén de origen, los artículos seleccionados se han eliminado porque pertenecen a otro almacén.',
+        icon: 'info',
+        confirmButtonColor: '#0d9488'
+      });
+      this.items = [];
+    }
+    this.guardarEstado();
+  }
+
+  alCambiarTipoMov(event?: Event) {
+    const tipo = this.tiposMovimiento.find(t => t.tmo_codigo === this.tipoMov);
+    const nombreTipo = tipo ? tipo.tmo_nombre.toLowerCase() : '';
+    
+    // Verificar si es transferencia
+    if (!nombreTipo.includes('transferencia')) {
+      Swal.fire({
+        title: 'Operación no permitida',
+        text: 'Por el momento, solo se permite realizar "Transferencia entre almacenes".',
+        icon: 'error',
+        confirmButtonColor: '#0d9488'
+      });
+      
+      // Revertir selección a Transferencia (asumiendo que 102 es Transferencia)
+      const transferencia = this.tiposMovimiento.find(t => t.tmo_nombre.toLowerCase().includes('transferencia'));
+      this.tipoMov = transferencia ? transferencia.tmo_codigo : (this.tiposMovimiento.length > 0 ? this.tiposMovimiento[0].tmo_codigo : '102');
+    }
+    
     this.verificarDestino();
     this.guardarEstado();
   }
@@ -426,20 +217,32 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
   }
 
   limpiarFormulario() {
-    if (confirm('¿Estás seguro de que deseas limpiar el formulario de nuevo registro?')) {
-      this.items = [];
-      this.glosa = '';
-      this.barcodeInput = '';
-      this.almDestino = '';
-      this.tipoMov = this.tiposMovimiento.length > 0 ? this.tiposMovimiento[0].tmo_codigo : '102';
-      this.fechaEmision = new Date().toISOString().substring(0, 10);
-      localStorage.removeItem('sigris_nr_items');
-      localStorage.removeItem('sigris_nr_glosa');
-      localStorage.removeItem('sigris_nr_alm_destino');
-      this.verificarDestino();
-      this.guardarEstado();
-      this.cdr.detectChanges();
-    }
+    Swal.fire({
+      title: '¿Limpiar formulario?',
+      text: '¿Estás seguro de que deseas limpiar el formulario de nuevo registro? Se perderán los datos actuales.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#0d9488',
+      cancelButtonColor: '#ef4444',
+      confirmButtonText: 'Sí, limpiar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.items = [];
+        this.glosa = '';
+        this.barcodeInput = '';
+        this.almDestino = '';
+        const transferencia = this.tiposMovimiento.find(t => t.tmo_nombre.toLowerCase().includes('transferencia'));
+        this.tipoMov = transferencia ? transferencia.tmo_codigo : (this.tiposMovimiento.length > 0 ? this.tiposMovimiento[0].tmo_codigo : '102');
+        this.fechaEmision = new Date().toISOString().substring(0, 10);
+        localStorage.removeItem('sigris_nr_items');
+        localStorage.removeItem('sigris_nr_glosa');
+        localStorage.removeItem('sigris_nr_alm_destino');
+        this.verificarDestino();
+        this.guardarEstado();
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   buscarCodigoBarras() {
@@ -450,7 +253,12 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
           this.seleccionarArticulo(res.articulos[0]);
           this.barcodeInput = '';
         } else {
-          alert('Artículo no encontrado con el código de barras ingresado.');
+          Swal.fire({
+            title: 'No encontrado',
+            text: 'Artículo no encontrado con el código de barras ingresado.',
+            icon: 'warning',
+            confirmButtonColor: '#0d9488'
+          });
         }
         this.cdr.detectChanges();
       }
@@ -458,6 +266,15 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
   }
 
   abrirModalArticulos() {
+    if (!this.almOrigen) {
+      Swal.fire({
+        title: 'Almacén requerido',
+        text: 'Debes seleccionar un almacén de origen antes de agregar artículos.',
+        icon: 'error',
+        confirmButtonColor: '#0d9488'
+      });
+      return;
+    }
     this.modalArticulosVisible = true;
     this.searchQuery = '';
     this.modalPaginaActual = 1;
@@ -474,7 +291,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
         if (res.success) {
           this.articulosEncontrados = res.articulos;
           this.modalTotalRegistros = res.total_records || 0;
-          
+
           if (this.modalPaginaActual > this.modalTotalPaginas && this.modalTotalPaginas > 0) {
             this.modalPaginaActual = 1;
             this.buscarArticulos(); // Recargar a la primera página válida
@@ -505,10 +322,82 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
       lot_id: '-',
       lot_numlote: '-',
       mov_numord: '-',
+      stock_disponible: art.stock_actual || 0,
       cantidad: 1.000
     });
     this.modalArticulosVisible = false;
     this.guardarEstado();
+    this.cdr.detectChanges();
+  }
+
+  abrirModalLotesParaItem(item: any) {
+    this.buscandoLotes = true;
+    this.itemSeleccionadoParaLote = item;
+    this.cdr.detectChanges();
+
+    this.apiService.getLotes(this.almOrigen, item.art_codigo).subscribe({
+      next: (res) => {
+        this.buscandoLotes = false;
+        if (res.success && res.lotes && res.lotes.length > 0) {
+          this.lotesEncontrados = res.lotes;
+          const actualLote = res.lotes.find((l: any) => l.lot_id === item.lot_id);
+          this.loteSeleccionado = actualLote || res.lotes[0];
+          this.filtroLote = '';
+          this.modalLotesVisible = true;
+        } else {
+          Swal.fire({
+            title: 'Sin Lotes Disponibles',
+            text: `El artículo "${item.art_nombre}" (${item.art_codigo}) no cuenta con lotes con stock en el almacén ${this.almOrigen}.`,
+            icon: 'warning',
+            confirmButtonColor: '#0d9488'
+          });
+        }
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.buscandoLotes = false;
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudieron consultar los lotes del artículo.',
+          icon: 'error',
+          confirmButtonColor: '#0d9488'
+        });
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  seleccionarLote(lote: any) {
+    this.loteSeleccionado = lote;
+    this.cdr.detectChanges();
+  }
+
+  confirmarLote() {
+    if (!this.loteSeleccionado || !this.itemSeleccionadoParaLote) {
+      Swal.fire({
+        title: 'Seleccione un Lote',
+        text: 'Debe seleccionar un lote de la lista para continuar.',
+        icon: 'info',
+        confirmButtonColor: '#0d9488'
+      });
+      return;
+    }
+
+    this.itemSeleccionadoParaLote.lot_id = this.loteSeleccionado.lot_id || '-';
+    this.itemSeleccionadoParaLote.lot_numlote = this.loteSeleccionado.lot_numlote || '-';
+    this.itemSeleccionadoParaLote.stock_disponible = this.loteSeleccionado.lot_cantid;
+
+    this.modalLotesVisible = false;
+    this.itemSeleccionadoParaLote = null;
+    this.loteSeleccionado = null;
+    this.guardarEstado();
+    this.cdr.detectChanges();
+  }
+
+  cerrarModalLotes() {
+    this.modalLotesVisible = false;
+    this.itemSeleccionadoParaLote = null;
+    this.loteSeleccionado = null;
     this.cdr.detectChanges();
   }
 

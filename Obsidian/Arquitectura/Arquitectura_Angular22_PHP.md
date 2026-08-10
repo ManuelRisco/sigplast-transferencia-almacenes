@@ -52,3 +52,8 @@ graph TD
 
 3. **Autoprotección de Administrador**:
    - El backend y frontend impiden que un Administrador desactive su propia cuenta si tiene la sesión activa.
+
+## 🛠️ Actualizacion de Plantillas y Dependencias
+- Todos los componentes mayores (Movimientos, NuevoRegistro, Sidebar, Login, AdminUsuarios) ahora utilizan la propiedad `templateUrl` y tienen sus archivos `.html` fisicamente separados de la logica en el `.ts`. Esto asegura un mejor mantenimiento y escalabilidad del proyecto, cumpliendo con las buenas practicas del framework.
+- **Seguridad en Frontend (CryptoJS)**: Todo el `localStorage` se encripta mediante AES para no exponer la data JSON del usuario.
+- **Interacción y Modales (SweetAlert2)**: Se descontinuaron las alertas nativas (`alert`, `confirm`). Todo feedback visual, notificaciones y prevenciones (Exception Handling) de usuario en el frontend se rige de manera estricta bajo la librería `SweetAlert2`.
