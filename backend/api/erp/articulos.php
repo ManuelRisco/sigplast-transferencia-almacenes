@@ -36,8 +36,14 @@ if ($accion === 'tipos_mov') {
     if ($conn) {
         $searchPattern = !empty($q) ? "%" . $q . "%" : "";
 
+        // Subconsulta para obtener el stock más reciente de log_stkarticulo
+        $subquery_stock = "(SELECT art_codigo, alm_codigo, SUM(stk_stkart) as stk_stkart 
+                            FROM log_stkarticulo 
+                            WHERE stk_anho = (SELECT MAX(stk_anho) FROM log_stkarticulo) 
+                              AND stk_nmes = (SELECT MAX(stk_nmes) FROM log_stkarticulo WHERE stk_anho = (SELECT MAX(stk_anho) FROM log_stkarticulo))
+                            GROUP BY art_codigo, alm_codigo)";
+
         // 1. Intento por asociación de Almacén en mae_almtpoart (para 001 y almacenes configurados)
-        // Count Query
         if (!empty($q)) {
             $sql_count = "SELECT COUNT(*) as total
                           FROM mae_articulo a
@@ -67,9 +73,9 @@ if ($accion === 'tipos_mov') {
                             COALESCE(s.stk_stkart, 0) AS stock_actual
                         FROM mae_articulo a
                         INNER JOIN mae_almtpoart mta ON a.tar_codigo = mta.tar_codigo
-                        LEFT JOIN log_stkart s ON a.art_codigo = s.art_codigo AND RTRIM(LTRIM(s.alm_codigo)) = RTRIM(LTRIM(mta.alm_codigo))
+                        LEFT JOIN $subquery_stock s ON a.art_codigo = s.art_codigo AND RTRIM(LTRIM(s.alm_codigo)) = RTRIM(LTRIM(mta.alm_codigo))
                         WHERE RTRIM(LTRIM(mta.alm_codigo)) = ? AND (a.art_codigo LIKE ? OR a.art_codean LIKE ? OR a.art_nombre LIKE ?)
-                        ORDER BY a.art_nombre ASC
+                        ORDER BY s.stk_stkart DESC, a.art_nombre ASC
                         OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
                 $params = array($alm, $searchPattern, $searchPattern, $searchPattern, $offset, $limit);
             } else {
@@ -81,9 +87,9 @@ if ($accion === 'tipos_mov') {
                             COALESCE(s.stk_stkart, 0) AS stock_actual
                         FROM mae_articulo a
                         INNER JOIN mae_almtpoart mta ON a.tar_codigo = mta.tar_codigo
-                        LEFT JOIN log_stkart s ON a.art_codigo = s.art_codigo AND RTRIM(LTRIM(s.alm_codigo)) = RTRIM(LTRIM(mta.alm_codigo))
+                        LEFT JOIN $subquery_stock s ON a.art_codigo = s.art_codigo AND RTRIM(LTRIM(s.alm_codigo)) = RTRIM(LTRIM(mta.alm_codigo))
                         WHERE RTRIM(LTRIM(mta.alm_codigo)) = ?
-                        ORDER BY a.art_nombre ASC
+                        ORDER BY s.stk_stkart DESC, a.art_nombre ASC
                         OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
                 $params = array($alm, $offset, $limit);
             }
@@ -94,15 +100,14 @@ if ($accion === 'tipos_mov') {
                     $r['art_codigo'] = trim((string)$r['art_codigo']);
                     $r['art_nombre'] = trim((string)$r['art_nombre']);
                     $r['art_codean'] = trim((string)$r['art_codean']);
-                    $r['stock_actual'] = number_format((float)$r['stock_actual'], 5, '.', '');
+                    $r['stock_actual'] = number_format((float)$r['stock_actual'], 2, '.', '');
                     $articulos[] = $r;
                 }
             }
         }
 
-        // 2. Si el almacén no tiene mapeo en mae_almtpoart (ej. Almacén 002 Productos Terminados o 016), consultar catálogo general con stock del almacén
+        // 2. Si el almacén no tiene mapeo en mae_almtpoart (ej. Almacenes de planta), catálogo general
         if ($total_records === 0) {
-            // Count Query Alt
             if (!empty($q)) {
                 $sql_count_alt = "SELECT COUNT(*) as total
                                   FROM mae_articulo a
@@ -127,9 +132,9 @@ if ($accion === 'tipos_mov') {
                                     ISNULL(a.art_codean, '') AS art_codean,
                                     COALESCE(s.stk_stkart, 0) AS stock_actual
                                 FROM mae_articulo a
-                                LEFT JOIN log_stkart s ON a.art_codigo = s.art_codigo AND RTRIM(LTRIM(s.alm_codigo)) = ?
+                                LEFT JOIN $subquery_stock s ON a.art_codigo = s.art_codigo AND RTRIM(LTRIM(s.alm_codigo)) = ?
                                 WHERE a.art_codigo LIKE ? OR a.art_codean LIKE ? OR a.art_nombre LIKE ?
-                                ORDER BY a.art_nombre ASC
+                                ORDER BY s.stk_stkart DESC, a.art_nombre ASC
                                 OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
                     $params_alt = array($alm, $searchPattern, $searchPattern, $searchPattern, $offset, $limit);
                 } else {
@@ -140,8 +145,8 @@ if ($accion === 'tipos_mov') {
                                     ISNULL(a.art_codean, '') AS art_codean,
                                     COALESCE(s.stk_stkart, 0) AS stock_actual
                                 FROM mae_articulo a
-                                LEFT JOIN log_stkart s ON a.art_codigo = s.art_codigo AND RTRIM(LTRIM(s.alm_codigo)) = ?
-                                ORDER BY a.art_nombre ASC
+                                LEFT JOIN $subquery_stock s ON a.art_codigo = s.art_codigo AND RTRIM(LTRIM(s.alm_codigo)) = ?
+                                ORDER BY s.stk_stkart DESC, a.art_nombre ASC
                                 OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
                     $params_alt = array($alm, $offset, $limit);
                 }
@@ -152,7 +157,7 @@ if ($accion === 'tipos_mov') {
                         $r['art_codigo'] = trim((string)$r['art_codigo']);
                         $r['art_nombre'] = trim((string)$r['art_nombre']);
                         $r['art_codean'] = trim((string)$r['art_codean']);
-                        $r['stock_actual'] = number_format((float)$r['stock_actual'], 5, '.', '');
+                        $r['stock_actual'] = number_format((float)$r['stock_actual'], 2, '.', '');
                         $articulos[] = $r;
                     }
                 }
@@ -172,16 +177,51 @@ if ($accion === 'tipos_mov') {
     $art = trim($_GET['art'] ?? '');
 
     $lotes = [];
-    if ($conn) {
-        $sql = "SELECT lot_codigo AS lot_id, art_codref AS lot_numlote, mov_ctdmov AS lot_cantid 
-                FROM log_lote 
-                WHERE RTRIM(LTRIM(alm_codigo)) = ? AND RTRIM(LTRIM(art_codigo)) = ? 
-                ORDER BY lot_codigo DESC";
+    if ($conn && !empty($art)) {
+        // 1. Calcular el stock real activo de cada lote según movimientos de entrada/salida
+        $sql_mov = "SELECT 
+                        d.lot_codigo AS lot_id,
+                        COALESCE(l.lot_real, d.lot_codigo) AS lot_numlote,
+                        SUM(CASE WHEN t.tmo_tipo = 'I' THEN d.mov_ctdmov ELSE -d.mov_ctdmov END) as lot_cantid
+                    FROM log_detmov d
+                    INNER JOIN log_cabmov c ON d.emp_codigo = c.emp_codigo AND d.mov_id = c.mov_id
+                    LEFT JOIN mae_tpomov t ON c.tmo_codigo = t.tmo_codigo
+                    LEFT JOIN log_lote l ON d.art_codigo = l.art_codigo AND d.lot_codigo = l.lot_codigo
+                    WHERE RTRIM(LTRIM(d.art_codigo)) = ?
+                      AND RTRIM(LTRIM(c.alm_codigo)) = ?
+                      AND d.lot_codigo IS NOT NULL 
+                      AND RTRIM(LTRIM(d.lot_codigo)) <> ''
+                    GROUP BY d.lot_codigo, l.lot_real
+                    HAVING SUM(CASE WHEN t.tmo_tipo = 'I' THEN d.mov_ctdmov ELSE -d.mov_ctdmov END) > 0
+                    ORDER BY lot_cantid DESC, d.lot_codigo DESC";
 
-        $stmt = sqlsrv_query($conn, $sql, array($alm, $art));
-        if ($stmt) {
-            while ($r = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+        $stmt_mov = sqlsrv_query($conn, $sql_mov, array($art, $alm));
+        if ($stmt_mov) {
+            while ($r = sqlsrv_fetch_array($stmt_mov, SQLSRV_FETCH_ASSOC)) {
+                $r['lot_id'] = trim((string)$r['lot_id']);
+                $r['lot_numlote'] = trim((string)$r['lot_numlote']);
+                $r['lot_cantid'] = number_format((float)$r['lot_cantid'], 2, '.', '');
                 $lotes[] = $r;
+            }
+        }
+
+        // 2. Si no hay registros calculados por movimientos, mostrar el catálogo maestro de log_lote
+        if (empty($lotes)) {
+            $sql_fallback = "SELECT l.lot_codigo AS lot_id, 
+                                    l.lot_real AS lot_numlote, 
+                                    0.00 AS lot_cantid 
+                             FROM log_lote l 
+                             WHERE RTRIM(LTRIM(l.art_codigo)) = ? 
+                             ORDER BY l.lot_codigo DESC";
+
+            $stmt_fb = sqlsrv_query($conn, $sql_fallback, array($art));
+            if ($stmt_fb) {
+                while ($r = sqlsrv_fetch_array($stmt_fb, SQLSRV_FETCH_ASSOC)) {
+                    $r['lot_id'] = trim((string)$r['lot_id']);
+                    $r['lot_numlote'] = trim((string)$r['lot_numlote']);
+                    $r['lot_cantid'] = '0.00';
+                    $lotes[] = $r;
+                }
             }
         }
     }

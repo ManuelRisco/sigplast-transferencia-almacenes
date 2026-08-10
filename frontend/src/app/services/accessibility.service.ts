@@ -7,6 +7,7 @@ export interface AccessibilitySettings {
   colorFilter: ColorFilterType;
   dyslexicFont: boolean;
   enhancedSpacing: boolean;
+  darkMode: boolean;
 }
 
 @Injectable({
@@ -20,6 +21,7 @@ export class AccessibilityService {
   colorFilter = signal<ColorFilterType>('none');
   dyslexicFont = signal<boolean>(false);
   enhancedSpacing = signal<boolean>(false);
+  darkMode = signal<boolean>(false);
   isMenuOpen = signal<boolean>(false);
 
   constructor() {
@@ -41,20 +43,8 @@ export class AccessibilityService {
   }
 
   setFontSize(size: number) {
-    const clamped = Math.max(90, Math.min(150, size));
+    const clamped = Math.max(75, Math.min(150, size));
     this.fontSize.set(clamped);
-  }
-
-  increaseFontSize() {
-    if (this.fontSize() < 140) {
-      this.fontSize.update(v => v + 10);
-    }
-  }
-
-  decreaseFontSize() {
-    if (this.fontSize() > 90) {
-      this.fontSize.update(v => v - 10);
-    }
   }
 
   setColorFilter(filter: ColorFilterType) {
@@ -69,18 +59,24 @@ export class AccessibilityService {
     this.enhancedSpacing.update(v => !v);
   }
 
+  toggleDarkMode() {
+    this.darkMode.update(v => !v);
+  }
+
   resetAll() {
     this.fontSize.set(100);
     this.colorFilter.set('none');
     this.dyslexicFont.set(false);
     this.enhancedSpacing.set(false);
+    this.darkMode.set(false);
   }
 
   get isDefault(): boolean {
     return this.fontSize() === 100 &&
            this.colorFilter() === 'none' &&
            !this.dyslexicFont() &&
-           !this.enhancedSpacing();
+           !this.enhancedSpacing() &&
+           !this.darkMode();
   }
 
   private applyDOMChanges() {
@@ -110,14 +106,21 @@ export class AccessibilityService {
       root.classList.add(`filter-${this.colorFilter()}`);
     }
 
-    // 3. Fuente para dislexia
+    // 3. Modo Noche / Dark Mode
+    if (this.darkMode()) {
+      root.classList.add('dark-mode');
+    } else {
+      root.classList.remove('dark-mode');
+    }
+
+    // 4. Fuente para dislexia
     if (this.dyslexicFont()) {
       root.classList.add('font-dyslexic');
     } else {
       root.classList.remove('font-dyslexic');
     }
 
-    // 4. Espaciado adicional
+    // 5. Espaciado adicional
     if (this.enhancedSpacing()) {
       root.classList.add('enhanced-spacing');
     } else {
@@ -131,7 +134,8 @@ export class AccessibilityService {
       fontSize: this.fontSize(),
       colorFilter: this.colorFilter(),
       dyslexicFont: this.dyslexicFont(),
-      enhancedSpacing: this.enhancedSpacing()
+      enhancedSpacing: this.enhancedSpacing(),
+      darkMode: this.darkMode()
     };
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(settings));
@@ -150,6 +154,7 @@ export class AccessibilityService {
       if (parsed.colorFilter) this.colorFilter.set(parsed.colorFilter);
       if (typeof parsed.dyslexicFont === 'boolean') this.dyslexicFont.set(parsed.dyslexicFont);
       if (typeof parsed.enhancedSpacing === 'boolean') this.enhancedSpacing.set(parsed.enhancedSpacing);
+      if (typeof parsed.darkMode === 'boolean') this.darkMode.set(parsed.darkMode);
     } catch (e) {
       console.warn('Error leyendo configuración de accesibilidad guardada', e);
     }

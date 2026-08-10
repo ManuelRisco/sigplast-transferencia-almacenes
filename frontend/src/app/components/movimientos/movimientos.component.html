@@ -7,8 +7,8 @@
   <div class="bg-blue-50 border border-blue-300 rounded-lg p-4 mb-4 flex flex-col md:flex-row items-start md:items-center gap-4 shadow-sm">
     
     <div class="flex items-center gap-2 w-full md:w-auto">
-      <label class="font-bold text-gray-900 text-sm uppercase whitespace-nowrap">Almacen</label>
-      <select aria-label="Seleccionar Almacén" [(ngModel)]="filtroAlmacen" (change)="alCambiarFiltro()" class="border border-gray-400 rounded px-3 py-1.5 text-sm w-full md:w-auto bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 font-semibold">
+      <label for="filtro-almacen" class="font-bold text-gray-900 text-sm uppercase whitespace-nowrap">Almacen</label>
+      <select id="filtro-almacen" aria-label="Filtrar por almacén" [(ngModel)]="filtroAlmacen" (change)="alCambiarFiltro()" class="border border-gray-400 rounded px-3 py-1.5 text-sm w-full md:w-auto bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 font-semibold">
         @for (a of almacenes; track a.alm_codigo) {
           <option [value]="a.alm_codigo">{{ a.alm_nombre }}</option>
         }
@@ -16,8 +16,8 @@
     </div>
 
     <div class="flex items-center gap-2 w-full md:w-auto">
-      <label class="font-bold text-gray-900 text-sm uppercase whitespace-nowrap">Año</label>
-      <select aria-label="Seleccionar Año" [(ngModel)]="filtroAnho" (change)="alCambiarFiltro()" class="border border-gray-400 rounded px-3 py-1.5 text-sm w-full md:w-auto bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 font-semibold">
+      <label for="filtro-anho" class="font-bold text-gray-900 text-sm uppercase whitespace-nowrap">Año</label>
+      <select id="filtro-anho" aria-label="Filtrar por año" [(ngModel)]="filtroAnho" (change)="alCambiarFiltro()" class="border border-gray-400 rounded px-3 py-1.5 text-sm w-full md:w-auto bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 font-semibold">
         @for (a of anios; track a) {
           <option [value]="a">{{ a }}</option>
         }
@@ -25,8 +25,8 @@
     </div>
 
     <div class="flex items-center gap-2 w-full md:w-auto">
-      <label class="font-bold text-gray-900 text-sm uppercase whitespace-nowrap">Mes</label>
-      <select aria-label="Seleccionar Mes" [(ngModel)]="filtroMes" (change)="alCambiarFiltro()" class="border border-gray-400 rounded px-3 py-1.5 text-sm w-full md:w-auto bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 font-semibold">
+      <label for="filtro-mes" class="font-bold text-gray-900 text-sm uppercase whitespace-nowrap">Mes</label>
+      <select id="filtro-mes" aria-label="Filtrar por mes" [(ngModel)]="filtroMes" (change)="alCambiarFiltro()" class="border border-gray-400 rounded px-3 py-1.5 text-sm w-full md:w-auto bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 font-semibold">
         @for (m of meses; track m.codigo) {
           <option [value]="m.codigo">{{ m.nombre }}</option>
         }
@@ -36,10 +36,13 @@
     <!-- Botones de Acción -->
     <div class="md:ml-auto flex w-full md:w-auto gap-3 mt-2 md:mt-0">
       <a [routerLink]="['/nuevo-registro']" [queryParams]="{ alm_codigo: filtroAlmacen }" 
-         class="flex-1 md:flex-none flex justify-center items-center bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-1.5 px-4 rounded text-sm transition-colors shadow shadow-cyan-900/20">
+         aria-label="Ir a la pantalla de crear nuevo registro"
+         class="flex-1 md:flex-none flex justify-center items-center bg-cyan-700 hover:bg-cyan-800 text-white font-bold py-1.5 px-4 rounded text-sm transition-colors shadow">
         ➕ Nuevo Registro
       </a>
-      <button type="button" (click)="copiarDatosExcel()" class="flex-1 md:flex-none bg-green-600 hover:bg-green-700 text-white font-bold py-1.5 px-4 rounded text-sm transition-colors shadow shadow-green-900/20">
+      <button type="button" (click)="copiarDatosExcel()" 
+              aria-label="Copiar datos de la tabla para Excel"
+              class="flex-1 md:flex-none bg-green-700 hover:bg-green-800 text-white font-bold py-1.5 px-4 rounded text-sm transition-colors shadow">
         📋 Excel
       </button>
     </div>
@@ -47,39 +50,40 @@
 
   <!-- Contenedor de Tabla con Scroll Estilo Hoja de Cálculo -->
   <div class="bg-white border-2 border-gray-400 border-b-0 rounded-t shadow-md w-full h-[65vh] overflow-auto">
-    <table class="w-full text-sm text-left whitespace-nowrap border-collapse text-gray-900">
-      <thead class="text-white uppercase bg-brandDark sticky top-0 z-10">
-        <tr>
-          <th class="sticky-col bg-[#003a6c] px-4 py-3 border-2 border-gray-400 text-center z-20">Acción</th>
-          <th class="px-4 py-3 border-2 border-gray-400">Nro. ID</th>
-          <th class="px-4 py-3 border-2 border-gray-400">No.Vale</th>
-          <th class="px-4 py-3 border-2 border-gray-400">Fec.Emi.</th>
-          <th class="px-4 py-3 border-2 border-gray-400">Fec-Trasl</th>
-          <th class="px-4 py-3 border-2 border-gray-400">Tipo de Movimiento</th>
-          <th class="px-4 py-3 border-2 border-gray-400">Doc_Ref</th>
-          <th class="px-4 py-3 border-2 border-gray-400">Est</th>
-          <th class="px-4 py-3 border-2 border-gray-400">Dst</th>
-          <th class="px-4 py-3 border-2 border-gray-400">Doc.Venta</th>
-          <th class="px-4 py-3 border-2 border-gray-400">N.Pedido</th>
-          <th class="px-4 py-3 border-2 border-gray-400">Cliente/Proveedor</th>
-          <th class="px-4 py-3 border-2 border-gray-400">Usuario</th>
+    <table class="w-full text-sm text-left whitespace-nowrap border-collapse text-gray-900" aria-label="Tabla de movimientos y notas de salidas">
+      <thead class="text-white uppercase bg-[#003a6c] sticky top-0 z-10">
+        <tr class="bg-[#003a6c] text-white">
+          <th scope="col" class="sticky-col bg-[#003a6c] px-4 py-3 border-2 border-gray-400 text-center z-20 font-bold text-white">Acción</th>
+          <th scope="col" class="bg-[#003a6c] px-4 py-3 border-2 border-gray-400 font-bold text-white">Nro. ID</th>
+          <th scope="col" class="bg-[#003a6c] px-4 py-3 border-2 border-gray-400 font-bold text-white">No.Vale</th>
+          <th scope="col" class="bg-[#003a6c] px-4 py-3 border-2 border-gray-400 font-bold text-white">Fec.Emi.</th>
+          <th scope="col" class="bg-[#003a6c] px-4 py-3 border-2 border-gray-400 font-bold text-white">Fec-Trasl</th>
+          <th scope="col" class="bg-[#003a6c] px-4 py-3 border-2 border-gray-400 font-bold text-white">Tipo de Movimiento</th>
+          <th scope="col" class="bg-[#003a6c] px-4 py-3 border-2 border-gray-400 font-bold text-white">Doc_Ref</th>
+          <th scope="col" class="bg-[#003a6c] px-4 py-3 border-2 border-gray-400 font-bold text-white text-center">Est</th>
+          <th scope="col" class="bg-[#003a6c] px-4 py-3 border-2 border-gray-400 font-bold text-white text-center">Dst</th>
+          <th scope="col" class="bg-[#003a6c] px-4 py-3 border-2 border-gray-400 font-bold text-white">Doc.Venta</th>
+          <th scope="col" class="bg-[#003a6c] px-4 py-3 border-2 border-gray-400 font-bold text-white">N.Pedido</th>
+          <th scope="col" class="bg-[#003a6c] px-4 py-3 border-2 border-gray-400 font-bold text-white">Cliente/Proveedor</th>
+          <th scope="col" class="bg-[#003a6c] px-4 py-3 border-2 border-gray-400 font-bold text-white">Usuario</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-300">
         @if (loading) {
           <tr>
-            <td colspan="13" class="py-12 text-center text-gray-500 font-medium">Cargando información del ERP...</td>
+            <td colspan="13" class="py-12 text-center text-gray-700 font-bold">Cargando información del ERP...</td>
           </tr>
         } @else if (movimientos.length === 0) {
           <tr>
-            <td colspan="13" class="py-12 text-center text-gray-500 font-medium">No se encontraron movimientos registrados para el almacén y período seleccionado.</td>
+            <td colspan="13" class="py-12 text-center text-gray-700 font-bold">No se encontraron movimientos registrados para el almacén y período seleccionado.</td>
           </tr>
         } @else {
           @for (m of movimientos; track m.raw_mov_id) {
             <tr class="hover:bg-blue-50 transition-colors border-b border-gray-300">
               <td class="sticky-col bg-white border-b-2 border-gray-400 px-4 py-2 text-center shadow-[2px_0_4px_-1px_rgba(0,0,0,0.1)]">
-                <button aria-label="Ver u ocultar artículos" (click)="toggleDetail(m)" 
-                        [class]="m.expanded ? 'bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded shadow transition-colors' : 'bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded shadow transition-colors'">
+                <button (click)="toggleDetail(m)" 
+                        [attr.aria-label]="(m.expanded ? 'Ocultar artículos del movimiento ' : 'Ver artículos del movimiento ') + m.nro_id"
+                        [class]="m.expanded ? 'bg-red-700 hover:bg-red-800 text-white font-bold py-1 px-3 rounded shadow transition-colors cursor-pointer' : 'bg-green-700 hover:bg-green-800 text-white font-bold py-1 px-3 rounded shadow transition-colors cursor-pointer'">
                   {{ m.expanded ? 'Ocultar' : 'Ver Artículos' }}
                 </button>
               </td>
@@ -87,55 +91,55 @@
               <td class="px-4 py-2 border-b-2 border-gray-400 font-bold">{{ m.no_vale || '-' }}</td>
               <td class="px-4 py-2 border-b-2 border-gray-400">{{ m.fec_emi || '-' }}</td>
               <td class="px-4 py-2 border-b-2 border-gray-400">{{ m.fec_trasl === '01/01/1900' ? '-' : (m.fec_trasl || '-') }}</td>
-              <td class="px-4 py-2 border-b-2 border-gray-400 font-medium">{{ m.tipo_movimiento || '-' }}</td>
+              <td class="px-4 py-2 border-b-2 border-gray-400 font-bold text-gray-900">{{ m.tipo_movimiento || '-' }}</td>
               <td class="px-4 py-2 border-b-2 border-gray-400">{{ m.doc_ref || '-' }}</td>
               <td class="px-4 py-2 border-b-2 border-gray-400 text-center">{{ m.est || '-' }}</td>
               <td class="px-4 py-2 border-b-2 border-gray-400 text-center">{{ m.dst || '-' }}</td>
               <td class="px-4 py-2 border-b-2 border-gray-400">{{ m.doc_venta || '-' }}</td>
               <td class="px-4 py-2 border-b-2 border-gray-400">{{ m.n_pedido || '-' }}</td>
               <td class="px-4 py-2 border-b-2 border-gray-400 font-medium">{{ m.cliente_proveedor || '-' }}</td>
-              <td class="px-4 py-2 border-b-2 border-gray-400 text-xs font-mono text-gray-700">{{ m.usuario || '-' }}</td>
+              <td class="px-4 py-2 border-b-2 border-gray-400 text-xs font-mono text-gray-800">{{ m.usuario || '-' }}</td>
             </tr>
 
             <!-- Fila oculta Maestro-Detalle -->
             @if (m.expanded) {
               <tr class="bg-blue-50 border-b-2 border-gray-400">
                 <td colspan="13" class="p-0 border-b-2 border-gray-400">
-                  <div class="bg-blue-50 p-4 border border-blue-200 m-2 rounded shadow-inner">
-                    <h3 class="text-blue-900 font-bold mb-3 border-b-2 border-blue-200 pb-2">
+                  <div class="bg-blue-50 p-4 border border-blue-300 m-2 rounded shadow-inner">
+                    <h3 class="text-blue-900 font-bold mb-3 border-b-2 border-blue-300 pb-2">
                       Detalle de Artículos para MOV_ID: {{ m.raw_mov_id }}
                     </h3>
 
                     @if (m.loadingDetail) {
-                      <p class="p-4 text-gray-600 font-medium animate-pulse">Cargando información de artículos...</p>
+                      <p class="p-4 text-gray-700 font-bold animate-pulse">Cargando información de artículos...</p>
                     } @else if (!m.detalles || m.detalles.length === 0) {
-                      <p class="p-4 text-gray-600 font-medium italic">No hay artículos asociados a este movimiento.</p>
+                      <p class="p-4 text-gray-700 font-medium italic">No hay artículos asociados a este movimiento.</p>
                     } @else {
-                      <div class="overflow-x-auto w-full rounded border border-blue-200 shadow-sm">
-                        <table class="w-full text-sm text-left whitespace-nowrap border-collapse">
-                          <thead class="bg-blue-100 text-blue-900 uppercase font-bold text-xs">
+                      <div class="overflow-x-auto w-full rounded border border-blue-300 shadow-sm">
+                        <table class="w-full text-sm text-left whitespace-nowrap border-collapse" aria-label="Detalles de artículos del movimiento">
+                          <thead class="bg-blue-200 text-blue-950 uppercase font-bold text-xs">
                             <tr>
-                              <th class="px-4 py-2 border-b-2 border-blue-200">Item</th>
-                              <th class="px-4 py-2 border-b-2 border-blue-200">Código</th>
-                              <th class="px-4 py-2 border-b-2 border-blue-200">Descripción</th>
-                              <th class="px-4 py-2 border-b-2 border-blue-200">U/M</th>
-                              <th class="px-4 py-2 border-b-2 border-blue-200">ID.Lote</th>
-                              <th class="px-4 py-2 border-b-2 border-blue-200">Lote</th>
-                              <th class="px-4 py-2 border-b-2 border-blue-200 text-right">Cantidad</th>
-                              <th class="px-4 py-2 border-b-2 border-blue-200 text-center">No O/T</th>
+                              <th scope="col" class="px-4 py-2 border-b-2 border-blue-300">Item</th>
+                              <th scope="col" class="px-4 py-2 border-b-2 border-blue-300">Código</th>
+                              <th scope="col" class="px-4 py-2 border-b-2 border-blue-300">Descripción</th>
+                              <th scope="col" class="px-4 py-2 border-b-2 border-blue-300">U/M</th>
+                              <th scope="col" class="px-4 py-2 border-b-2 border-blue-300">ID.Lote</th>
+                              <th scope="col" class="px-4 py-2 border-b-2 border-blue-300">Lote</th>
+                              <th scope="col" class="px-4 py-2 border-b-2 border-blue-300 text-right">Cantidad</th>
+                              <th scope="col" class="px-4 py-2 border-b-2 border-blue-300 text-center">No O/T</th>
                             </tr>
                           </thead>
-                          <tbody class="divide-y divide-blue-100 bg-white text-xs">
+                          <tbody class="divide-y divide-blue-100 bg-white text-xs text-gray-900">
                             @for (d of m.detalles; track d.Item) {
                               <tr class="hover:bg-blue-50 transition-colors">
-                                <td class="px-4 py-2 font-mono text-gray-500">#{{ d.Item }}</td>
+                                <td class="px-4 py-2 font-mono text-gray-700">#{{ d.Item }}</td>
                                 <td class="px-4 py-2 font-bold text-brandDark">{{ d.Codigo }}</td>
                                 <td class="px-4 py-2 font-medium">{{ d.Descripcion }}</td>
-                                <td class="px-4 py-2 text-gray-600">{{ d.UM }}</td>
-                                <td class="px-4 py-2 font-mono text-cyan-800">{{ d.IDLote }}</td>
-                                <td class="px-4 py-2 font-mono text-cyan-800">{{ d.Lote }}</td>
+                                <td class="px-4 py-2 text-gray-800">{{ d.UM }}</td>
+                                <td class="px-4 py-2 font-mono text-cyan-900 font-bold">{{ d.IDLote }}</td>
+                                <td class="px-4 py-2 font-mono text-cyan-900 font-bold">{{ d.Lote }}</td>
                                 <td class="px-4 py-2 text-right font-bold text-gray-900">{{ d.Cantidad }}</td>
-                                <td class="px-4 py-2 text-center">{{ d.NoOT }}</td>
+                                <td class="px-4 py-2 text-center text-gray-800">{{ d.NoOT }}</td>
                               </tr>
                             }
                           </tbody>
@@ -154,14 +158,14 @@
 
   <!-- Barra de Paginación Unificada Inferior -->
   <div class="bg-gray-50 border-2 border-gray-400 rounded-b p-3 flex flex-col sm:flex-row justify-between items-center gap-3 shadow-md">
-    <div class="text-xs sm:text-sm font-semibold text-gray-700">
+    <div class="text-xs sm:text-sm font-semibold text-gray-800">
       Mostrando <span class="font-bold text-brandDark">{{ inicioRegistro }}</span> - <span class="font-bold text-brandDark">{{ finRegistro }}</span> de <span class="font-bold text-brandDark">{{ totalRegistros }}</span> registros
     </div>
 
     <div class="flex items-center gap-3">
       <div class="flex items-center gap-1.5">
-        <label class="text-xs font-bold text-gray-700 uppercase">Filas:</label>
-        <select aria-label="Filas por página" [ngModel]="itemsPorPagina" (ngModelChange)="cambiarItemsPorPagina($event)" class="border border-gray-400 rounded px-2 py-1 text-xs bg-white font-semibold">
+        <label for="items-por-pagina" class="text-xs font-bold text-gray-800 uppercase">Filas:</label>
+        <select id="items-por-pagina" aria-label="Filas por página" [ngModel]="itemsPorPagina" (ngModelChange)="cambiarItemsPorPagina($event)" class="border border-gray-400 rounded px-2 py-1 text-xs bg-white font-semibold text-gray-900">
           <option [value]="10">10</option>
           <option [value]="20">20</option>
           <option [value]="50">50</option>
@@ -169,14 +173,14 @@
         </select>
       </div>
 
-      <div class="flex items-center gap-1">
-        <button aria-label="Página Anterior" (click)="cambiarPagina(paginaActual - 1)" [disabled]="paginaActual === 1" class="px-3 py-1 text-xs font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed">
+      <div class="flex items-center gap-1" role="navigation" aria-label="Paginación de resultados">
+        <button aria-label="Ir a la página anterior" (click)="cambiarPagina(paginaActual - 1)" [disabled]="paginaActual === 1" class="px-3 py-1 text-xs font-bold rounded border border-gray-400 bg-white hover:bg-gray-100 text-gray-800 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
           ‹ Anterior
         </button>
-        <span class="px-2.5 py-1 text-xs font-bold text-brandDark bg-blue-50 border border-blue-200 rounded">
+        <span class="px-2.5 py-1 text-xs font-bold text-brandDark bg-blue-50 border border-blue-300 rounded" aria-current="page">
           {{ paginaActual }} / {{ totalPaginas }}
         </span>
-        <button aria-label="Página Siguiente" (click)="cambiarPagina(paginaActual + 1)" [disabled]="paginaActual === totalPaginas" class="px-3 py-1 text-xs font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed">
+        <button aria-label="Ir a la página siguiente" (click)="cambiarPagina(paginaActual + 1)" [disabled]="paginaActual === totalPaginas" class="px-3 py-1 text-xs font-bold rounded border border-gray-400 bg-white hover:bg-gray-100 text-gray-800 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
           Siguiente ›
         </button>
       </div>

@@ -3,88 +3,74 @@
      ========================================== -->
 
 <!-- SVG Color Matrices para Daltonismo (Ocultos en el DOM) -->
-<svg class="sr-only" aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<svg class="sr-only" aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;">
   <defs>
     <!-- Protanopía (Deficiencia al color Rojo) -->
     <filter id="protanopia-filter">
-      <feColorMatrix type="matrix" values="0.567, 0.433, 0,     0, 0
-                                           0.558, 0.442, 0,     0, 0
-                                           0,     0.242, 0.758, 0, 0
-                                           0,     0,     0,     1, 0" />
+      <feColorMatrix type="matrix" values="0.567 0.433 0 0 0 0.558 0.442 0 0 0 0 0.242 0.758 0 0 0 0 0 1 0" />
     </filter>
 
     <!-- Deuteranopía (Deficiencia al color Verde) -->
     <filter id="deuteranopia-filter">
-      <feColorMatrix type="matrix" values="0.625, 0.375, 0,   0, 0
-                                           0.7,   0.3,   0,   0, 0
-                                           0,     0.3,   0.7, 0, 0
-                                           0,     0,     0,   1, 0" />
+      <feColorMatrix type="matrix" values="0.625 0.375 0 0 0 0.7 0.3 0 0 0 0 0.3 0.7 0 0 0 0 0 1 0" />
     </filter>
 
     <!-- Tritanopía (Deficiencia al color Azul) -->
     <filter id="tritanopia-filter">
-      <feColorMatrix type="matrix" values="0.95, 0.05,  0,     0, 0
-                                           0,    0.433, 0.567, 0, 0
-                                           0,    0.475, 0.525, 0, 0
-                                           0,    0,     0,     1, 0" />
+      <feColorMatrix type="matrix" values="0.95 0.05 0 0 0 0 0.433 0.567 0 0 0 0.475 0.525 0 0 0 0 0 1 0" />
     </filter>
   </defs>
 </svg>
 
-<!-- Contenedor Relativo para el Dropdown en el Navbar -->
-<div class="relative inline-block text-left select-none">
+<!-- Contenedor Dropdown en el Navbar -->
+<div class="relative inline-block text-left select-none font-sans">
 
-  <!-- Botón del Navbar -->
+  <!-- Botón del Navbar (Modo Claro / Modo Oscuro) -->
   <button (click)="a11y.toggleMenu()"
           type="button"
-          class="relative px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-cyan-300 border border-slate-700/80 shadow-sm flex items-center gap-2 transition-all duration-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-500/40 cursor-pointer"
-          [class.bg-slate-700]="a11y.isMenuOpen()"
-          [class.text-cyan-300]="a11y.isMenuOpen()"
+          class="relative px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-cyan-700 border border-gray-300 shadow-sm flex items-center gap-2 transition-all duration-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 cursor-pointer"
+          [class.bg-slate-200]="a11y.isMenuOpen()"
+          [class.text-cyan-800]="a11y.isMenuOpen()"
+          aria-label="Menú de opciones de accesibilidad visual y de lectura"
           title="Opciones de Accesibilidad">
     
-    <!-- Icono Accesibilidad -->
-    <span class="text-sm">♿</span>
-    <span class="hidden md:inline">Accesibilidad</span>
+    <span class="text-base" aria-hidden="true">♿</span>
+    <span class="hidden sm:inline">Accesibilidad</span>
 
-    <!-- Indicador de Opciones Activas (Punto verde pulsante) -->
+    <!-- Indicador de Opciones Activas (Punto verde) -->
     @if (!a11y.isDefault) {
-      <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-        <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-slate-900"></span>
-      </span>
+      <span class="w-2 h-2 rounded-full bg-emerald-500" aria-label="Opciones de accesibilidad activadas"></span>
     }
   </button>
 
-  <!-- Menú Desplegable con Tema Unificado (Dark Slate) -->
+  <!-- Menú Desplegable Adaptable (Claro / Oscuro) -->
   @if (a11y.isMenuOpen()) {
     <!-- Backdrop invisible para cerrar al hacer clic afuera -->
-    <div class="fixed inset-0 z-40" (click)="a11y.closeMenu()"></div>
+    <div class="fixed inset-0 z-40" (click)="a11y.closeMenu()" aria-hidden="true"></div>
 
-    <div class="absolute right-0 mt-2 w-80 sm:w-96 bg-slate-900 text-slate-100 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden z-50 flex flex-col max-h-[82vh] animate-fade-in">
+    <div role="dialog" 
+         aria-label="Panel de Ajustes de Accesibilidad" 
+         class="absolute right-0 mt-2 w-72 sm:w-80 bg-white text-slate-800 rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-50 animate-fade-in p-4 space-y-4 transition-colors duration-200">
       
-      <!-- Cabecera del Menú -->
-      <div class="p-3.5 border-b border-slate-800 bg-slate-950/60 flex justify-between items-center">
+      <!-- Cabecera Limpia (Título + Restablecer + Cerrar) -->
+      <div class="flex items-center justify-between border-b border-gray-200 pb-3">
         <div class="flex items-center gap-2">
-          <div class="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center justify-center font-bold text-sm">
-            ♿
-          </div>
-          <div>
-            <h3 class="font-bold text-xs text-white leading-tight">Accesibilidad</h3>
-            <p class="text-[10px] text-slate-400">Ajustes visuales y de lectura</p>
-          </div>
+          <span class="text-base" aria-hidden="true">♿</span>
+          <span class="font-bold text-xs text-slate-900">Accesibilidad</span>
         </div>
 
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-2">
           @if (!a11y.isDefault) {
             <button (click)="a11y.resetAll()" 
-                    class="px-2 py-1 text-[10px] font-bold text-cyan-300 hover:text-cyan-100 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors"
-                    title="Restablecer valores originales">
+                    class="text-[11px] font-bold text-cyan-700 hover:text-cyan-900 transition-colors cursor-pointer"
+                    aria-label="Restablecer todas las opciones de accesibilidad"
+                    title="Restablecer valores por defecto">
               Restablecer
             </button>
           }
           <button (click)="a11y.closeMenu()" 
-                  class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
-                  aria-label="Cerrar opciones de accesibilidad">
+                  class="text-slate-500 hover:text-slate-900 p-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                  aria-label="Cerrar panel de accesibilidad">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
@@ -92,127 +78,91 @@
         </div>
       </div>
 
-      <!-- Contenido Unificado (Fondo Slate 900) -->
-      <div class="p-3.5 space-y-3 overflow-y-auto max-h-[64vh]">
-
-        <!-- SECCIÓN 1: Tamaño de Texto -->
-        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold text-slate-200 flex items-center gap-1.5">
-              <span>🔍</span> Tamaño de Texto
-            </span>
-            <span class="text-[11px] font-black font-mono px-2 py-0.5 rounded bg-slate-900 text-cyan-300 border border-slate-700">
-              {{ a11y.fontSize() }}%
-            </span>
-          </div>
-
-          <!-- Botones A- / 100% / A+ -->
-          <div class="flex items-center justify-between gap-1.5">
-            <button (click)="a11y.decreaseFontSize()"
-                    [disabled]="a11y.fontSize() <= 90"
-                    class="flex-1 py-1.5 px-2 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-xs flex items-center justify-center gap-1 text-slate-200 transition-all">
-              <span>A-</span> Reducir
-            </button>
-            <button (click)="a11y.setFontSize(100)"
-                    class="py-1.5 px-2.5 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-700 font-bold text-xs text-slate-300 transition-all"
-                    title="Tamaño original">
-              100%
-            </button>
-            <button (click)="a11y.increaseFontSize()"
-                    [disabled]="a11y.fontSize() >= 140"
-                    class="flex-1 py-1.5 px-2 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-xs flex items-center justify-center gap-1 text-slate-200 transition-all">
-              <span>A+</span> Aumentar
-            </button>
-          </div>
-
-          <!-- Presets -->
-          <div class="flex justify-between gap-1 pt-0.5">
-            @for (preset of fontSizePresets; track preset.value) {
-              <button (click)="a11y.setFontSize(preset.value)"
-                      [class.bg-cyan-600]="a11y.fontSize() === preset.value"
-                      [class.text-white]="a11y.fontSize() === preset.value"
-                      [class.border-cyan-400]="a11y.fontSize() === preset.value"
-                      [class.bg-slate-900]="a11y.fontSize() !== preset.value"
-                      [class.text-slate-400]="a11y.fontSize() !== preset.value"
-                      class="flex-1 py-1 text-[10px] font-bold rounded border border-slate-700/80 transition-all hover:text-white">
-                {{ preset.label }}
-              </button>
-            }
-          </div>
-        </div>
-
-        <!-- SECCIÓN 2: Filtros de Daltonismo -->
-        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 space-y-2">
-          <span class="text-[11px] font-bold text-slate-200 flex items-center gap-1.5">
-            <span>👁️</span> Filtros de Color y Daltonismo
+      <!-- SECCIÓN 1: Tamaño de Texto (Control Segmentado Único) -->
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold text-slate-800 flex items-center gap-1.5">
+            <span aria-hidden="true">🔍</span> Tamaño de Texto
           </span>
-
-          <div class="grid grid-cols-2 gap-1.5">
-            @for (filter of filterOptions; track filter.id) {
-              <button (click)="a11y.setColorFilter(filter.id)"
-                      [class.bg-cyan-600]="a11y.colorFilter() === filter.id"
-                      [class.text-white]="a11y.colorFilter() === filter.id"
-                      [class.border-cyan-400]="a11y.colorFilter() === filter.id"
-                      [class.shadow-md]="a11y.colorFilter() === filter.id"
-                      [class.bg-slate-900]="a11y.colorFilter() !== filter.id"
-                      [class.text-slate-300]="a11y.colorFilter() !== filter.id"
-                      [class.border-slate-700]="a11y.colorFilter() !== filter.id"
-                      class="flex items-center gap-2 p-2 rounded-lg border text-left transition-all hover:border-slate-500">
-                <span class="text-sm shrink-0">{{ filter.icon }}</span>
-                <div class="overflow-hidden">
-                  <div class="text-[11px] font-bold leading-tight truncate">{{ filter.label }}</div>
-                  <div class="text-[9px] opacity-75 truncate leading-none">{{ filter.desc }}</div>
-                </div>
-              </button>
-            }
-          </div>
+          <span class="font-bold font-mono text-cyan-700 text-[11px]">{{ a11y.fontSize() }}%</span>
         </div>
 
-        <!-- SECCIÓN 3: Opciones de Lectura -->
-        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 space-y-2.5">
-          <span class="text-[11px] font-bold text-slate-200 flex items-center gap-1.5">
-            <span>📖</span> Adaptación de Lectura
-          </span>
-
-          <!-- Toggle: Fuente Lexend -->
-          <label class="flex items-center justify-between gap-2 p-2 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer hover:border-slate-600 transition-colors">
-            <div class="space-y-0.5">
-              <div class="text-[11px] font-bold text-white flex items-center gap-1.5">
-                Fuente para Dislexia
-                <span class="text-[8px] px-1 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase font-bold">Lexend</span>
-              </div>
-              <p class="text-[9px] text-slate-400">Letras con formas claras y diferenciadas</p>
-            </div>
-            <input type="checkbox" 
-                   [checked]="a11y.dyslexicFont()" 
-                   (change)="a11y.toggleDyslexicFont()" 
-                   class="w-4 h-4 text-cyan-500 rounded border-slate-600 bg-slate-800 focus:ring-cyan-500 cursor-pointer">
-          </label>
-
-          <!-- Toggle: Mayor Espaciado -->
-          <label class="flex items-center justify-between gap-2 p-2 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer hover:border-slate-600 transition-colors">
-            <div class="space-y-0.5">
-              <div class="text-[11px] font-bold text-white">Mayor Espaciado de Línea</div>
-              <p class="text-[9px] text-slate-400">Aumenta el interlineado y separación</p>
-            </div>
-            <input type="checkbox" 
-                   [checked]="a11y.enhancedSpacing()" 
-                   (change)="a11y.toggleEnhancedSpacing()" 
-                   class="w-4 h-4 text-cyan-500 rounded border-slate-600 bg-slate-800 focus:ring-cyan-500 cursor-pointer">
-          </label>
+        <!-- Barra de selección única y limpia -->
+        <div class="grid grid-cols-4 gap-1 p-1 bg-slate-100 rounded-xl border border-gray-200" role="group" aria-label="Seleccionar tamaño de fuente">
+          @for (preset of fontSizePresets; track preset.value) {
+            <button (click)="a11y.setFontSize(preset.value)"
+                    [class.bg-cyan-600]="a11y.fontSize() === preset.value"
+                    [class.text-white]="a11y.fontSize() === preset.value"
+                    [class.font-bold]="a11y.fontSize() === preset.value"
+                    [class.text-slate-700]="a11y.fontSize() !== preset.value"
+                    [attr.aria-label]="'Cambiar tamaño de texto a ' + preset.label"
+                    class="py-1.5 text-[11px] rounded-lg transition-all hover:bg-cyan-500 hover:text-white text-center cursor-pointer font-medium">
+              {{ preset.label }}
+            </button>
+          }
         </div>
-
       </div>
 
-      <!-- Pie del Menú -->
-      <div class="p-3 bg-slate-950/60 border-t border-slate-800 flex items-center justify-between text-[10px] text-slate-400">
-        <span class="flex items-center gap-1">
-          <span>💾</span> Guardado en este equipo
+      <!-- SECCIÓN 2: Filtros de Daltonismo y Visión (Pills Compactos) -->
+      <div class="space-y-1.5">
+        <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+          <span aria-hidden="true">👁️</span> Filtros de Visión
         </span>
-        <button (click)="a11y.closeMenu()" 
-                class="px-3.5 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs rounded-lg transition-colors shadow">
-          Listo
-        </button>
+
+        <div class="grid grid-cols-2 gap-1.5" role="group" aria-label="Filtros de color para visión">
+          @for (filter of filterOptions; track filter.id) {
+            <button (click)="a11y.setColorFilter(filter.id)"
+                    [class.bg-cyan-600]="a11y.colorFilter() === filter.id"
+                    [class.text-white]="a11y.colorFilter() === filter.id"
+                    [class.border-cyan-600]="a11y.colorFilter() === filter.id"
+                    [class.font-bold]="a11y.colorFilter() === filter.id"
+                    [class.bg-slate-50]="a11y.colorFilter() !== filter.id"
+                    [class.text-slate-800]="a11y.colorFilter() !== filter.id"
+                    [class.border-gray-200]="a11y.colorFilter() !== filter.id"
+                    [attr.aria-label]="'Activar filtro de visión ' + filter.label"
+                    class="flex items-center gap-2 px-2.5 py-2 rounded-xl border text-xs transition-all hover:border-cyan-500 cursor-pointer">
+              <span class="text-sm" aria-hidden="true">{{ filter.icon }}</span>
+              <span class="truncate">{{ filter.label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- SECCIÓN 3: Opciones de Lectura (Switches Limpios) -->
+      <div class="space-y-2 border-t border-gray-200 pt-3">
+
+        <!-- Toggle: Fuente Lexend -->
+        <label class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-gray-200 hover:border-cyan-400 cursor-pointer transition-colors">
+          <div class="flex items-center gap-2">
+            <span class="text-sm" aria-hidden="true">📖</span>
+            <div>
+              <div class="text-xs font-bold text-slate-900">Fuente para Dislexia</div>
+              <div class="text-[10px] text-cyan-700 font-mono">Tipografía Lexend</div>
+            </div>
+          </div>
+          <input type="checkbox" 
+                 [checked]="a11y.dyslexicFont()" 
+                 (change)="a11y.toggleDyslexicFont()" 
+                 aria-label="Activar o desactivar tipografía para dislexia"
+                 class="w-4 h-4 text-cyan-600 rounded border-gray-300 bg-white focus:ring-cyan-500 cursor-pointer">
+        </label>
+
+        <!-- Toggle: Mayor Espaciado -->
+        <label class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-gray-200 hover:border-cyan-400 cursor-pointer transition-colors">
+          <div class="flex items-center gap-2">
+            <span class="text-sm" aria-hidden="true">↔️</span>
+            <div>
+              <div class="text-xs font-bold text-slate-900">Mayor Espaciado</div>
+              <div class="text-[10px] text-slate-600">Interlineado ampliado</div>
+            </div>
+          </div>
+          <input type="checkbox" 
+                 [checked]="a11y.enhancedSpacing()" 
+                 (change)="a11y.toggleEnhancedSpacing()" 
+                 aria-label="Activar o desactivar mayor espaciado de lectura"
+                 class="w-4 h-4 text-cyan-600 rounded border-gray-300 bg-white focus:ring-cyan-500 cursor-pointer">
+        </label>
+
       </div>
 
     </div>

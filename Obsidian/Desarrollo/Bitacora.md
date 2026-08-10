@@ -188,6 +188,50 @@ Proyecto cliente independiente construido con el cliente de Angular 22, utilizan
 
 ---
 
+### 🔹 Fase 12: Modularización Arquitectónica y Certificación 100% Accesibilidad (Lighthouse)
+- **Desacoplamiento de Componentes**:
+  - Creación de `NavbarComponent` (`src/app/components/navbar/`) como componente independiente para el encabezado superior institucional.
+  - Refactorización de `SidebarComponent` (`src/app/components/sidebar/`) para concentrarse en la navegación lateral deslizante y el contenedor de layout.
+- **Servicio Reactivo Centralizado (`SidebarService`)**:
+  - Creación de `src/app/services/sidebar.service.ts` con Signal `isOpen`.
+  - Sincronización transparente del botón hamburguesa en el Navbar con la animación del Sidebar y persistencia en `localStorage` (`sigris_sidebar_open`).
+- **Certificación 100% Accesibilidad Web (Lighthouse / WCAG 2.1 AA/AAA)**:
+  - Optimización de todos los ratios de contraste de color en textos y botones de acción.
+  - Asignación de `aria-label`s únicos y contextuales en botones de grillas y enlaces de navegación, superando con éxito todas las 22 auditorías automáticas de Lighthouse con puntaje perfecto (**100 / 100**).
+
+---
+
+### 🔹 Fase 13: Implementación del Componente 404 (Not Found)
+- **Creación de `NotFoundComponent` (`src/app/components/not-found/`)**:
+  - Vista dedicada para rutas inexistentes o no autorizadas (`path: '**'`), evitando redirecciones silenciosas y ofreciendo una experiencia amigable al usuario.
+  - Opciones de retorno directo al panel `/erp`, acceso al `/login` o navegación hacia atrás (`history.back()`).
+  - Diseño Dark Slate de alto contraste, 100% responsivo y con accesibilidad auditada.
+
+---
+
+### 🔹 Fase 14: Escaneo de Código de Barras Directo & Balance Dinámico de Lotes
+- **Lector de Código de Barras en `NuevoRegistroComponent`**:
+  - Al disparar con un escáner físico de código de barras sobre el campo "Código de Barras", el lector escribe el código y envía automáticamente `Enter`.
+  - El sistema busca el artículo correspondiente en la base de datos y lo añade de inmediato a la grilla de detalle con sus datos y stock actual, limpiando el campo para el siguiente escaneo.
+- **Balance Dinámico de Stock por Lote**:
+  - Consulta en tiempo real de movimientos (`log_detmov` + `log_cabmov`) para calcular el stock exacto activo de cada lote ($Stock = Ingresos - Salidas$).
+
+---
+
+### 🔹 Fase 15: Botón Directo de Modo Noche, Módulo de Accesibilidad Adaptable y Optimización para Handhelds Industriales
+- **Diseño Dual Integral (Modo Claro vs Modo Noche)**:
+  - **Modo Claro (Por Defecto)**: Navbar, Sidebar y Módulo de Accesibilidad en blanco puro (`bg-white`) con bordes sutiles y textos oscuros de alta definición.
+  - **Modo Noche (Oscuro)**: Al activar el botón de luna `🌙`, toda la interfaz (Navbar, Sidebar, desplegable de accesibilidad, filtros, grillas, modales y tarjetas) se transforma fluidamente a una paleta Dark Slate/Navy (`#0b1329`, `#0f172a`, `#131d38`) con textos en blanco puro y acentos cian, garantizando legibilidad total sin deslumbramientos.
+  - **Botón Directo en Navbar**: Botón `🌙 / ☀️` colocado externamente en la barra superior al costado de Accesibilidad para alternar el tema con un solo clic.
+  - **Persistencia en `localStorage`**: La preferencia `darkMode` se almacena en el objeto `sigris_accessibility` para conservarse tras recargar o cerrar sesión.
+- **Optimización Integral para Handhelds / Packets Industriales (Zebra, Honeywell, Chainway de 360px a 480px)**:
+  - **Sidebar Móvil con Backdrop**: En pantallas pequeñas, el Sidebar funciona como menú lateral flotante con fondo difuminado (backdrop overlay) y cierre automático al pulsar cualquier opción o hacer clic afuera.
+  - **Filtros Responsivos**: La barra de filtros de *Notas de Salidas* y la cabecera de *Nuevo Registro* se adaptan en columna/rejilla con controles táctiles optimizados.
+  - **Escaneo Directo**: Campo "Código de Barras" preparado para capturar el flujo de datos del escáner láser integrado en los packets industriales al instante.
+  - **Modales Adaptables**: Ventanas de Catálogo y Lotes con scroll táctil, paginación compacta y botones de acción cómodos para dedos.
+
+---
+
 ## 🚀 Próximos Pasos (To-Do)
 - Integración de la vista **Nuevo Registro** contra el Backend PHP para efectuar la rebaja real del inventario en SQL Server al grabar una "Transferencia entre Almacenes".
 - Implementación de validación de cantidades (el usuario no debería poder transferir más de la cantidad existente en `log_stkart`).

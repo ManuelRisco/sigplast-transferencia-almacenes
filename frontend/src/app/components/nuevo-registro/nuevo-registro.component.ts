@@ -106,6 +106,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
       this.modalPaginaActual = 1;
       this.buscarArticulos();
     });
+
     // Restaurar items de localStorage si existen
     const savedItems = localStorage.getItem('sigris_nr_items');
     if (savedItems) {
@@ -132,7 +133,6 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
       next: (res) => {
         if (res.success && res.tipos_mov && res.tipos_mov.length > 0) {
           this.tiposMovimiento = res.tipos_mov;
-          // Si no hay tipo guardado, asignar el primero por defecto
           if (!this.tipoMov && this.tiposMovimiento.length > 0) {
             this.tipoMov = this.tiposMovimiento[0].tmo_codigo;
           }
@@ -167,7 +167,6 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
       this.almDestino = '';
     }
     
-    // Si cambia de almacén, debemos advertirle que se limpiará la grilla si hay items, o lo limpiamos directo
     if (this.items.length > 0) {
       Swal.fire({
         title: 'Almacén cambiado',
@@ -184,7 +183,6 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
     const tipo = this.tiposMovimiento.find(t => t.tmo_codigo === this.tipoMov);
     const nombreTipo = tipo ? tipo.tmo_nombre.toLowerCase() : '';
     
-    // Verificar si es transferencia
     if (!nombreTipo.includes('transferencia')) {
       Swal.fire({
         title: 'Operación no permitida',
@@ -193,7 +191,6 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
         confirmButtonColor: '#0d9488'
       });
       
-      // Revertir selección a Transferencia (asumiendo que 102 es Transferencia)
       const transferencia = this.tiposMovimiento.find(t => t.tmo_nombre.toLowerCase().includes('transferencia'));
       this.tipoMov = transferencia ? transferencia.tmo_codigo : (this.tiposMovimiento.length > 0 ? this.tiposMovimiento[0].tmo_codigo : '102');
     }
@@ -245,21 +242,35 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Escaneo de Código de Barras (funciona directamente con lector USB / Enter)
   buscarCodigoBarras() {
     if (!this.barcodeInput.trim()) return;
-    this.apiService.buscarArticulos(this.almOrigen, this.barcodeInput).subscribe({
+    const term = this.barcodeInput.trim();
+
+    this.apiService.buscarArticulos(this.almOrigen, term).subscribe({
       next: (res) => {
-        if (res.success && res.articulos.length > 0) {
-          this.seleccionarArticulo(res.articulos[0]);
+        if (res.success && res.articulos && res.articulos.length > 0) {
+          const art = res.articulos[0];
+          this.seleccionarArticulo(art);
           this.barcodeInput = '';
         } else {
           Swal.fire({
             title: 'No encontrado',
-            text: 'Artículo no encontrado con el código de barras ingresado.',
+            text: `Artículo no encontrado con el código "${term}" en este almacén.`,
             icon: 'warning',
             confirmButtonColor: '#0d9488'
           });
+          this.barcodeInput = '';
         }
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        Swal.fire({
+          title: 'Error',
+          text: 'Error al buscar el código de barras.',
+          icon: 'error',
+          confirmButtonColor: '#0d9488'
+        });
         this.cdr.detectChanges();
       }
     });
@@ -278,30 +289,40 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
     this.modalArticulosVisible = true;
     this.searchQuery = '';
     this.modalPaginaActual = 1;
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
     this.buscarArticulos();
   }
 
   buscarArticulos() {
     this.buscando = true;
+    this.cdr.markForCheck();
     this.cdr.detectChanges();
 
     this.apiService.buscarArticulos(this.almOrigen, this.searchQuery, this.modalPaginaActual, this.modalItemsPorPagina).subscribe({
       next: (res) => {
         this.buscando = false;
-        if (res.success) {
-          this.articulosEncontrados = res.articulos;
+        if (res && res.success) {
+          this.articulosEncontrados = res.articulos || [];
           this.modalTotalRegistros = res.total_records || 0;
 
           if (this.modalPaginaActual > this.modalTotalPaginas && this.modalTotalPaginas > 0) {
             this.modalPaginaActual = 1;
-            this.buscarArticulos(); // Recargar a la primera página válida
+            this.buscarArticulos();
             return;
           }
+        } else {
+          this.articulosEncontrados = [];
+          this.modalTotalRegistros = 0;
         }
+        this.cdr.markForCheck();
         this.cdr.detectChanges();
       },
       error: () => {
         this.buscando = false;
+        this.articulosEncontrados = [];
+        this.modalTotalRegistros = 0;
+        this.cdr.markForCheck();
         this.cdr.detectChanges();
       }
     });
@@ -333,12 +354,13 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
   abrirModalLotesParaItem(item: any) {
     this.buscandoLotes = true;
     this.itemSeleccionadoParaLote = item;
+    this.cdr.markForCheck();
     this.cdr.detectChanges();
 
     this.apiService.getLotes(this.almOrigen, item.art_codigo).subscribe({
       next: (res) => {
         this.buscandoLotes = false;
-        if (res.success && res.lotes && res.lotes.length > 0) {
+        if (res && res.success && res.lotes && res.lotes.length > 0) {
           this.lotesEncontrados = res.lotes;
           const actualLote = res.lotes.find((l: any) => l.lot_id === item.lot_id);
           this.loteSeleccionado = actualLote || res.lotes[0];
@@ -352,6 +374,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
             confirmButtonColor: '#0d9488'
           });
         }
+        this.cdr.markForCheck();
         this.cdr.detectChanges();
       },
       error: () => {
@@ -362,6 +385,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
           icon: 'error',
           confirmButtonColor: '#0d9488'
         });
+        this.cdr.markForCheck();
         this.cdr.detectChanges();
       }
     });

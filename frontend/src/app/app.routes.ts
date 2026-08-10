@@ -4,6 +4,7 @@ import { RegistroComponent } from './components/registro/registro.component';
 import { MovimientosComponent } from './components/movimientos/movimientos.component';
 import { NuevoRegistroComponent } from './components/nuevo-registro/nuevo-registro.component';
 import { AdminUsuariosComponent } from './components/admin-usuarios/admin-usuarios.component';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 import { userGuard, adminGuard, guestGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -13,5 +14,5 @@ export const routes: Routes = [
   { path: 'erp', component: MovimientosComponent, canActivate: [userGuard] },
   { path: 'nuevo-registro', component: NuevoRegistroComponent, canActivate: [userGuard] },
   { path: 'admin', component: AdminUsuariosComponent, canActivate: [adminGuard] },
-  { path: '**', redirectTo: 'erp' }
+  { path: '**', component: NotFoundComponent }
 ];

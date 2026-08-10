@@ -45,17 +45,18 @@ Gestiona el estado reactivo del usuario conectado utilizando **Angular Signals**
 ---
 
 ### 3. `AccessibilityService` (`src/app/services/accessibility.service.ts`)
-Controla de forma reactiva y centralizada todos los ajustes de accesibilidad de la aplicación:
+Controla de forma reactiva y centralizada todos los ajustes de accesibilidad y temas de la aplicación:
 - **Signals y Estado:**
-  - `fontSize = signal<number>(100)`: Tamaño relativo de fuente (`90%` a `140%`).
+  - `darkMode = signal<boolean>(false)`: Modo Noche / Tema Oscuro activo (`html.dark-mode`).
+  - `fontSize = signal<number>(100)`: Tamaño relativo de fuente (`75%` a `150%`).
   - `colorFilter = signal<ColorFilterType>('none')`: Filtro de daltonismo o contraste activo.
   - `dyslexicFont = signal<boolean>(false)`: Indicador de fuente adaptada para dislexia (Lexend).
   - `enhancedSpacing = signal<boolean>(false)`: Mayor separación de líneas y caracteres.
   - `isMenuOpen = signal<boolean>(false)`: Estado de apertura del panel emergente.
 - **Efectos DOM Reactivos (`effect`):**
-  - Aplica dinámicamente las clases de filtros (`filter-protanopia`, `filter-deuteranopia`, etc.) y fuentes al elemento raíz `<html>`.
-- **Persistencia:**
-  - Guarda y restaura automáticamente las preferencias desde `localStorage` bajo la clave `sigris_accessibility`.
+  - Aplica dinámicamente la clase `dark-mode` al root `<html>`, junto con las clases de filtros de daltonismo (`filter-protanopia`, `filter-deuteranopia`, etc.) y fuentes.
+- **Persistencia en `localStorage`:**
+  - Guarda y restaura automáticamente todas las preferencias (incluido `darkMode`) en `sigris_accessibility`.
 
 ---
 

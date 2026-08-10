@@ -1,283 +1,350 @@
 <app-sidebar>
 
-<div class="max-w-screen-2xl mx-auto px-2 sm:px-4 bg-white border border-gray-400 shadow-lg rounded-lg overflow-hidden flex flex-col min-h-[80vh] h-auto mb-12">
-  <!-- Header Window -->
-  <div class="bg-[#eef5fa] p-3 border-b-2 border-brandDark flex justify-between items-center">
-    <div class="flex items-center gap-3">
-      <h2 class="m-0 text-base font-bold text-[#002d5a]">Nuevo Registro</h2>
+  <div
+    class="max-w-screen-2xl mx-auto px-2 sm:px-4 bg-white border border-gray-400 shadow-lg rounded-lg overflow-hidden flex flex-col min-h-[80vh] h-auto mb-12">
+    <!-- Header Window -->
+    <div class="bg-[#eef5fa] p-3 border-b-2 border-brandDark flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <h2 class="m-0 text-base font-bold text-[#002d5a]">Nuevo Registro</h2>
+      </div>
+      <div class="flex items-center gap-3">
+        <button type="button" (click)="limpiarFormulario()" title="Limpiar y reiniciar formulario"
+          class="text-xs text-red-600 hover:text-red-800 font-bold border border-red-200 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded transition-colors cursor-pointer">
+          🗑️ Limpiar Todo
+        </button>
+        <a routerLink="/erp" [queryParams]="{ alm_codigo: almOrigen }" aria-label="Cerrar y volver a notas de salidas"
+          class="text-brandDark font-bold hover:text-blue-900">✕ Cerrar</a>
+      </div>
     </div>
-    <div class="flex items-center gap-3">
-      <button type="button" (click)="limpiarFormulario()" title="Limpiar y reiniciar formulario" class="text-xs text-red-600 hover:text-red-800 font-bold border border-red-200 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded transition-colors">
-        🗑️ Limpiar Todo
-      </button>
-      <a routerLink="/erp" [queryParams]="{ alm_codigo: almOrigen }" class="text-brandDark font-bold hover:text-blue-900">✕ Cerrar</a>
-    </div>
-  </div>
 
-  <!-- Header General -->
-  <div class="flex flex-col sm:flex-row flex-wrap gap-3 p-3 md:px-4 bg-gray-50 border-b border-gray-400 items-start sm:items-center shadow-sm">
-    <div class="flex items-center gap-2 w-full sm:w-auto">
-      <label class="font-bold text-brandDark text-sm w-16 sm:w-auto">Almacen</label>
-      <select [(ngModel)]="almOrigen" (ngModelChange)="alCambiarAlmacenOrigen()" class="form-input flex-1 sm:w-80 bg-white border-gray-400 border rounded px-2 py-1 text-sm font-semibold text-gray-900 focus:ring-2 focus:ring-brandTeal outline-none transition-all">
-        <option value="">-- Seleccione Almacén --</option>
-        @for (a of almacenesTodos; track a.alm_codigo) {
+    <!-- Header General -->
+    <div
+      class="flex flex-col sm:flex-row flex-wrap gap-3 p-3 md:px-4 bg-gray-50 border-b border-gray-400 items-start sm:items-center shadow-sm">
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <label for="nr-almacen" class="font-bold text-brandDark text-sm w-16 sm:w-auto">Almacen</label>
+        <select id="nr-almacen" [(ngModel)]="almOrigen" (ngModelChange)="alCambiarAlmacenOrigen()"
+          class="form-input flex-1 sm:w-80 bg-white border-gray-400 border rounded px-2 py-1 text-sm font-semibold text-gray-900 focus:ring-2 focus:ring-brandTeal outline-none transition-all">
+          <option value="">-- Seleccione Almacén --</option>
+          @for (a of almacenesTodos; track a.alm_codigo) {
           <option [value]="a.alm_codigo">{{ a.alm_codigo }} - {{ a.alm_nombre }}</option>
-        }
-      </select>
-    </div>
-    
-    <div class="flex items-center gap-2 w-full sm:w-auto">
-      <label class="font-bold text-brandDark text-sm w-16 sm:w-auto">Año</label>
-      <select class="form-input flex-1 sm:w-24 bg-white border-gray-400 border rounded px-2 py-1 text-sm font-semibold">
-        <option>{{ anhoActual }}</option>
-      </select>
-    </div>
-
-    <div class="flex items-center gap-2 w-full sm:w-auto">
-      <label class="font-bold text-brandDark text-sm w-16 sm:w-auto">Mes</label>
-      <select class="form-input flex-1 sm:w-32 bg-white border-gray-400 border rounded px-2 py-1 text-sm font-semibold">
-        <option>{{ mesActualNombre }}</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Scrollable Content Area -->
-  <div class="flex-1 overflow-y-auto">
-    <!-- Formulario Cabecera -->
-    <div class="p-3 md:p-4 border-b border-gray-400 space-y-3">
-      <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-start sm:items-center">
-        <div class="flex items-center gap-2 w-full md:w-auto">
-          <label class="w-24 font-bold text-gray-900 text-sm text-left sm:text-right">Tipo Mov.</label>
-          <select [(ngModel)]="tipoMov" (ngModelChange)="alCambiarTipoMov()" class="form-input flex-1 md:w-80 bg-white border border-gray-400 text-gray-900 rounded px-2 py-1.5 text-sm font-medium">
-            <option value="">-- Seleccione Tipo de Movimiento --</option>
-            @for (t of tiposMovimiento; track t.tmo_codigo) {
-              <option [value]="t.tmo_codigo">{{ t.tmo_codigo }} - {{ t.tmo_nombre }}</option>
-            }
-          </select>
-        </div>
-        <div class="flex items-center gap-2 w-full md:w-auto">
-          <label class="w-24 font-bold text-gray-900 text-sm text-left sm:text-right">Fec.Emisión</label>
-          <input type="date" [(ngModel)]="fechaEmision" (ngModelChange)="guardarEstado()" class="form-input flex-1 md:w-36 bg-white border border-gray-400 text-gray-900 rounded px-2 py-1 text-sm">
-        </div>
+          }
+        </select>
       </div>
 
-      <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-start sm:items-center">
-        <div class="flex items-center gap-2 w-full md:w-auto">
-          <label class="w-24 font-bold text-gray-900 text-sm text-left sm:text-right">C.Costos</label>
-          <input type="text" class="form-input w-16 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs" readonly>
-          <input type="text" class="form-input flex-1 sm:w-48 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs" readonly>
-        </div>
-        @if (esTransferencia) {
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <label for="nr-anho" class="font-bold text-brandDark text-sm w-16 sm:w-auto">Año</label>
+        <select id="nr-anho"
+          class="form-input flex-1 sm:w-24 bg-white border-gray-400 border rounded px-2 py-1 text-sm font-semibold">
+          <option>{{ anhoActual }}</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <label for="nr-mes" class="font-bold text-brandDark text-sm w-16 sm:w-auto">Mes</label>
+        <select id="nr-mes"
+          class="form-input flex-1 sm:w-32 bg-white border-gray-400 border rounded px-2 py-1 text-sm font-semibold">
+          <option>{{ mesActualNombre }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Scrollable Content Area -->
+    <div class="flex-1 overflow-y-auto">
+      <!-- Formulario Cabecera -->
+      <div class="p-3 md:p-4 border-b border-gray-400 space-y-3">
+        <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-start sm:items-center">
           <div class="flex items-center gap-2 w-full md:w-auto">
-            <label class="w-32 font-bold text-gray-900 text-sm text-left sm:text-right">Almacen Destino</label>
-            <select [(ngModel)]="almDestino" (ngModelChange)="guardarEstado()" class="form-input flex-1 md:w-72 bg-white border border-gray-400 text-gray-900 rounded px-2 py-1 text-sm">
-              <option value="">-- Seleccione Destino --</option>
-              @for (d of almacenesDestino; track d.alm_codigo) {
-                <option [value]="d.alm_codigo">{{ d.alm_codigo }} - {{ d.alm_nombre }}</option>
+            <label for="nr-tipo-mov" class="w-24 font-bold text-gray-900 text-sm text-left sm:text-right">Tipo
+              Mov.</label>
+            <select id="nr-tipo-mov" [(ngModel)]="tipoMov" (ngModelChange)="alCambiarTipoMov()"
+              class="form-input flex-1 md:w-80 bg-white border border-gray-400 text-gray-900 rounded px-2 py-1.5 text-sm font-medium">
+              <option value="">-- Seleccione Tipo de Movimiento --</option>
+              @for (t of tiposMovimiento; track t.tmo_codigo) {
+              <option [value]="t.tmo_codigo">{{ t.tmo_codigo }} - {{ t.tmo_nombre }}</option>
               }
             </select>
           </div>
-        }
-      </div>
-      
-      <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-start sm:items-center">
-        <div class="flex items-center gap-2 w-full md:w-auto">
-          <label class="w-24 font-bold text-gray-900 text-sm text-left sm:text-right">Trabajador</label>
-          <input type="text" class="form-input w-16 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs" readonly>
-          <input type="text" class="form-input flex-1 sm:w-48 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs" readonly>
-        </div>
-      </div>
-    </div>
-
-    <!-- Pestañas -->
-    <div class="flex bg-gray-200 border-b-2 border-gray-400 pt-2 px-2 gap-1">
-      <div class="px-6 py-2 font-bold text-sm cursor-pointer bg-white text-brandDark border-t-2 border-brandDark border-x border-gray-400 rounded-t-sm -mb-[2px]">Detalle</div>
-      <div class="px-6 py-2 font-bold text-sm cursor-pointer text-gray-600 hover:text-gray-900">Datos Adicionales</div>
-      <div class="px-6 py-2 font-bold text-sm cursor-pointer text-gray-600 hover:text-gray-900">Datos de Exportación</div>
-    </div>
-
-    <!-- Detalle Grid -->
-    <div class="p-0 bg-white flex flex-col border border-gray-300">
-      <div class="flex flex-col md:flex-row flex-wrap gap-3 items-center justify-between py-1.5 px-3 border-b border-gray-300 bg-[#f4f4f4]">
-        <div class="flex flex-col sm:flex-row items-center gap-6 w-full md:w-auto">
-          <div class="flex items-center gap-2">
-            <label class="font-bold text-[#004b87] text-sm">Stock Seguridad:</label>
-            <input type="text" value="0.00000" readonly class="form-input w-24 text-right bg-[#eaf2fa] border border-[#90bced] text-[#004b87] font-semibold p-1 outline-none rounded">
-          </div>
-          <div class="flex items-center gap-2">
-            <label class="font-bold text-[#004b87] text-sm">Codigo de Barras :</label>
-            <input type="text" [(ngModel)]="barcodeInput" (keyup.enter)="buscarCodigoBarras()" class="form-input w-full sm:w-56 bg-white border border-gray-400 p-1 rounded text-sm">
+          <div class="flex items-center gap-2 w-full md:w-auto">
+            <label for="nr-fec-emi"
+              class="w-24 font-bold text-gray-900 text-sm text-left sm:text-right">Fec.Emisión</label>
+            <input type="date" id="nr-fec-emi" [(ngModel)]="fechaEmision" (ngModelChange)="guardarEstado()"
+              class="form-input flex-1 md:w-36 bg-white border border-gray-400 text-gray-900 rounded px-2 py-1 text-sm">
           </div>
         </div>
-        <div class="flex gap-2 w-full md:w-auto p-1">
-          <button type="button" (click)="abrirModalArticulos()" class="px-5 py-1 text-sm text-[#004b87] bg-white border border-gray-300 shadow-sm hover:bg-gray-50 rounded-sm font-bold"><u>N</u>uevo</button>
-          <button type="button" (click)="eliminarSeleccionados()" class="px-5 py-1 text-sm text-[#004b87] bg-white border border-gray-300 shadow-sm hover:bg-gray-50 rounded-sm font-bold"><u>E</u>liminar</button>
-        </div>
-      </div>
 
-      <div class="flex-1 overflow-auto bg-white min-h-[300px]">
-        <table class="w-full border-collapse text-xs whitespace-nowrap">
-          <thead class="bg-white text-gray-800 border-b border-gray-300">
-            <tr>
-              <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">Sele.</th>
-              <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">Item</th>
-              <th class="px-2 py-1 border-r border-gray-300 font-bold text-center">Codigo</th>
-              <th class="px-2 py-1 border-r border-gray-300 font-bold text-center">Descripción</th>
-              <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">U/M</th>
-              <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">ID.Lote</th>
-              <th class="px-2 py-1 border-r border-gray-300 font-bold text-center">Lote</th>
-              <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">No O/T</th>
-              <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">Cantidad</th>
-              <th class="px-2 py-1 border-r border-gray-300 text-center font-bold whitespace-normal w-12 leading-none">Cant.<br>Und.Vta</th>
-              <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">Millares</th>
-              <th class="px-2 py-1 border-r border-gray-300 text-center font-bold">C.Costo</th>
-              <th class="px-2 py-1 border-gray-300 text-center font-bold">Metraje</th>
-            </tr>
-          </thead>
-          <tbody class="text-gray-900 divide-y divide-gray-200">
-            @if (items.length === 0) {
-              <tr>
-                <td colspan="13" class="py-8 text-center text-gray-500 font-medium">No hay ítems agregados aún. Usa el campo "Código de Barras" o el botón "Nuevo" para añadir.</td>
-              </tr>
-            } @else {
-              @for (item of items; track $index) {
-                <tr class="hover:bg-blue-50">
-                  <td class="px-2 py-1 border-r border-gray-300 text-center">
-                    <input type="checkbox" [(ngModel)]="item.selected">
-                  </td>
-                  <td class="px-2 py-1 border-r border-gray-300 text-center font-mono text-gray-600">#{{ $index + 1 }}</td>
-                  <td class="px-2 py-1 border-r border-gray-300 font-bold text-brandDark text-center">{{ item.art_codigo }}</td>
-                  <td class="px-2 py-1 border-r border-gray-300 font-medium">{{ item.art_nombre }}</td>
-                  <td class="px-2 py-1 border-r border-gray-300 text-center text-gray-600">{{ item.art_uniing }}</td>
-                  <td (click)="abrirModalLotesParaItem(item)" class="px-2 py-1 border-r border-gray-300 text-center font-mono font-bold text-cyan-700 hover:bg-cyan-100 hover:text-cyan-950 cursor-pointer underline decoration-dotted transition-colors select-none" title="Haga clic para seleccionar o cambiar de lote">
-                    {{ item.lot_id || '-' }}
-                  </td>
-                  <td (click)="abrirModalLotesParaItem(item)" class="px-2 py-1 border-r border-gray-300 text-center font-mono font-bold text-cyan-700 hover:bg-cyan-100 hover:text-cyan-950 cursor-pointer underline decoration-dotted transition-colors select-none" title="Haga clic para seleccionar o cambiar de lote">
-                    {{ item.lot_numlote || '-' }}
-                  </td>
-                  <td class="px-2 py-1 border-r border-gray-300 text-center">{{ item.mov_numord || '-' }}</td>
-                  <td class="px-2 py-1 border-r border-gray-300 text-right">
-                    <input type="number" [(ngModel)]="item.cantidad" (ngModelChange)="guardarEstado()" min="1" step="0.001" class="w-24 border border-gray-300 rounded px-1 text-right font-bold">
-                  </td>
-                  <td class="px-2 py-1 border-r border-gray-300 text-right">{{ item.cantidad }}</td>
-                  <td class="px-2 py-1 border-r border-gray-300 text-right">0.000</td>
-                  <td class="px-2 py-1 border-r border-gray-300 text-center">-</td>
-                  <td class="px-2 py-1 text-right">0.000</td>
-                </tr>
+        <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-start sm:items-center">
+          <div class="flex items-center gap-2 w-full md:w-auto">
+            <label class="w-24 font-bold text-gray-900 text-sm text-left sm:text-right">C.Costos</label>
+            <input type="text"
+              class="form-input w-16 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs"
+              readonly>
+            <input type="text"
+              class="form-input flex-1 sm:w-48 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs"
+              readonly>
+          </div>
+          @if (esTransferencia) {
+          <div class="flex items-center gap-2 w-full md:w-auto">
+            <label for="nr-alm-destino" class="w-32 font-bold text-gray-900 text-sm text-left sm:text-right">Almacen
+              Destino</label>
+            <select id="nr-alm-destino" [(ngModel)]="almDestino" (ngModelChange)="guardarEstado()"
+              class="form-input flex-1 md:w-72 bg-white border border-gray-400 text-gray-900 rounded px-2 py-1 text-sm">
+              <option value="">-- Seleccione Destino --</option>
+              @for (d of almacenesDestino; track d.alm_codigo) {
+              <option [value]="d.alm_codigo">{{ d.alm_codigo }} - {{ d.alm_nombre }}</option>
               }
-            }
-          </tbody>
-        </table>
-      </div>
-    </div>
+            </select>
+          </div>
+          }
+        </div>
 
-    <div class="flex flex-col md:flex-row flex-wrap items-center justify-between p-3 bg-gray-50 border-t border-gray-400 gap-3">
-      <div class="flex flex-col sm:flex-row flex-wrap gap-3 w-full md:w-auto">
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-          <label class="font-bold text-sm text-gray-900 w-24 text-left sm:text-right">Glosa</label>
-          <input type="text" [(ngModel)]="glosa" (ngModelChange)="guardarEstado()" placeholder="Ingrese una glosa o comentario..." class="form-input flex-1 md:w-72 bg-white border border-gray-400 rounded px-2 py-1 text-sm">
+        <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-start sm:items-center">
+          <div class="flex items-center gap-2 w-full md:w-auto">
+            <label class="w-24 font-bold text-gray-900 text-sm text-left sm:text-right">Trabajador</label>
+            <input type="text"
+              class="form-input w-16 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs"
+              readonly>
+            <input type="text"
+              class="form-input flex-1 sm:w-48 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs"
+              readonly>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pestañas -->
+      <div class="flex bg-gray-200 border-b-2 border-gray-400 pt-2 px-2 gap-1">
+        <div
+          class="px-6 py-2 font-bold text-sm cursor-pointer bg-white text-brandDark border-t-2 border-brandDark border-x border-gray-400 rounded-t-sm -mb-[2px]">
+          Detalle</div>
+        <div class="px-6 py-2 font-bold text-sm cursor-pointer text-gray-700 hover:text-gray-900">Datos Adicionales
+        </div>
+        <div class="px-6 py-2 font-bold text-sm cursor-pointer text-gray-700 hover:text-gray-900">Datos de Exportación
+        </div>
+      </div>
+
+      <!-- Detalle Grid -->
+      <div class="p-0 bg-white flex flex-col border border-gray-300">
+        <div
+          class="flex flex-col md:flex-row flex-wrap gap-3 items-center justify-between py-1.5 px-3 border-b border-gray-300 bg-[#f4f4f4]">
+          <div class="flex flex-col sm:flex-row items-center gap-6 w-full md:w-auto">
+            <div class="flex items-center gap-2">
+              <label class="font-bold text-[#004b87] text-sm">Stock Seguridad:</label>
+              <input type="text" value="0.00000" readonly
+                class="form-input w-24 text-right bg-[#eaf2fa] border border-[#90bced] text-[#004b87] font-semibold p-1 outline-none rounded">
+            </div>
+            <div class="flex items-center gap-2">
+              <label for="nr-input-barcode" class="font-bold text-[#004b87] text-sm">Codigo de Barras :</label>
+              <input type="text" id="nr-input-barcode" [(ngModel)]="barcodeInput"
+                (keydown.enter)="$event.preventDefault(); buscarCodigoBarras()"
+                class="form-input w-full sm:w-56 bg-white border border-gray-400 p-1 rounded text-sm font-semibold">
+            </div>
+          </div>
+          <div class="flex gap-2 w-full md:w-auto p-1">
+            <button type="button" (click)="abrirModalArticulos()"
+              class="px-5 py-1 text-sm text-[#004b87] bg-white border border-gray-300 shadow-sm hover:bg-gray-50 rounded-sm font-bold cursor-pointer"><u>N</u>uevo</button>
+            <button type="button" (click)="eliminarSeleccionados()"
+              class="px-5 py-1 text-sm text-[#004b87] bg-white border border-gray-300 shadow-sm hover:bg-gray-50 rounded-sm font-bold cursor-pointer"><u>E</u>liminar</button>
+          </div>
+        </div>
+
+        <div class="flex-1 overflow-auto bg-white min-h-[300px]">
+          <table class="w-full border-collapse text-xs whitespace-nowrap" aria-label="Tabla de artículos">
+            <thead class="bg-white text-gray-800 border-b border-gray-300">
+              <tr>
+                <th scope="col" class="px-2 py-1 border-r border-gray-300 text-center font-bold">Sele.</th>
+                <th scope="col" class="px-2 py-1 border-r border-gray-300 text-center font-bold">Item</th>
+                <th scope="col" class="px-2 py-1 border-r border-gray-300 font-bold text-center">Codigo</th>
+                <th scope="col" class="px-2 py-1 border-r border-gray-300 font-bold text-center">Descripción</th>
+                <th scope="col" class="px-2 py-1 border-r border-gray-300 text-center font-bold">U/M</th>
+                <th scope="col" class="px-2 py-1 border-r border-gray-300 text-center font-bold">ID.Lote</th>
+                <th scope="col" class="px-2 py-1 border-r border-gray-300 font-bold text-center">Lote</th>
+                <th scope="col" class="px-2 py-1 border-r border-gray-300 text-center font-bold">No O/T</th>
+                <th scope="col" class="px-2 py-1 border-r border-gray-300 text-center font-bold">Cantidad</th>
+                <th scope="col"
+                  class="px-2 py-1 border-r border-gray-300 text-center font-bold whitespace-normal w-12 leading-none">
+                  Cant.<br>Und.Vta</th>
+                <th scope="col" class="px-2 py-1 border-r border-gray-300 text-center font-bold">Millares</th>
+                <th scope="col" class="px-2 py-1 border-r border-gray-300 text-center font-bold">C.Costo</th>
+                <th scope="col" class="px-2 py-1 border-gray-300 text-center font-bold">Metraje</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-900 divide-y divide-gray-200">
+              @if (items.length === 0) {
+              <tr>
+                <td colspan="13" class="py-8 text-center text-gray-700 font-medium">No hay ítems agregados aún. Usa el
+                  campo "Código de Barras" o el botón "Nuevo" para añadir.</td>
+              </tr>
+              } @else {
+              @for (item of items; track $index) {
+              <tr class="hover:bg-blue-50">
+                <td class="px-2 py-1 border-r border-gray-300 text-center">
+                  <input type="checkbox" [(ngModel)]="item.selected" aria-label="Seleccionar fila">
+                </td>
+                <td class="px-2 py-1 border-r border-gray-300 text-center font-mono text-gray-700">#{{ $index + 1 }}
+                </td>
+                <td class="px-2 py-1 border-r border-gray-300 font-bold text-brandDark text-center">{{ item.art_codigo
+                  }}</td>
+                <td class="px-2 py-1 border-r border-gray-300 font-medium">{{ item.art_nombre }}</td>
+                <td class="px-2 py-1 border-r border-gray-300 text-center text-gray-700 font-bold">{{ item.art_uniing }}
+                </td>
+                <td (click)="abrirModalLotesParaItem(item)"
+                  class="px-2 py-1 border-r border-gray-300 text-center font-mono font-bold text-cyan-800 hover:bg-cyan-100 hover:text-cyan-950 cursor-pointer underline decoration-dotted transition-colors select-none"
+                  title="Haga clic para seleccionar o cambiar de lote">
+                  {{ item.lot_id || '-' }}
+                </td>
+                <td (click)="abrirModalLotesParaItem(item)"
+                  class="px-2 py-1 border-r border-gray-300 text-center font-mono font-bold text-cyan-800 hover:bg-cyan-100 hover:text-cyan-950 cursor-pointer underline decoration-dotted transition-colors select-none"
+                  title="Haga clic para seleccionar o cambiar de lote">
+                  {{ item.lot_numlote || '-' }}
+                </td>
+                <td class="px-2 py-1 border-r border-gray-300 text-center">{{ item.mov_numord || '-' }}</td>
+                <td class="px-2 py-1 border-r border-gray-300 text-right">
+                  <input type="number" [(ngModel)]="item.cantidad" (ngModelChange)="guardarEstado()" min="1"
+                    step="0.001" class="w-24 border border-gray-300 rounded px-1 text-right font-bold">
+                </td>
+                <td class="px-2 py-1 border-r border-gray-300 text-right">{{ item.cantidad }}</td>
+                <td class="px-2 py-1 border-r border-gray-300 text-right">0.000</td>
+                <td class="px-2 py-1 border-r border-gray-300 text-center">-</td>
+                <td class="px-2 py-1 text-right">0.000</td>
+              </tr>
+              }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div
+        class="flex flex-col md:flex-row flex-wrap items-center justify-between p-3 bg-gray-50 border-t border-gray-400 gap-3">
+        <div class="flex flex-col sm:flex-row flex-wrap gap-3 w-full md:w-auto">
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <label for="nr-glosa" class="font-bold text-sm text-gray-900 w-24 text-left sm:text-right">Glosa</label>
+            <input type="text" id="nr-glosa" [(ngModel)]="glosa" (ngModelChange)="guardarEstado()"
+              placeholder="Ingrese una glosa o comentario..."
+              class="form-input flex-1 md:w-72 bg-white border border-gray-400 rounded px-2 py-1 text-sm">
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Modal Buscador de Artículos con Paginación Unificada -->
-@if (modalArticulosVisible) {
+  <!-- Modal Buscador de Artículos con Paginación Unificada -->
+  @if (modalArticulosVisible) {
   <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-gray-200 flex flex-col">
+    <div
+      class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-gray-200 flex flex-col">
       <div class="bg-slate-800 text-white px-6 py-4 flex justify-between items-center sticky top-0 z-10 shrink-0">
         <h3 class="font-bold text-base md:text-lg">Catálogo de Artículos ({{ almOrigen }} - {{ almNombre }})</h3>
-        <button (click)="modalArticulosVisible = false" class="text-gray-400 hover:text-white font-bold text-xl">&times;</button>
+        <button (click)="modalArticulosVisible = false"
+          class="text-gray-400 hover:text-white font-bold text-xl cursor-pointer">&times;</button>
       </div>
 
       <div class="p-4 md:p-6 space-y-4 flex-1 overflow-y-auto">
         <div class="flex gap-2">
-          <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchQueryChange($event)" (keyup.enter)="buscarArticulos()" placeholder="Buscar por código o descripción de artículo..." class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-600">
-          <button (click)="buscarArticulos()" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shrink-0">Buscar</button>
+          <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchQueryChange($event)"
+            (keyup.enter)="buscarArticulos()" placeholder="Buscar por código o descripción de artículo..."
+            class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-600">
+          <button (click)="buscarArticulos()"
+            class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shrink-0 cursor-pointer">Buscar</button>
         </div>
 
         @if (buscando) {
-          <div class="py-12 text-center text-gray-500 text-sm font-medium animate-pulse">Cargando catálogo del almacén...</div>
+        <div class="py-12 text-center text-gray-700 text-sm font-medium animate-pulse">Cargando catálogo del almacén...
+        </div>
         } @else if (articulosEncontrados.length > 0) {
-          <div class="border border-gray-300 rounded-xl overflow-hidden shadow-sm flex flex-col">
-            <div class="overflow-x-auto max-h-[50vh]">
-              <table class="w-full text-xs text-left whitespace-nowrap">
-                <thead class="bg-slate-100 text-slate-800 uppercase font-bold border-b border-gray-300 sticky top-0 z-10">
-                  <tr>
-                    <th class="py-2.5 px-4">Código</th>
-                    <th class="py-2.5 px-4">Descripción</th>
-                    <th class="py-2.5 px-4">U/M</th>
-                    <th class="py-2.5 px-4 text-right">Stock Actual</th>
-                    <th class="py-2.5 px-4 text-center">Acción</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200 bg-white">
-                  @for (a of articulosEncontrados; track a.art_codigo) {
-                    <tr class="hover:bg-cyan-50/50 transition-colors">
-                      <td class="py-2 px-4 font-bold text-brandDark font-mono">{{ a.art_codigo }}</td>
-                      <td class="py-2 px-4 font-medium text-gray-900">{{ a.art_nombre }}</td>
-                      <td class="py-2 px-4 text-gray-600">{{ a.art_uniing }}</td>
-                      <td class="py-2 px-4 text-right font-mono font-bold text-gray-900">{{ a.stock_actual }}</td>
-                      <td class="py-2 px-4 text-center">
-                        <button (click)="seleccionarArticulo(a)" class="bg-brandTeal hover:bg-teal-700 text-white font-bold px-3 py-1 rounded-lg text-xs transition-colors shadow">
-                          Seleccionar
-                        </button>
-                      </td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Barra de Paginación Unificada en el Modal -->
-            <div class="bg-gray-50 border-t border-gray-300 p-3 flex flex-col sm:flex-row justify-between items-center gap-3">
-              <div class="text-xs font-semibold text-gray-700">
-                Mostrando <span class="font-bold text-brandDark">{{ modalInicioRegistro }}</span> - <span class="font-bold text-brandDark">{{ modalFinRegistro }}</span> de <span class="font-bold text-brandDark">{{ modalTotalRegistros }}</span> artículos
-              </div>
-
-              <div class="flex items-center gap-3">
-                <div class="flex items-center gap-1.5">
-                  <label class="text-xs font-bold text-gray-700 uppercase">Filas:</label>
-                  <select [ngModel]="modalItemsPorPagina" (ngModelChange)="cambiarModalItemsPorPagina($event)" class="border border-gray-400 rounded px-2 py-1 text-xs bg-white font-semibold">
-                    <option [value]="10">10</option>
-                    <option [value]="20">20</option>
-                    <option [value]="50">50</option>
-                  </select>
-                </div>
-
-                <div class="flex items-center gap-1">
-                  <button (click)="cambiarModalPagina(modalPaginaActual - 1)" [disabled]="modalPaginaActual === 1" class="px-3 py-1 text-xs font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed">
-                    ‹ Anterior
-                  </button>
-                  <span class="px-2.5 py-1 text-xs font-bold text-brandDark bg-blue-50 border border-blue-200 rounded">
-                    {{ modalPaginaActual }} / {{ modalTotalPaginas }}
-                  </span>
-                  <button (click)="cambiarModalPagina(modalPaginaActual + 1)" [disabled]="modalPaginaActual === modalTotalPaginas" class="px-3 py-1 text-xs font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed">
-                    Siguiente ›
-                  </button>
-                </div>
-              </div>
-            </div>
-
+        <div class="border border-gray-300 rounded-xl overflow-hidden shadow-sm flex flex-col">
+          <div class="overflow-x-auto max-h-[50vh]">
+            <table class="w-full text-xs text-left whitespace-nowrap">
+              <thead class="bg-slate-100 text-slate-800 uppercase font-bold border-b border-gray-300 sticky top-0 z-10">
+                <tr>
+                  <th scope="col" class="py-2.5 px-4">Código</th>
+                  <th scope="col" class="py-2.5 px-4">Descripción</th>
+                  <th scope="col" class="py-2.5 px-4">U/M</th>
+                  <th scope="col" class="py-2.5 px-4 text-right">Stock Actual</th>
+                  <th scope="col" class="py-2.5 px-4 text-center">Acción</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 bg-white">
+                @for (a of articulosEncontrados; track a.art_codigo) {
+                <tr class="hover:bg-cyan-50/50 transition-colors">
+                  <td class="py-2 px-4 font-bold text-brandDark font-mono">{{ a.art_codigo }}</td>
+                  <td class="py-2 px-4 font-medium text-gray-900">{{ a.art_nombre }}</td>
+                  <td class="py-2 px-4 text-gray-700 font-bold">{{ a.art_uniing }}</td>
+                  <td class="py-2 px-4 text-right font-mono font-bold text-gray-900">{{ a.stock_actual }}</td>
+                  <td class="py-2 px-4 text-center">
+                    <button (click)="seleccionarArticulo(a)"
+                      class="bg-brandTeal hover:bg-teal-700 text-white font-bold px-3 py-1 rounded-lg text-xs transition-colors shadow cursor-pointer">
+                      Seleccionar
+                    </button>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
           </div>
+
+          <!-- Barra de Paginación Unificada en el Modal -->
+          <div
+            class="bg-gray-50 border-t border-gray-300 p-3 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="text-xs font-semibold text-gray-800">
+              Mostrando <span class="font-bold text-brandDark">{{ modalInicioRegistro }}</span> - <span
+                class="font-bold text-brandDark">{{ modalFinRegistro }}</span> de <span
+                class="font-bold text-brandDark">{{ modalTotalRegistros }}</span> artículos
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="flex items-center gap-1.5">
+                <label for="nr-modal-items" class="text-xs font-bold text-gray-800 uppercase">Filas:</label>
+                <select id="nr-modal-items" [ngModel]="modalItemsPorPagina"
+                  (ngModelChange)="cambiarModalItemsPorPagina($event)"
+                  class="border border-gray-400 rounded px-2 py-1 text-xs bg-white font-semibold text-gray-900">
+                  <option [value]="10">10</option>
+                  <option [value]="20">20</option>
+                  <option [value]="50">50</option>
+                </select>
+              </div>
+
+              <div class="flex items-center gap-1" role="navigation" aria-label="Paginación de catálogo de artículos">
+                <button (click)="cambiarModalPagina(modalPaginaActual - 1)" [disabled]="modalPaginaActual === 1"
+                  aria-label="Ir a la página anterior de artículos"
+                  class="px-3 py-1 text-xs font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer text-gray-800">
+                  ‹ Anterior
+                </button>
+                <span class="px-2.5 py-1 text-xs font-bold text-brandDark bg-blue-50 border border-blue-200 rounded"
+                  aria-current="page">
+                  {{ modalPaginaActual }} / {{ modalTotalPaginas }}
+                </span>
+                <button (click)="cambiarModalPagina(modalPaginaActual + 1)"
+                  [disabled]="modalPaginaActual === modalTotalPaginas"
+                  aria-label="Ir a la página siguiente de artículos"
+                  class="px-3 py-1 text-xs font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer text-gray-800">
+                  Siguiente ›
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
         } @else {
-          <div class="py-12 text-center text-gray-500 text-sm font-medium">No se encontraron artículos para este almacén.</div>
+        <div class="py-12 text-center text-gray-700 text-sm font-medium">No se encontraron artículos para este almacén.
+        </div>
         }
       </div>
     </div>
   </div>
-}
+  }
 
-<!-- Modal de Selección de Lotes (Estilo ERP) -->
-@if (modalLotesVisible) {
+  <!-- Modal de Selección de Lotes (Estilo ERP) -->
+  @if (modalLotesVisible) {
   <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 animate-fade-in">
-    <div class="bg-white rounded-xl shadow-2xl border border-gray-300 w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]">
-      
+    <div
+      class="bg-white rounded-xl shadow-2xl border border-gray-300 w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]">
+
       <!-- Cabecera Ventana Modal -->
-      <div class="bg-gradient-to-r from-slate-800 to-brandDark px-4 py-3 text-white flex justify-between items-center shadow-md">
+      <div
+        class="bg-gradient-to-r from-slate-800 to-brandDark px-4 py-3 text-white flex justify-between items-center shadow-md">
         <div class="flex items-center gap-2">
-          <div class="w-6 h-6 rounded bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-xs font-bold font-mono">
+          <div
+            class="w-6 h-6 rounded bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-xs font-bold font-mono">
             📦
           </div>
           <div>
@@ -285,8 +352,11 @@
             <p class="text-[11px] text-cyan-200 truncate max-w-xs">{{ itemSeleccionadoParaLote?.art_nombre }}</p>
           </div>
         </div>
-        <button (click)="cerrarModalLotes()" class="text-gray-300 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        <button (click)="cerrarModalLotes()" aria-label="Cerrar modal de lotes"
+          class="text-gray-300 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
       </div>
 
@@ -294,34 +364,36 @@
       <div class="p-3 flex-1 overflow-y-auto bg-slate-50">
         <div class="border border-slate-700 rounded-lg overflow-hidden shadow-inner bg-white">
           <div class="overflow-x-auto max-h-[45vh]">
-            <table class="w-full text-xs text-left whitespace-nowrap">
+            <table class="w-full text-xs text-left whitespace-nowrap" aria-label="Lista de lotes disponibles">
               <thead class="bg-[#003d79] text-white uppercase font-bold sticky top-0 z-10 border-b border-slate-700">
                 <tr>
-                  <th class="py-2.5 px-3 border-r border-blue-900/50">ID-Lote</th>
-                  <th class="py-2.5 px-4 border-r border-blue-900/50">Lote-O/T</th>
-                  <th class="py-2.5 px-4 text-right">Stock</th>
+                  <th scope="col" class="py-2.5 px-3 border-r border-blue-900/50">ID-Lote</th>
+                  <th scope="col" class="py-2.5 px-4 border-r border-blue-900/50">Lote-O/T</th>
+                  <th scope="col" class="py-2.5 px-4 text-right">Stock</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200">
                 @for (l of lotesFiltrados; track l.lot_id) {
-                  <tr (click)="seleccionarLote(l)" 
-                      (dblclick)="confirmarLote()"
-                      [class.bg-blue-600]="loteSeleccionado?.lot_id === l.lot_id"
-                      [class.text-white]="loteSeleccionado?.lot_id === l.lot_id"
-                      [class.hover:bg-blue-50]="loteSeleccionado?.lot_id !== l.lot_id"
-                      class="cursor-pointer transition-colors select-none font-medium">
-                    <td class="py-2 px-3 font-mono font-bold" [class.text-slate-900]="loteSeleccionado?.lot_id !== l.lot_id">{{ l.lot_id }}</td>
-                    <td class="py-2 px-4" [class.text-gray-800]="loteSeleccionado?.lot_id !== l.lot_id">{{ l.lot_numlote }}</td>
-                    <td class="py-2 px-4 text-right font-mono font-bold" [class.text-gray-900]="loteSeleccionado?.lot_id !== l.lot_id">
-                      {{ l.lot_cantid | number:'1.3-3' }}
-                    </td>
-                  </tr>
+                <tr (click)="seleccionarLote(l)" (dblclick)="confirmarLote()"
+                  [class.bg-blue-600]="loteSeleccionado?.lot_id === l.lot_id"
+                  [class.text-white]="loteSeleccionado?.lot_id === l.lot_id"
+                  [class.hover:bg-blue-50]="loteSeleccionado?.lot_id !== l.lot_id"
+                  class="cursor-pointer transition-colors select-none font-medium">
+                  <td class="py-2 px-3 font-mono font-bold"
+                    [class.text-slate-900]="loteSeleccionado?.lot_id !== l.lot_id">{{ l.lot_id }}</td>
+                  <td class="py-2 px-4" [class.text-gray-800]="loteSeleccionado?.lot_id !== l.lot_id">{{ l.lot_numlote
+                    }}</td>
+                  <td class="py-2 px-4 text-right font-mono font-bold"
+                    [class.text-gray-900]="loteSeleccionado?.lot_id !== l.lot_id">
+                    {{ l.lot_cantid | number:'1.2-2' }}
+                  </td>
+                </tr>
                 } @empty {
-                  <tr>
-                    <td colspan="3" class="py-8 text-center text-gray-500 font-medium text-xs">
-                      No se encontraron lotes que coincidan con la búsqueda.
-                    </td>
-                  </tr>
+                <tr>
+                  <td colspan="3" class="py-8 text-center text-gray-700 font-medium text-xs">
+                    No se encontraron lotes que coincidan con la búsqueda.
+                  </td>
+                </tr>
                 }
               </tbody>
             </table>
@@ -330,29 +402,31 @@
       </div>
 
       <!-- Barra Inferior (Buscar por + Botones Aceptar / Cerrar) -->
-      <div class="bg-gray-100 border-t border-gray-300 p-3 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <div
+        class="bg-gray-100 border-t border-gray-300 p-3 flex flex-col sm:flex-row justify-between items-center gap-3">
         <!-- Filtro Lote -->
         <div class="flex items-center gap-2 w-full sm:w-auto">
-          <label class="text-xs font-bold text-gray-700 whitespace-nowrap">Buscar por :</label>
-          <select class="border border-gray-400 rounded px-2 py-1 text-xs bg-white font-semibold text-gray-800">
+          <label for="nr-modal-lote-filtro" class="text-xs font-bold text-gray-800 whitespace-nowrap">Buscar por
+            :</label>
+          <select id="nr-modal-lote-filtro"
+            class="border border-gray-400 rounded px-2 py-1 text-xs bg-white font-semibold text-gray-800">
             <option value="lote">Lote</option>
           </select>
-          <input type="text" 
-                 [(ngModel)]="filtroLote" 
-                 placeholder="Filtrar lote..." 
-                 class="border border-gray-400 rounded px-2.5 py-1 text-xs bg-white text-gray-900 font-medium flex-1 sm:w-36 focus:ring-1 focus:ring-blue-600 outline-none">
+          <input type="text" [(ngModel)]="filtroLote" placeholder="Filtrar lote..."
+            aria-label="Filtrar lote por número o ID"
+            class="border border-gray-400 rounded px-2.5 py-1 text-xs bg-white text-gray-900 font-medium flex-1 sm:w-36 focus:ring-1 focus:ring-blue-600 outline-none">
         </div>
 
         <!-- Botones de Acción Estilo ERP -->
         <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-          <button (click)="confirmarLote()" 
-                  class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg border border-emerald-600 bg-white hover:bg-emerald-50 text-emerald-700 font-bold text-xs shadow-sm hover:shadow transition-all">
+          <button (click)="confirmarLote()" aria-label="Confirmar selección de lote"
+            class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg border border-emerald-600 bg-white hover:bg-emerald-50 text-emerald-700 font-bold text-xs shadow-sm hover:shadow transition-all cursor-pointer">
             <span class="text-emerald-600 font-black text-sm">✔</span>
             <span>Aceptar</span>
           </button>
-          
-          <button (click)="cerrarModalLotes()" 
-                  class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg border border-rose-400 bg-white hover:bg-rose-50 text-rose-700 font-bold text-xs shadow-sm hover:shadow transition-all">
+
+          <button (click)="cerrarModalLotes()" aria-label="Cerrar modal de lotes"
+            class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg border border-rose-400 bg-white hover:bg-rose-50 text-rose-700 font-bold text-xs shadow-sm hover:shadow transition-all cursor-pointer">
             <span class="text-rose-600 font-black text-sm">🚫</span>
             <span>Cerrar</span>
           </button>
@@ -361,6 +435,6 @@
 
     </div>
   </div>
-}
+  }
 
 </app-sidebar>

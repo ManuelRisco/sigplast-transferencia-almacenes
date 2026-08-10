@@ -49,6 +49,9 @@ Todos los componentes del sistema tienen sus vistas desacopladas en archivos HTM
     - Al hacer clic en el lote de cualquier fila, consulta `log_lote` en tiempo real para ese artículo y almacén.
     - Si cuenta con lotes, despliega el modal estilo ERP con columnas: `ID-Lote`, `Lote-O/T` y `Stock` (3 decimales), soporte de selección con resalte azul, doble clic y filtro de texto inferior.
     - Si no tiene lotes registrados, notifica al usuario con SweetAlert2.
+  - **Escáner de Código de Barras Directo**:
+    - Campo de texto `Codigo de Barras :` conectado con `(keyup.enter)="buscarCodigoBarras()"`.
+    - Al escanear con la pistola lectora o ingresar un código/EAN y presionar `Enter`, busca el artículo en la base de datos y lo agrega automáticamente como una nueva fila en la grilla de detalle con sus datos y stock actual.
   - **Persistencia en LocalStorage:** La grilla de artículos agregados, cantidades, glosa, almacén y tipo de movimiento se guardan automáticamente, resistiendo recargas (F5).
   - **Botón Limpiar Todo:** Confirmación interactiva con SweetAlert2 para vaciar el formulario.
   - **Rendimiento OnPush:** `ChangeDetectionStrategy.OnPush` para máxima velocidad de respuesta.
@@ -72,7 +75,13 @@ Todos los componentes del sistema tienen sus vistas desacopladas en archivos HTM
 
 ---
 
-### 5. `LoginComponent` y `RegistroComponent`
+### 5. `NavbarComponent` (Barra Superior de Navegación)
+- **Archivos:** `navbar.component.ts`, `navbar.component.html`
+- **Propósito:** Encabezado superior institucional con botón hamburguesa para control del Sidebar, título, botón directo para alternar Modo Noche / Modo Claro (`🌙 / ☀️`) y módulo de accesibilidad universal.
+
+---
+
+### 6. `LoginComponent` y `RegistroComponent`
 - **Rutas:** `/login` y `/registro`
 - **Archivos:** `login.component.ts`, `login.component.html`, `registro.component.ts`, `registro.component.html`
 - **Propósito:** Autenticación y registro de nuevos usuarios en el sistema.
@@ -80,13 +89,23 @@ Todos los componentes del sistema tienen sus vistas desacopladas en archivos HTM
 
 ---
 
-### 6. `AccessibilityWidgetComponent` (Módulo de Accesibilidad Universal)
-- **Ubicación:** Integrado en la barra superior (Navbar) de `SidebarComponent`.
+### 7. `AccessibilityWidgetComponent` (Módulo de Accesibilidad Universal)
+- **Ubicación:** Integrado en la barra superior (Navbar) junto al botón de Modo Noche.
 - **Archivos:** `accessibility-widget.component.ts`, `accessibility-widget.component.html`
 - **Propósito:** Ofrecer herramientas universales de adaptación visual, tamaño de fuente, tipografía para dislexia y filtros de daltonismo.
 - **Características Clave:**
-  - **Diseño Unificado (Dark Slate):** Menú desplegable con paleta de un solo tono elegante a juego con la barra superior de SIGRIS.
-  - **Zoom de Texto:** Escalamiento porcentual (`90%` a `140%`).
+  - **Diseño Unificado (Dark Slate):** Menú desplegable con paleta de un solo tono elegante.
+  - **Zoom de Texto:** Escalamiento porcentual (`75%` a `150%`).
   - **Filtros de Visión:** Matrices de color SVG para Protanopía, Deuteranopía, Tritanopía, Monocromático, Alto Contraste e Invertido.
   - **Modo Dislexia:** Activación de fuente Lexend con espaciado optimizado.
   - **Persistencia Reactiva:** Vinculado con `AccessibilityService` y guardado en `localStorage`.
+
+---
+
+### 8. `NotFoundComponent` (Página 404 - Ruta no encontrada)
+- **Ruta:** `**` (Captura cualquier ruta no mapeada o inexistente)
+- **Archivos:** `not-found.component.ts`, `not-found.component.html`
+- **Propósito:** Mostrar una pantalla elegante, accesible y amigable cuando el usuario intenta navegar a una URL desconocida.
+- **Características Clave:**
+  - Acciones contextuales para retornar a `/erp` (si está logueado), ir a `/login` o regresar a la página anterior con `window.history.back()`.
+  - Estética visual Dark Slate consistente y 100% accesible (WCAG 2.1 AAA).

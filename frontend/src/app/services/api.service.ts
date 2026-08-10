@@ -9,10 +9,10 @@ export class ApiService {
   private primaryUrl = 'http://localhost/sigris/backend/api';
   private secondaryUrl = 'http://localhost/prueba/sigris/backend/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   private requestWithFallback(method: 'get' | 'post', path: string, dataOrParams?: any): Observable<any> {
-    const primary$ = method === 'get' 
+    const primary$ = method === 'get'
       ? this.http.get(`${this.primaryUrl}${path}`, { params: dataOrParams })
       : this.http.post(`${this.primaryUrl}${path}`, dataOrParams);
 
@@ -61,3 +61,4 @@ export class ApiService {
     return this.requestWithFallback('post', '/admin/usuarios.php', payload);
   }
 }
+

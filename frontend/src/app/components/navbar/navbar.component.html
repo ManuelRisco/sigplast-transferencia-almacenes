@@ -1,0 +1,48 @@
+<!-- Header Topbar con Botón Hamburguesa -->
+<header class="bg-white text-slate-800 shadow-sm border-b border-gray-200 z-30 shrink-0 transition-colors duration-200">
+  <div class="max-w-screen-2xl mx-auto px-4 h-16 flex items-center justify-between">
+
+    <!-- Lado Izquierdo: Botón Menú + Logo ERP -->
+    <div class="flex items-center gap-4">
+      <button (click)="toggleSidebar()" type="button"
+        class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-cyan-700 focus:outline-none transition-all duration-200 border border-gray-300 shadow-sm flex items-center justify-center group cursor-pointer"
+        aria-label="Abrir o cerrar el menú principal lateral"
+        title="Menú Principal">
+        <svg class="w-6 h-6 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <a routerLink="/erp" aria-label="Ir a la página principal de Control de Almacén SIGRIS ERP" class="flex items-center gap-3">
+        <div
+          class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#003a6c] to-[#0d9488] flex items-center justify-center text-white font-bold shadow-md shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+        </div>
+        <div>
+          <span class="font-bold text-base text-slate-900 block leading-tight">Control de Almacén</span>
+          <span class="text-[10px] text-cyan-700 tracking-wider uppercase font-bold">SIGRIS ERP</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Lado Derecho: Modo Oscuro + Accesibilidad -->
+    <div class="flex items-center gap-2.5">
+      <!-- Botón Modo Noche / Modo Claro -->
+      <button (click)="a11y.toggleDarkMode()"
+              type="button"
+              class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-cyan-700 border border-gray-300 shadow-sm flex items-center justify-center transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400"
+              [attr.aria-label]="a11y.darkMode() ? 'Cambiar a modo claro' : 'Cambiar a modo noche'"
+              [title]="a11y.darkMode() ? 'Cambiar a Modo Claro ☀️' : 'Cambiar a Modo Noche 🌙'">
+        <span class="text-base" aria-hidden="true">{{ a11y.darkMode() ? '☀️' : '🌙' }}</span>
+      </button>
+
+      <!-- Widget de Accesibilidad Universal -->
+      <app-accessibility-widget></app-accessibility-widget>
+    </div>
+
+  </div>
+</header>

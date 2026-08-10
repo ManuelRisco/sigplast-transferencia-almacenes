@@ -2,32 +2,37 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { AccessibilityWidgetComponent } from '../accessibility-widget/accessibility-widget.component';
+import { SidebarService } from '../../services/sidebar.service';
+import { NavbarComponent } from '../navbar/navbar.component';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, AccessibilityWidgetComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive, NavbarComponent],
   templateUrl: './sidebar.component.html'
 })
 export class SidebarComponent {
-  authService = inject(AuthService);
-  router = inject(Router);
-  isOpen = localStorage.getItem('sigris_sidebar_open') === 'true';
+  readonly authService = inject(AuthService);
+  readonly sidebarService = inject(SidebarService);
+  private readonly router = inject(Router);
 
-  toggleSidebar() {
-    this.isOpen = !this.isOpen;
-    localStorage.setItem('sigris_sidebar_open', String(this.isOpen));
+  get isOpen(): boolean {
+    return this.sidebarService.isOpen();
   }
 
   closeSidebar() {
-    this.isOpen = false;
-    localStorage.setItem('sigris_sidebar_open', 'false');
+    this.sidebarService.close();
+  }
+
+  closeOnMobile() {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      this.sidebarService.close();
+    }
   }
 
   logout() {
     this.authService.clearSession();
-    this.closeSidebar();
+    this.sidebarService.close();
     this.router.navigate(['/login']);
   }
 }

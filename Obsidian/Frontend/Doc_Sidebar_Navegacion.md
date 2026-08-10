@@ -1,40 +1,35 @@
 # Sidebar y Sistema de Navegación - Frontend Angular 22
 
-El componente **`SidebarComponent`** (`src/app/components/sidebar/sidebar.component.ts` y `sidebar.component.html`) provee el layout maestro y la navegación responsiva de la plataforma **SIGRIS**.
+La arquitectura de navegación y maquetación de **SIGRIS** se organiza en componentes modulares e independientes sincronizados mediante **Angular Signals**:
 
 ---
 
-## 📌 Relaciones y Dependencias
-- **Layout Contenedor:** Envuelve mediante `<ng-content>` las vistas principales de [[Frontend/Doc_Componentes_Angular]].
-- **Estado de Usuario:** Lee la sesión encriptada y permisos desde `AuthService` en [[Frontend/Doc_Servicios_Guards]].
-- **Roles y Permisos:** Control de visibilidad de módulos para Administradores vs Usuarios según [[Backend/Doc_Seguridad_BCRYPT]].
+## 📌 Componentes y Servicios del Layout
+- **`SidebarComponent`** (`src/app/components/sidebar/`): Provee el menú lateral deslizable (`<aside>`) y el layout Flexbox contenedor.
+- **`NavbarComponent`** (`src/app/components/navbar/`): Provee el encabezado superior (`<header>`) con el botón hamburguesa, logo institucional, módulo de accesibilidad y acciones de usuario.
+- **`SidebarService`** (`src/app/services/sidebar.service.ts`): Servicio reactivo con Signal `isOpen` que sincroniza el estado entre el Navbar y el Sidebar, persistiendo en `localStorage`.
 
 ---
 
 ## 📐 Diseño y Arquitectura de Layout (Push Layout)
 
-1. **Patrón Wrapper (Contenedor Maestro):**
-   - El `SidebarComponent` actúa como un layout Flexbox de envoltura para la aplicación.
-   - Aloja el Header superior y el área de contenido principal (`<main>`), proyectando el contenido de las vistas mediante `<ng-content>`.
+1. **Patrón Wrapper y Componentes Separados:**
+   - `SidebarComponent` actúa como contenedor Flexbox maestro que proyecta las vistas mediante `<ng-content>`.
+   - Incorpora el componente independiente `<app-navbar></app-navbar>` en la parte superior.
 
 2. **Comportamiento Push (Desplazamiento Dinámico):**
-   - A diferencia de los menús flotantes tradicionales que se superponen tapando la pantalla, este sidebar **empuja el contenido hacia la derecha**.
-   - El elemento `<aside>` transiciona suavemente de `w-0` a `w-72` (`288px`), adaptando el ancho del contenido principal sin tapar tablas ni formularios.
-   - El borde lateral derecho se oculta automáticamente al cerrarse (`[class.border-r]="isOpen"`) para evitar artefactos visuales o líneas residuales.
+   - El sidebar lateral transiciona suavemente de `w-0` a `w-72` (`288px`), empujando el contenido hacia la derecha sin superponerse sobre tablas ni formularios.
+   - El estado es gobernado reactivamente por `sidebarService.isOpen()`.
 
 3. **Persistencia de Posición (LocalStorage):**
    - El estado abierto/cerrado se almacena bajo la clave `sigris_sidebar_open` en `localStorage`.
    - Al recargar la página (F5) o cambiar de módulo, el sidebar recuerda y conserva exactamente la posición en la que el usuario lo dejó.
-   - La navegación entre enlaces de escritorio no fuerza el cierre automático del menú, permitiendo trabajar cómodamente con el panel lateral abierto.
 
-4. **Enlaces y Menús Dinámicos:**
+4. **Enlaces y Menús Dinámicos (Sidebar):**
    - **Notas de Salidas:** Acceso directo a `/erp`.
    - **Nuevo Registro:** Acceso a `/nuevo-registro`.
    - **Panel de Usuarios:** Visible **únicamente** si `authService.isAdmin()` es verdadero.
    - **Cerrar Sesión:** Llama a `authService.clearSession()`, destruyendo las variables encriptadas en `localStorage` y redirigiendo a `/login`.
 
-5. **Perfil del Usuario:**
-   - Muestra el nombre completo, inicial del avatar y badge del rol (`Administrador` o `Usuario`) en la parte inferior del menú lateral.
-
-6. **Módulo de Accesibilidad Integrado en el Navbar:**
-   - Incluye el botón y dropdown de accesibilidad universal (`AccessibilityWidgetComponent`) en la barra superior derecha, con diseño unificado en color Dark Slate/Navy a tono con el encabezado.
+5. **Módulo de Accesibilidad Integrado en Navbar:**
+   - El componente `NavbarComponent` aloja el widget de accesibilidad universal (`AccessibilityWidgetComponent`), manteniendo el menú limpio, minimalista y con tema Dark Slate.

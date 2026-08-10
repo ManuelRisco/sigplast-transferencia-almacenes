@@ -12,21 +12,20 @@ import { AccessibilityService, ColorFilterType } from '../../services/accessibil
 export class AccessibilityWidgetComponent {
   readonly a11y = inject(AccessibilityService);
 
-  readonly filterOptions: { id: ColorFilterType; label: string; icon: string; desc: string }[] = [
-    { id: 'none', label: 'Estándar', icon: '🎨', desc: 'Colores originales' },
-    { id: 'protanopia', label: 'Protanopía', icon: '🔴', desc: 'Deficiencia rojo' },
-    { id: 'deuteranopia', label: 'Deuteranopía', icon: '🟢', desc: 'Deficiencia verde' },
-    { id: 'tritanopia', label: 'Tritanopía', icon: '🔵', desc: 'Deficiencia azul' },
-    { id: 'monochrome', label: 'Monocromático', icon: '⚪', desc: 'Escala de grises' },
-    { id: 'high-contrast', label: 'Alto Contraste', icon: '🔆', desc: 'Mayor visibilidad' },
-    { id: 'inverted', label: 'Invertido', icon: '🌓', desc: 'Modo inverso' }
+  readonly filterOptions: { id: ColorFilterType; label: string; icon: string }[] = [
+    { id: 'none', label: 'Normal', icon: '🎨' },
+    { id: 'protanopia', label: 'Protanopía', icon: '🔴' },
+    { id: 'deuteranopia', label: 'Deuteranopía', icon: '🟢' },
+    { id: 'tritanopia', label: 'Tritanopía', icon: '🔵' },
+    { id: 'monochrome', label: 'Escala Grises', icon: '⚪' },
+    { id: 'high-contrast', label: 'Alto Contraste', icon: '🔆' },
+    { id: 'inverted', label: 'Invertido', icon: '🌓' }
   ];
 
   readonly fontSizePresets = [
-    { label: '90%', value: 90 },
+    { label: '75%', value: 75 },
     { label: '100%', value: 100 },
-    { label: '110%', value: 110 },
-    { label: '120%', value: 120 },
-    { label: '130%', value: 130 }
+    { label: '125%', value: 125 },
+    { label: '150%', value: 150 }
   ];
 }
