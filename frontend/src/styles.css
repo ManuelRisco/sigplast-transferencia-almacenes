@@ -3,6 +3,11 @@
 
 @import 'tailwindcss';
 
+@theme {
+  --color-brand-dark: #004b87;
+  --color-brand-teal: #008b8b;
+}
+
 /* =========================================================
    ESTILOS Y FILTROS DE ACCESIBILIDAD UNIVERSAL - SIGRIS ERP
    ========================================================= */
