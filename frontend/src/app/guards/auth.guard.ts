@@ -11,15 +11,6 @@ export const userGuard: CanActivateFn = () => {
   return router.parseUrl('/login');
 };
 
-export const adminGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  if (authService.isLoggedIn() && authService.isAdmin()) {
-    return true;
-  }
-  return router.parseUrl('/erp');
-};
-
 export const guestGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);

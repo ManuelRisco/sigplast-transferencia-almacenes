@@ -1,232 +1,169 @@
 <?php
-require_once "../../config/conexion.php";
+require_once __DIR__ . '/../../config/conexion.php';
 
-$accion = $_GET['accion'] ?? 'buscar';
 $conn = getSqlServerConn();
+$accion = $_GET['accion'] ?? 'stock';
 
+$alm = trim($_GET['alm'] ?? $_GET['alm_codigo'] ?? '001');
+$art = trim($_GET['art'] ?? $_GET['art_codigo'] ?? '');
+$lot = isset($_GET['lot']) ? (int)$_GET['lot'] : 0;
+
+// Sanitizar y validar fecha de corte
+$fecRaw = trim($_GET['fec'] ?? '');
+if (empty($fecRaw) || $fecRaw === 'undefined' || $fecRaw === 'null' || !strtotime($fecRaw)) {
+    $fec = date('Ymd');
+} else {
+    $fec = date('Ymd', strtotime($fecRaw));
+}
+
+/**
+ * Llama al procedimiento almacenado [dbo].[stock_articulo]
+ */
+function consultarStockSP($conn, $alm, $art, $fec = null, $lot = 0) {
+    if (!$conn || empty($art)) return [];
+    if (!$fec || $fec === 'undefined' || !strtotime($fec)) {
+        $fec = date('Ymd');
+    } else {
+        $fec = date('Ymd', strtotime($fec));
+    }
+    
+    $sql = "SET NOCOUNT ON; EXEC [dbo].[stock_articulo] @alm=?, @fec=?, @lot=?, @art=?";
+    $stmt = sqlsrv_query($conn, $sql, array(trim($alm), trim($fec), (int)$lot, trim($art)));
+    $res = [];
+    if ($stmt) {
+        do {
+            while ($r = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $res[] = $r;
+            }
+        } while (sqlsrv_next_result($stmt));
+    }
+    return $res;
+}
+
+// 1. Tipos de movimiento
 if ($accion === 'tipos_mov') {
     $tipos = [];
     if ($conn) {
-        $sql_tmo = "SELECT tmo_codigo, tmo_nombre FROM mae_tpomov ORDER BY tmo_nombre DESC";
-        $stmt_tmo = sqlsrv_query($conn, $sql_tmo);
-        if ($stmt_tmo) {
-            while ($r = sqlsrv_fetch_array($stmt_tmo, SQLSRV_FETCH_ASSOC)) {
-                $r['tmo_codigo'] = trim((string)$r['tmo_codigo']);
-                $r['tmo_nombre'] = trim((string)$r['tmo_nombre']);
-                $tipos[] = $r;
+        $stmt = sqlsrv_query($conn, "SELECT tmo_codigo, tmo_nombre FROM mae_tpomov ORDER BY tmo_nombre DESC");
+        if ($stmt) {
+            while ($r = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $tipos[] = [
+                    "tmo_codigo" => trim((string)$r['tmo_codigo']),
+                    "tmo_nombre" => trim((string)$r['tmo_nombre'])
+                ];
             }
         }
     }
     echo json_encode(["success" => true, "tipos_mov" => $tipos]);
     exit;
+}
 
-} elseif ($accion === 'buscar') {
-    $alm = trim($_GET['alm_codigo'] ?? '001');
-    $q   = trim($_GET['q'] ?? '');
-
-    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
-    if ($page < 1) $page = 1;
-    if ($limit < 1) $limit = 10;
+// 2. Búsqueda y Catálogo de Artículos con Stock calculado por el Stored Procedure
+if ($accion === 'buscar') {
+    $q = trim($_GET['q'] ?? '');
+    $page = max(1, (int)($_GET['page'] ?? 1));
+    $limit = max(1, (int)($_GET['limit'] ?? 10));
     $offset = ($page - 1) * $limit;
 
     $articulos = [];
-    $total_records = 0;
+    $total = 0;
 
     if ($conn) {
-        $searchPattern = !empty($q) ? "%" . $q . "%" : "";
-
-        // Subconsulta para obtener el stock más reciente de log_stkarticulo
-        $subquery_stock = "(SELECT art_codigo, alm_codigo, SUM(stk_stkart) as stk_stkart 
-                            FROM log_stkarticulo 
-                            WHERE stk_anho = (SELECT MAX(stk_anho) FROM log_stkarticulo) 
-                              AND stk_nmes = (SELECT MAX(stk_nmes) FROM log_stkarticulo WHERE stk_anho = (SELECT MAX(stk_anho) FROM log_stkarticulo))
-                            GROUP BY art_codigo, alm_codigo)";
-
-        // 1. Intento por asociación de Almacén en mae_almtpoart (para 001 y almacenes configurados)
-        if (!empty($q)) {
-            $sql_count = "SELECT COUNT(*) as total
-                          FROM mae_articulo a
-                          INNER JOIN mae_almtpoart mta ON a.tar_codigo = mta.tar_codigo
-                          WHERE RTRIM(LTRIM(mta.alm_codigo)) = ? AND (a.art_codigo LIKE ? OR a.art_codean LIKE ? OR a.art_nombre LIKE ?)";
-            $params_count = array($alm, $searchPattern, $searchPattern, $searchPattern);
-        } else {
-            $sql_count = "SELECT COUNT(*) as total
-                          FROM mae_articulo a
-                          INNER JOIN mae_almtpoart mta ON a.tar_codigo = mta.tar_codigo
-                          WHERE RTRIM(LTRIM(mta.alm_codigo)) = ?";
-            $params_count = array($alm);
+        $filtro = "%$q%";
+        $sqlCount = "SELECT COUNT(*) as total FROM mae_articulo WHERE art_codigo LIKE ? OR art_nombre LIKE ?";
+        $stmtC = sqlsrv_query($conn, $sqlCount, array($filtro, $filtro));
+        if ($stmtC && $row = sqlsrv_fetch_array($stmtC, SQLSRV_FETCH_ASSOC)) {
+            $total = (int)$row['total'];
         }
 
-        $stmt_count = sqlsrv_query($conn, $sql_count, $params_count);
-        if ($stmt_count && $row = sqlsrv_fetch_array($stmt_count, SQLSRV_FETCH_ASSOC)) {
-            $total_records = (int)$row['total'];
-        }
+        $sql = "SELECT art_codigo, art_nombre, art_codean, ume_codigo 
+                FROM mae_articulo 
+                WHERE art_codigo LIKE ? OR art_nombre LIKE ?
+                ORDER BY art_nombre ASC
+                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        $stmt = sqlsrv_query($conn, $sql, array($filtro, $filtro, $offset, $limit));
+        if ($stmt) {
+            while ($r = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $cod = trim((string)$r['art_codigo']);
+                $nom = trim((string)$r['art_nombre']);
+                $ean = trim((string)$r['art_codean']);
+                $umeDefault = trim((string)$r['ume_codigo']) === '001' ? 'KGS' : trim((string)$r['ume_codigo']);
 
-        if ($total_records > 0) {
-            if (!empty($q)) {
-                $sql = "SELECT 
-                            a.art_codigo, 
-                            a.art_nombre, 
-                            CASE WHEN a.ume_codigo = '001' THEN 'KGS' ELSE ISNULL(a.ume_codigo, '-') END AS art_uniing, 
-                            ISNULL(a.art_codean, '') AS art_codean,
-                            COALESCE(s.stk_stkart, 0) AS stock_actual
-                        FROM mae_articulo a
-                        INNER JOIN mae_almtpoart mta ON a.tar_codigo = mta.tar_codigo
-                        LEFT JOIN $subquery_stock s ON a.art_codigo = s.art_codigo AND RTRIM(LTRIM(s.alm_codigo)) = RTRIM(LTRIM(mta.alm_codigo))
-                        WHERE RTRIM(LTRIM(mta.alm_codigo)) = ? AND (a.art_codigo LIKE ? OR a.art_codean LIKE ? OR a.art_nombre LIKE ?)
-                        ORDER BY s.stk_stkart DESC, a.art_nombre ASC
-                        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-                $params = array($alm, $searchPattern, $searchPattern, $searchPattern, $offset, $limit);
-            } else {
-                $sql = "SELECT 
-                            a.art_codigo, 
-                            a.art_nombre, 
-                            CASE WHEN a.ume_codigo = '001' THEN 'KGS' ELSE ISNULL(a.ume_codigo, '-') END AS art_uniing, 
-                            ISNULL(a.art_codean, '') AS art_codean,
-                            COALESCE(s.stk_stkart, 0) AS stock_actual
-                        FROM mae_articulo a
-                        INNER JOIN mae_almtpoart mta ON a.tar_codigo = mta.tar_codigo
-                        LEFT JOIN $subquery_stock s ON a.art_codigo = s.art_codigo AND RTRIM(LTRIM(s.alm_codigo)) = RTRIM(LTRIM(mta.alm_codigo))
-                        WHERE RTRIM(LTRIM(mta.alm_codigo)) = ?
-                        ORDER BY s.stk_stkart DESC, a.art_nombre ASC
-                        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-                $params = array($alm, $offset, $limit);
-            }
-
-            $stmt = sqlsrv_query($conn, $sql, $params);
-            if ($stmt) {
-                while ($r = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-                    $r['art_codigo'] = trim((string)$r['art_codigo']);
-                    $r['art_nombre'] = trim((string)$r['art_nombre']);
-                    $r['art_codean'] = trim((string)$r['art_codean']);
-                    $r['stock_actual'] = number_format((float)$r['stock_actual'], 2, '.', '');
-                    $articulos[] = $r;
-                }
-            }
-        }
-
-        // 2. Si el almacén no tiene mapeo en mae_almtpoart (ej. Almacenes de planta), catálogo general
-        if ($total_records === 0) {
-            if (!empty($q)) {
-                $sql_count_alt = "SELECT COUNT(*) as total
-                                  FROM mae_articulo a
-                                  WHERE a.art_codigo LIKE ? OR a.art_codean LIKE ? OR a.art_nombre LIKE ?";
-                $params_count_alt = array($searchPattern, $searchPattern, $searchPattern);
-            } else {
-                $sql_count_alt = "SELECT COUNT(*) as total FROM mae_articulo a";
-                $params_count_alt = array();
-            }
-
-            $stmt_count_alt = sqlsrv_query($conn, $sql_count_alt, $params_count_alt);
-            if ($stmt_count_alt && $row_alt = sqlsrv_fetch_array($stmt_count_alt, SQLSRV_FETCH_ASSOC)) {
-                $total_records = (int)$row_alt['total'];
-            }
-
-            if ($total_records > 0) {
-                if (!empty($q)) {
-                    $sql_alt = "SELECT 
-                                    a.art_codigo, 
-                                    a.art_nombre, 
-                                    CASE WHEN a.ume_codigo = '001' THEN 'KGS' ELSE ISNULL(a.ume_codigo, '-') END AS art_uniing, 
-                                    ISNULL(a.art_codean, '') AS art_codean,
-                                    COALESCE(s.stk_stkart, 0) AS stock_actual
-                                FROM mae_articulo a
-                                LEFT JOIN $subquery_stock s ON a.art_codigo = s.art_codigo AND RTRIM(LTRIM(s.alm_codigo)) = ?
-                                WHERE a.art_codigo LIKE ? OR a.art_codean LIKE ? OR a.art_nombre LIKE ?
-                                ORDER BY s.stk_stkart DESC, a.art_nombre ASC
-                                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-                    $params_alt = array($alm, $searchPattern, $searchPattern, $searchPattern, $offset, $limit);
-                } else {
-                    $sql_alt = "SELECT 
-                                    a.art_codigo, 
-                                    a.art_nombre, 
-                                    CASE WHEN a.ume_codigo = '001' THEN 'KGS' ELSE ISNULL(a.ume_codigo, '-') END AS art_uniing, 
-                                    ISNULL(a.art_codean, '') AS art_codean,
-                                    COALESCE(s.stk_stkart, 0) AS stock_actual
-                                FROM mae_articulo a
-                                LEFT JOIN $subquery_stock s ON a.art_codigo = s.art_codigo AND RTRIM(LTRIM(s.alm_codigo)) = ?
-                                ORDER BY s.stk_stkart DESC, a.art_nombre ASC
-                                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-                    $params_alt = array($alm, $offset, $limit);
-                }
-
-                $stmt_alt = sqlsrv_query($conn, $sql_alt, $params_alt);
-                if ($stmt_alt) {
-                    while ($r = sqlsrv_fetch_array($stmt_alt, SQLSRV_FETCH_ASSOC)) {
-                        $r['art_codigo'] = trim((string)$r['art_codigo']);
-                        $r['art_nombre'] = trim((string)$r['art_nombre']);
-                        $r['art_codean'] = trim((string)$r['art_codean']);
-                        $r['stock_actual'] = number_format((float)$r['stock_actual'], 2, '.', '');
-                        $articulos[] = $r;
+                // Consultar stock en tiempo real con el Stored Procedure
+                $stkInfo = consultarStockSP($conn, $alm, $cod, $fec, 0);
+                $stockVal = 0.00;
+                $ume = $umeDefault;
+                if (!empty($stkInfo)) {
+                    $stockVal = (float)($stkInfo[0]['stk_stktra'] ?? 0.0);
+                    if (!empty($stkInfo[0]['ume_abrv'])) {
+                        $ume = trim((string)$stkInfo[0]['ume_abrv']);
                     }
                 }
+
+                $articulos[] = [
+                    "art_codigo"   => $cod,
+                    "art_nombre"   => $nom,
+                    "art_codean"   => $ean,
+                    "art_uniing"   => $ume,
+                    "stock_actual" => number_format($stockVal, 2, '.', '')
+                ];
             }
         }
     }
 
     echo json_encode([
         "success"       => true, 
-        "articulos"     => $articulos,
-        "total_records" => $total_records
+        "articulos"     => $articulos, 
+        "total_records" => $total
     ]);
     exit;
+}
 
-} elseif ($accion === 'lotes') {
-    $alm = trim($_GET['alm'] ?? '001');
-    $art = trim($_GET['art'] ?? '');
-
+// 3. Consulta de Lotes mediante Stored Procedure [dbo].[stock_articulo] con @lot = 1
+if ($accion === 'lotes') {
     $lotes = [];
     if ($conn && !empty($art)) {
-        // 1. Calcular el stock real activo de cada lote según movimientos de entrada/salida
-        $sql_mov = "SELECT 
-                        d.lot_codigo AS lot_id,
-                        COALESCE(l.lot_real, d.lot_codigo) AS lot_numlote,
-                        SUM(CASE WHEN t.tmo_tipo = 'I' THEN d.mov_ctdmov ELSE -d.mov_ctdmov END) as lot_cantid
-                    FROM log_detmov d
-                    INNER JOIN log_cabmov c ON d.emp_codigo = c.emp_codigo AND d.mov_id = c.mov_id
-                    LEFT JOIN mae_tpomov t ON c.tmo_codigo = t.tmo_codigo
-                    LEFT JOIN log_lote l ON d.art_codigo = l.art_codigo AND d.lot_codigo = l.lot_codigo
-                    WHERE RTRIM(LTRIM(d.art_codigo)) = ?
-                      AND RTRIM(LTRIM(c.alm_codigo)) = ?
-                      AND d.lot_codigo IS NOT NULL 
-                      AND RTRIM(LTRIM(d.lot_codigo)) <> ''
-                    GROUP BY d.lot_codigo, l.lot_real
-                    HAVING SUM(CASE WHEN t.tmo_tipo = 'I' THEN d.mov_ctdmov ELSE -d.mov_ctdmov END) > 0
-                    ORDER BY lot_cantid DESC, d.lot_codigo DESC";
-
-        $stmt_mov = sqlsrv_query($conn, $sql_mov, array($art, $alm));
-        if ($stmt_mov) {
-            while ($r = sqlsrv_fetch_array($stmt_mov, SQLSRV_FETCH_ASSOC)) {
-                $r['lot_id'] = trim((string)$r['lot_id']);
-                $r['lot_numlote'] = trim((string)$r['lot_numlote']);
-                $r['lot_cantid'] = number_format((float)$r['lot_cantid'], 2, '.', '');
-                $lotes[] = $r;
-            }
-        }
-
-        // 2. Si no hay registros calculados por movimientos, mostrar el catálogo maestro de log_lote
-        if (empty($lotes)) {
-            $sql_fallback = "SELECT l.lot_codigo AS lot_id, 
-                                    l.lot_real AS lot_numlote, 
-                                    0.00 AS lot_cantid 
-                             FROM log_lote l 
-                             WHERE RTRIM(LTRIM(l.art_codigo)) = ? 
-                             ORDER BY l.lot_codigo DESC";
-
-            $stmt_fb = sqlsrv_query($conn, $sql_fallback, array($art));
-            if ($stmt_fb) {
-                while ($r = sqlsrv_fetch_array($stmt_fb, SQLSRV_FETCH_ASSOC)) {
-                    $r['lot_id'] = trim((string)$r['lot_id']);
-                    $r['lot_numlote'] = trim((string)$r['lot_numlote']);
-                    $r['lot_cantid'] = '0.00';
-                    $lotes[] = $r;
-                }
-            }
+        $rows = consultarStockSP($conn, $alm, $art, $fec, 1);
+        foreach ($rows as $r) {
+            $cant = isset($r['stk_stktra']) ? (float)$r['stk_stktra'] : 0.0;
+            $lotes[] = [
+                "lot_id"      => trim((string)($r['lot_codigo'] ?? '')),
+                "lot_numlote" => trim((string)($r['lot_real'] ?? '')),
+                "lot_cantid"  => number_format($cant, 2, '.', ''),
+                "stk_stktra"  => $cant,
+                "art_nombre"  => trim((string)($r['art_nombre'] ?? '')),
+                "ume_abrv"    => trim((string)($r['ume_abrv'] ?? '')),
+                "fam_nombre"  => trim((string)($r['fam_nombre'] ?? '')),
+                "tfa_nombre"  => trim((string)($r['tfa_nombre'] ?? ''))
+            ];
         }
     }
-
     echo json_encode(["success" => true, "lotes" => $lotes]);
     exit;
 }
+
+// 4. Consulta de Stock General mediante Stored Procedure [dbo].[stock_articulo]
+$stockData = [];
+if ($conn && !empty($art)) {
+    $rows = consultarStockSP($conn, $alm, $art, $fec, $lot);
+    foreach ($rows as $r) {
+        $cant = isset($r['stk_stktra']) ? (float)$r['stk_stktra'] : 0.0;
+        $stockData[] = [
+            "alm_codigo" => trim((string)($r['alm_codigo'] ?? $alm)),
+            "art_codigo" => trim((string)($r['art_codigo'] ?? $art)),
+            "art_nombre" => trim((string)($r['art_nombre'] ?? '')),
+            "ume_abrv"   => trim((string)($r['ume_abrv'] ?? '')),
+            "lot_codigo" => trim((string)($r['lot_codigo'] ?? '')),
+            "lot_real"   => trim((string)($r['lot_real'] ?? '')),
+            "ingresos"   => isset($r['ingresos']) ? (float)$r['ingresos'] : 0.0,
+            "salidas"    => isset($r['salidas']) ? (float)$r['salidas'] : 0.0,
+            "stk_stktra" => $cant,
+            "stock_actual" => number_format($cant, 2, '.', ''),
+            "fam_nombre" => trim((string)($r['fam_nombre'] ?? '')),
+            "tfa_nombre" => trim((string)($r['tfa_nombre'] ?? ''))
+        ];
+    }
+}
+
+echo json_encode(["success" => true, "stock" => $stockData]);
 ?>

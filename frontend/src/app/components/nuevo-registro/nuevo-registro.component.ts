@@ -357,7 +357,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
     this.cdr.detectChanges();
 
-    this.apiService.getLotes(this.almOrigen, item.art_codigo).subscribe({
+    this.apiService.getLotes(this.almOrigen, item.art_codigo, this.fechaEmision).subscribe({
       next: (res) => {
         this.buscandoLotes = false;
         if (res && res.success && res.lotes && res.lotes.length > 0) {

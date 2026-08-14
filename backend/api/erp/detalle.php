@@ -1,5 +1,5 @@
 <?php
-require_once "../../config/conexion.php";
+require_once __DIR__ . '/../../config/conexion.php';
 
 $emp = $_GET["emp_codigo"] ?? '';
 $mov = $_GET["mov_id"] ?? '';

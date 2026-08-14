@@ -4,11 +4,16 @@ import * as CryptoJS from 'crypto-js';
 import { environment } from '../../environments/environment';
 
 export interface User {
-  id_usuario: number;
+  id_usuario: string | number;
   username: string;
   nombre_completo: string;
   id_rol: number;
   rol_nombre: string;
+  usr_codigo?: string;
+  usr_nombre?: string;
+  pus_codigo?: string;
+  emp_codigo?: string;
+  usr_correo?: string;
 }
 
 @Injectable({
@@ -58,11 +63,5 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return this.currentUser() !== null;
-  }
-
-  isAdmin(): boolean {
-    const user = this.currentUser();
-    if (!user) return false;
-    return user.id_rol === 1 || user.rol_nombre.toLowerCase() === 'administrador';
   }
 }

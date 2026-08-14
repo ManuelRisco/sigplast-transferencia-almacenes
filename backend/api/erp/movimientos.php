@@ -1,5 +1,5 @@
 <?php
-require_once "../../config/conexion.php";
+require_once __DIR__ . '/../../config/conexion.php';
 
 $filtro_almacen = $_GET['alm_codigo'] ?? '001';
 

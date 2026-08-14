@@ -11,26 +11,35 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
+  private cleanParams(params: any): any {
+    if (!params || typeof params !== 'object') return params;
+    const cleaned: any = {};
+    for (const key of Object.keys(params)) {
+      const val = params[key];
+      if (val !== undefined && val !== null && val !== 'undefined' && val !== 'null') {
+        cleaned[key] = val;
+      }
+    }
+    return cleaned;
+  }
+
   private requestWithFallback(method: 'get' | 'post', path: string, dataOrParams?: any): Observable<any> {
+    const params = this.cleanParams(dataOrParams);
     const primary$ = method === 'get'
-      ? this.http.get(`${this.primaryUrl}${path}`, { params: dataOrParams })
-      : this.http.post(`${this.primaryUrl}${path}`, dataOrParams);
+      ? this.http.get(`${this.primaryUrl}${path}`, { params })
+      : this.http.post(`${this.primaryUrl}${path}`, params);
 
     return primary$.pipe(
       catchError(() => {
         return method === 'get'
-          ? this.http.get(`${this.secondaryUrl}${path}`, { params: dataOrParams })
-          : this.http.post(`${this.secondaryUrl}${path}`, dataOrParams);
+          ? this.http.get(`${this.secondaryUrl}${path}`, { params })
+          : this.http.post(`${this.secondaryUrl}${path}`, params);
       })
     );
   }
 
   login(payload: any): Observable<any> {
     return this.requestWithFallback('post', '/auth/login.php', payload);
-  }
-
-  registro(payload: any): Observable<any> {
-    return this.requestWithFallback('post', '/auth/registro.php', payload);
   }
 
   getMovimientos(alm_codigo: string, mov_anho: string, mov_nmes: string, page: number = 1, limit: number = 20): Observable<any> {
@@ -49,16 +58,12 @@ export class ApiService {
     return this.requestWithFallback('get', '/erp/articulos.php', { accion: 'buscar', alm_codigo, q: query, page, limit });
   }
 
-  getLotes(alm: string, art: string): Observable<any> {
-    return this.requestWithFallback('get', '/erp/articulos.php', { accion: 'lotes', alm, art });
+  getLotes(alm: string, art: string, fec?: string): Observable<any> {
+    return this.requestWithFallback('get', '/erp/articulos.php', { accion: 'lotes', alm, art, fec });
   }
 
-  getUsuarios(): Observable<any> {
-    return this.requestWithFallback('get', '/admin/usuarios.php');
-  }
-
-  procesarUsuario(payload: any): Observable<any> {
-    return this.requestWithFallback('post', '/admin/usuarios.php', payload);
+  getStock(alm: string, art: string, fec?: string, lot: number = 0): Observable<any> {
+    return this.requestWithFallback('get', '/erp/articulos.php', { accion: 'stock', alm, art, fec, lot });
   }
 }
 

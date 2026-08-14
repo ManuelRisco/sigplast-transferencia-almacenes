@@ -1,5 +1,6 @@
 <?php
-require_once "../../config/conexion.php";
+require_once __DIR__ . '/../../config/conexion.php';
+require_once __DIR__ . '/../../config/seguridad.php';
 
 $data = getJsonInput();
 $username = trim($data['username'] ?? '');
@@ -10,62 +11,60 @@ if (empty($username) || empty($password)) {
     exit;
 }
 
-$sql = "SELECT u.id_usuario, u.username, u.password, u.estado, u.id_rol, 
-               p.nombres, p.apellido_paterno, p.apellido_materno,
-               r.nombre AS rol_nombre
-        FROM usuarios u
-        INNER JOIN personas p ON u.id_persona = p.id_persona
-        INNER JOIN roles r ON u.id_rol = r.id_rol
-        WHERE u.username = ?
-        LIMIT 1";
+$conn = getSqlServerConn();
 
-$stmt = $connMysql->prepare($sql);
-
-if (!$stmt) {
-    echo json_encode(["success" => false, "message" => "Error al consultar la base de datos."]);
+if (!$conn) {
+    echo json_encode(["success" => false, "message" => "Error de conexión con el servidor de base de datos TECNOTEST."]);
     exit;
 }
 
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
+$sql = "SELECT emp_codigo, usr_codigo, pus_codigo, usr_nombre, usr_clave, usr_status,
+               user_, date, time, tra_codigo, adm_tesore, usr_rescom, adm_aprreq,
+               adm_mparte, usr_correo, adm_ingmp, adm_cred, adm_vta
+        FROM TECNOTEST.dbo.adm_usuario
+        WHERE UPPER(RTRIM(usr_codigo)) = UPPER(?)";
 
-if ($user = $result->fetch_assoc()) {
-    if ((int)$user['estado'] !== 1) {
+$stmt = sqlsrv_query($conn, $sql, array($username));
+
+if (!$stmt) {
+    echo json_encode(["success" => false, "message" => "Error al consultar la base de datos.", "error" => sqlsrv_errors()]);
+    exit;
+}
+
+$user = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+
+if ($user) {
+    // Validar estado del usuario (1 = Activo, 0 = Inactivo)
+    if ((int)$user['usr_status'] !== 1) {
         echo json_encode(["success" => false, "message" => "El usuario se encuentra inactivo."]);
         exit;
     }
 
-    $passwordValida = password_verify($password, $user['password']);
-    $esTextoPlano = false;
-
-    if (!$passwordValida && $password === $user['password']) {
-        $passwordValida = true;
-        $esTextoPlano = true;
-    }
-
-    if ($passwordValida) {
-        if ($esTextoPlano || password_needs_rehash($user['password'], PASSWORD_BCRYPT)) {
-            $nuevoHash = password_hash($password, PASSWORD_BCRYPT);
-            $stmtRehash = $connMysql->prepare("UPDATE usuarios SET password = ? WHERE id_usuario = ?");
-            if ($stmtRehash) {
-                $stmtRehash->bind_param("si", $nuevoHash, $user['id_usuario']);
-                $stmtRehash->execute();
-            }
-        }
-
+    if (verifyPassword($password, $user['usr_clave'])) {
         $token = bin2hex(random_bytes(16));
+        $pus = trim($user['pus_codigo'] ?? '');
+        $usrCodigo = trim($user['usr_codigo']);
+        $usrNombre = trim($user['usr_nombre']);
+        
+        $isAdmin = (strtoupper($pus) === 'SISTEMAS' || strtoupper($usrCodigo) === 'ADMINISTRA');
+        $idRol = $isAdmin ? 1 : 2;
+        $rolNombre = !empty($pus) ? $pus : ($isAdmin ? 'ADMINISTRADOR' : 'USUARIO');
 
         echo json_encode([
             "success" => true,
             "message" => "Autenticación exitosa",
             "token"   => $token,
             "user"    => [
-                "id_usuario"      => (int)$user['id_usuario'],
-                "username"        => $user['username'],
-                "nombre_completo" => trim($user['nombres'] . ' ' . $user['apellido_paterno']),
-                "id_rol"          => (int)$user['id_rol'],
-                "rol_nombre"      => $user['rol_nombre']
+                "id_usuario"      => $usrCodigo,
+                "username"        => $usrCodigo,
+                "usr_codigo"      => $usrCodigo,
+                "nombre_completo" => $usrNombre,
+                "usr_nombre"      => $usrNombre,
+                "id_rol"          => $idRol,
+                "rol_nombre"      => $rolNombre,
+                "pus_codigo"      => $pus,
+                "emp_codigo"      => trim($user['emp_codigo'] ?? ''),
+                "usr_correo"      => trim($user['usr_correo'] ?? '')
             ]
         ]);
         exit;
