@@ -8,6 +8,10 @@
         <h2 class="m-0 text-base font-bold text-[#002d5a]">Nuevo Registro</h2>
       </div>
       <div class="flex items-center gap-3">
+        <button type="button" (click)="guardarMovimiento()" title="Guardar Transferencia"
+          class="text-xs text-emerald-600 hover:text-emerald-800 font-bold border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded transition-colors cursor-pointer">
+          💾 Guardar
+        </button>
         <button type="button" (click)="limpiarFormulario()" title="Limpiar y reiniciar formulario"
           class="text-xs text-red-600 hover:text-red-800 font-bold border border-red-200 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded transition-colors cursor-pointer">
           🗑️ Limpiar Todo
@@ -73,15 +77,6 @@
         </div>
 
         <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-start sm:items-center">
-          <div class="flex items-center gap-2 w-full md:w-auto">
-            <label class="w-24 font-bold text-gray-900 text-sm text-left sm:text-right">C.Costos</label>
-            <input type="text"
-              class="form-input w-16 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs"
-              readonly>
-            <input type="text"
-              class="form-input flex-1 sm:w-48 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs"
-              readonly>
-          </div>
           @if (esTransferencia) {
           <div class="flex items-center gap-2 w-full md:w-auto">
             <label for="nr-alm-destino" class="w-32 font-bold text-gray-900 text-sm text-left sm:text-right">Almacen
@@ -186,15 +181,19 @@
                 <td class="px-2 py-1 border-r border-gray-300 font-medium">{{ item.art_nombre }}</td>
                 <td class="px-2 py-1 border-r border-gray-300 text-center text-gray-700 font-bold">{{ item.art_uniing }}
                 </td>
-                <td (click)="abrirModalLotesParaItem(item)"
-                  class="px-2 py-1 border-r border-gray-300 text-center font-mono font-bold text-cyan-800 hover:bg-cyan-100 hover:text-cyan-950 cursor-pointer underline decoration-dotted transition-colors select-none"
-                  title="Haga clic para seleccionar o cambiar de lote">
-                  {{ item.lot_id || '-' }}
+                <td class="px-1 py-1 border-r border-gray-300 text-center">
+                  <button type="button" (click)="abrirModalLotesParaItem(item)"
+                    class="px-2 py-0.5 w-full min-w-[3rem] text-xs text-[#004b87] bg-white border border-gray-300 shadow-sm hover:bg-gray-50 rounded-sm font-bold cursor-pointer transition-colors"
+                    title="Haga clic para seleccionar o cambiar de lote">
+                    {{ item.lot_id || '-' }}
+                  </button>
                 </td>
-                <td (click)="abrirModalLotesParaItem(item)"
-                  class="px-2 py-1 border-r border-gray-300 text-center font-mono font-bold text-cyan-800 hover:bg-cyan-100 hover:text-cyan-950 cursor-pointer underline decoration-dotted transition-colors select-none"
-                  title="Haga clic para seleccionar o cambiar de lote">
-                  {{ item.lot_numlote || '-' }}
+                <td class="px-1 py-1 border-r border-gray-300 text-center">
+                  <button type="button" (click)="abrirModalLotesParaItem(item)"
+                    class="px-2 py-0.5 w-full min-w-[3rem] text-xs text-[#004b87] bg-white border border-gray-300 shadow-sm hover:bg-gray-50 rounded-sm font-bold cursor-pointer transition-colors"
+                    title="Haga clic para seleccionar o cambiar de lote">
+                    {{ item.lot_numlote || '-' }}
+                  </button>
                 </td>
                 <td class="px-2 py-1 border-r border-gray-300 text-center">{{ item.mov_numord || '-' }}</td>
                 <td class="px-2 py-1 border-r border-gray-300 text-right">
@@ -203,7 +202,13 @@
                 </td>
                 <td class="px-2 py-1 border-r border-gray-300 text-right">{{ item.cantidad }}</td>
                 <td class="px-2 py-1 border-r border-gray-300 text-right">0.000</td>
-                <td class="px-2 py-1 border-r border-gray-300 text-center">-</td>
+                <td class="px-1 py-1 border-r border-gray-300 text-center">
+                  <button type="button" (click)="abrirModalCcostosParaItem(item)"
+                    class="px-2 py-0.5 w-full min-w-[3rem] text-xs text-[#004b87] bg-white border border-gray-300 shadow-sm hover:bg-gray-50 rounded-sm font-bold cursor-pointer transition-colors"
+                    title="Haga clic para seleccionar C.Costo">
+                    {{ item.cco_codigo || '-' }}
+                  </button>
+                </td>
                 <td class="px-2 py-1 text-right">0.000</td>
               </tr>
               }
@@ -340,24 +345,10 @@
       class="bg-white rounded-xl shadow-2xl border border-gray-300 w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]">
 
       <!-- Cabecera Ventana Modal -->
-      <div
-        class="bg-gradient-to-r from-slate-800 to-brandDark px-4 py-3 text-white flex justify-between items-center shadow-md">
-        <div class="flex items-center gap-2">
-          <div
-            class="w-6 h-6 rounded bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-xs font-bold font-mono">
-            📦
-          </div>
-          <div>
-            <h3 class="font-bold text-sm leading-tight">Lotes - {{ itemSeleccionadoParaLote?.art_codigo }}</h3>
-            <p class="text-[11px] text-cyan-200 truncate max-w-xs">{{ itemSeleccionadoParaLote?.art_nombre }}</p>
-          </div>
-        </div>
-        <button (click)="cerrarModalLotes()" aria-label="Cerrar modal de lotes"
-          class="text-gray-300 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+      <div class="bg-slate-800 text-white px-6 py-4 flex justify-between items-center sticky top-0 z-10 shrink-0">
+        <h3 class="font-bold text-base md:text-lg">Lotes - {{ itemSeleccionadoParaLote?.art_codigo }} ({{ itemSeleccionadoParaLote?.art_nombre }})</h3>
+        <button (click)="cerrarModalLotes()"
+          class="text-gray-400 hover:text-white font-bold text-xl cursor-pointer">&times;</button>
       </div>
 
       <!-- Contenedor Tabla de Lotes -->
@@ -433,6 +424,65 @@
         </div>
       </div>
 
+    </div>
+  </div>
+  }
+
+  <!-- Modal de Centros de Costo -->
+  @if (modalCcostosVisible) {
+  <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 animate-fade-in">
+    <div
+      class="bg-white rounded-xl shadow-2xl border border-gray-300 w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
+
+      <!-- Cabecera Ventana Modal -->
+      <div class="bg-slate-800 text-white px-6 py-4 flex justify-between items-center sticky top-0 z-10 shrink-0">
+        <h3 class="font-bold text-base md:text-lg">Catálogo de Centros de Costo</h3>
+        <button (click)="cerrarModalCcostos()"
+          class="text-gray-400 hover:text-white font-bold text-xl cursor-pointer">&times;</button>
+      </div>
+
+      <!-- Buscador Local -->
+      <div class="p-3 bg-gray-50 border-b border-gray-300 flex gap-2">
+        <input type="text" [(ngModel)]="filtroCcosto" placeholder="Buscar por código o nombre..."
+          class="w-full border border-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brandTeal shadow-sm">
+      </div>
+
+      <!-- Contenedor Tabla -->
+      <div class="p-3 flex-1 overflow-y-auto bg-slate-50">
+        <div class="border border-slate-300 rounded-lg overflow-hidden shadow-inner bg-white">
+          <div class="overflow-x-auto max-h-[50vh]">
+            <table class="w-full text-sm text-left whitespace-nowrap" aria-label="Lista de centros de costo">
+              <thead class="bg-gray-200 text-gray-800 uppercase font-bold sticky top-0 z-10 border-b border-gray-300">
+                <tr>
+                  <th scope="col" class="py-2.5 px-4 border-r border-gray-300 w-24">Código</th>
+                  <th scope="col" class="py-2.5 px-4 border-r border-gray-300">Descripción / Nombre</th>
+                  <th scope="col" class="py-2.5 px-4 text-center w-24">Acción</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                @for (c of ccostosFiltrados; track c.cco_codigo) {
+                <tr class="hover:bg-blue-50 transition-colors">
+                  <td class="py-2 px-4 font-mono font-bold text-brandDark">{{ c.cco_codigo }}</td>
+                  <td class="py-2 px-4 font-medium text-gray-800">{{ c.cco_nombre }}</td>
+                  <td class="py-2 px-4 text-center">
+                    <button (click)="seleccionarCcosto(c)"
+                      class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1 rounded shadow cursor-pointer text-xs transition-colors">
+                      Seleccionar
+                    </button>
+                  </td>
+                </tr>
+                } @empty {
+                <tr>
+                  <td colspan="3" class="py-8 text-center text-gray-700 font-medium text-sm">
+                    No se encontraron centros de costo.
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   }

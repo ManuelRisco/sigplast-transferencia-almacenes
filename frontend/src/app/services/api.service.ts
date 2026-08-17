@@ -54,6 +54,10 @@ export class ApiService {
     return this.requestWithFallback('get', '/erp/articulos.php', { accion: 'tipos_mov' });
   }
 
+  getCostCenters(): Observable<any> {
+    return this.requestWithFallback('get', '/erp/ccostos.php');
+  }
+
   buscarArticulos(alm_codigo: string, query: string, page: number = 1, limit: number = 10): Observable<any> {
     return this.requestWithFallback('get', '/erp/articulos.php', { accion: 'buscar', alm_codigo, q: query, page, limit });
   }
@@ -64,6 +68,10 @@ export class ApiService {
 
   getStock(alm: string, art: string, fec?: string, lot: number = 0): Observable<any> {
     return this.requestWithFallback('get', '/erp/articulos.php', { accion: 'stock', alm, art, fec, lot });
+  }
+
+  guardarTransferencia(payload: any): Observable<any> {
+    return this.requestWithFallback('post', '/erp/transferencias.php', payload);
   }
 }
 

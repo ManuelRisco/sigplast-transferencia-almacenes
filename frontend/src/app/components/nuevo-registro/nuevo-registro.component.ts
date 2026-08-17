@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -17,6 +18,7 @@ import Swal from 'sweetalert2';
 })
 export class NuevoRegistroComponent implements OnInit, OnDestroy {
   apiService = inject(ApiService);
+  authService = inject(AuthService);
   route = inject(ActivatedRoute);
   cdr = inject(ChangeDetectorRef);
 
@@ -35,6 +37,20 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
   fechaEmision = localStorage.getItem('sigris_nr_fecha_emision') || new Date().toISOString().substring(0, 10);
   glosa = localStorage.getItem('sigris_nr_glosa') || '';
   barcodeInput = '';
+  ccostosTodos: any[] = [];
+
+  modalCcostosVisible = false;
+  filtroCcosto = '';
+  itemSeleccionadoParaCcosto: any = null;
+
+  get ccostosFiltrados(): any[] {
+    if (!this.filtroCcosto.trim()) return this.ccostosTodos;
+    const term = this.filtroCcosto.toLowerCase().trim();
+    return this.ccostosTodos.filter(c => 
+      (c.cco_codigo && c.cco_codigo.toLowerCase().includes(term)) ||
+      (c.cco_nombre && c.cco_nombre.toLowerCase().includes(term))
+    );
+  }
 
   items: any[] = [];
 
@@ -137,6 +153,16 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
             this.tipoMov = this.tiposMovimiento[0].tmo_codigo;
           }
           this.verificarDestino();
+        }
+        this.cdr.detectChanges();
+      }
+    });
+
+    // Cargar C.Costos
+    this.apiService.getCostCenters().subscribe({
+      next: (res) => {
+        if (res.success && res.ccostos) {
+          this.ccostosTodos = res.ccostos;
         }
         this.cdr.detectChanges();
       }
@@ -343,6 +369,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
       lot_id: '-',
       lot_numlote: '-',
       mov_numord: '-',
+      cco_codigo: '',
       stock_disponible: art.stock_actual || 0,
       cantidad: 1.000
     });
@@ -429,5 +456,100 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
     this.items = this.items.filter(item => !item.selected);
     this.guardarEstado();
     this.cdr.detectChanges();
+  }
+
+  abrirModalCcostosParaItem(item: any) {
+    this.itemSeleccionadoParaCcosto = item;
+    this.modalCcostosVisible = true;
+    this.filtroCcosto = '';
+    this.cdr.detectChanges();
+  }
+
+  cerrarModalCcostos() {
+    this.modalCcostosVisible = false;
+    this.itemSeleccionadoParaCcosto = null;
+    this.cdr.detectChanges();
+  }
+
+  seleccionarCcosto(c: any) {
+    if (this.itemSeleccionadoParaCcosto) {
+      this.itemSeleccionadoParaCcosto.cco_codigo = c.cco_codigo;
+    }
+    this.modalCcostosVisible = false;
+    this.itemSeleccionadoParaCcosto = null;
+    this.guardarEstado();
+    this.cdr.detectChanges();
+  }
+
+  guardarMovimiento() {
+    if (!this.almOrigen) {
+      Swal.fire('Atención', 'Debe seleccionar un almacén de origen.', 'warning');
+      return;
+    }
+    if (this.esTransferencia && !this.almDestino) {
+      Swal.fire('Atención', 'Para transferencias debe seleccionar un almacén destino.', 'warning');
+      return;
+    }
+    const itemsSinCcosto = this.items.filter(i => !i.cco_codigo);
+    if (itemsSinCcosto.length > 0) {
+      Swal.fire('Atención', 'Todos los artículos deben tener asignado un Centro de Costo.', 'warning');
+      return;
+    }
+
+    // Validar que las cantidades sean mayores a 0
+    const itemsSinCantidad = this.items.filter(i => !i.cantidad || Number(i.cantidad) <= 0);
+    if (itemsSinCantidad.length > 0) {
+      Swal.fire('Atención', 'Todos los artículos deben tener una cantidad mayor a 0.', 'warning');
+      return;
+    }
+
+    const detalles = this.items.map(i => ({
+      art_codigo: i.art_codigo,
+      art_nombre: i.art_nombre,
+      lot_codigo: (i.lot_id && i.lot_id !== '-') ? i.lot_id : '',
+      cantidad: Number(i.cantidad),
+      cco_codigo: i.cco_codigo
+    }));
+
+    const payload = {
+      emp_codigo: '001',
+      suc_codigo: '001',
+      alm_origen: this.almOrigen,
+      alm_destino: this.almDestino,
+      fec_emi: this.fechaEmision,
+      usuario: this.authService.currentUser()?.usr_codigo || this.authService.currentUser()?.username || 'ADMINISTRA',
+      detalles: detalles,
+      cco_codigo: '', // Ya no es global, se manda vacío
+      glosa: this.glosa
+    };
+
+    Swal.fire({
+      title: 'Guardando transferencia...',
+      text: 'Por favor espere',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    this.apiService.guardarTransferencia(payload).subscribe({
+      next: (res) => {
+        if (res.success) {
+          Swal.fire({
+            title: '¡Transferencia Exitosa!',
+            html: `Se ha registrado correctamente.<br><br><b>Salida:</b> ${res.vale_salida} <br><b>Ingreso:</b> ${res.vale_ingreso}`,
+            icon: 'success',
+            confirmButtonColor: '#0d9488'
+          }).then(() => {
+            this.limpiarFormulario(); // Resetear el form despues de guardar
+          });
+        } else {
+          Swal.fire('Error', res.message || 'No se pudo guardar la transferencia', 'error');
+        }
+      },
+      error: (err) => {
+        Swal.fire('Error de conexión', 'Ocurrió un error al conectar con el servidor', 'error');
+      }
+    });
   }
 }

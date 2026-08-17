@@ -70,18 +70,21 @@ if ($accion === 'buscar') {
 
     if ($conn) {
         $filtro = "%$q%";
-        $sqlCount = "SELECT COUNT(*) as total FROM mae_articulo WHERE art_codigo LIKE ? OR art_nombre LIKE ?";
-        $stmtC = sqlsrv_query($conn, $sqlCount, array($filtro, $filtro));
+        // Subquery para validar que tenga stock positivo
+        $stockSubquery = "(SELECT ISNULL(SUM(CASE WHEN b.mov_tipo = 'I' THEN a.mov_ctdmov ELSE 0 END) - SUM(CASE WHEN b.mov_tipo = 'S' THEN a.mov_ctdmov ELSE 0 END), 0) FROM log_detmov a INNER JOIN log_cabmov b ON a.mov_id = b.mov_id WHERE b.mov_flag <> 'A' AND b.alm_codigo = ? AND a.art_codigo = mae_articulo.art_codigo) > 0";
+
+        $sqlCount = "SELECT COUNT(*) as total FROM mae_articulo WHERE (art_codigo LIKE ? OR art_nombre LIKE ?) AND $stockSubquery";
+        $stmtC = sqlsrv_query($conn, $sqlCount, array($filtro, $filtro, $alm));
         if ($stmtC && $row = sqlsrv_fetch_array($stmtC, SQLSRV_FETCH_ASSOC)) {
             $total = (int)$row['total'];
         }
 
         $sql = "SELECT art_codigo, art_nombre, art_codean, ume_codigo 
                 FROM mae_articulo 
-                WHERE art_codigo LIKE ? OR art_nombre LIKE ?
+                WHERE (art_codigo LIKE ? OR art_nombre LIKE ?) AND $stockSubquery
                 ORDER BY art_nombre ASC
                 OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-        $stmt = sqlsrv_query($conn, $sql, array($filtro, $filtro, $offset, $limit));
+        $stmt = sqlsrv_query($conn, $sql, array($filtro, $filtro, $alm, $offset, $limit));
         if ($stmt) {
             while ($r = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                 $cod = trim((string)$r['art_codigo']);
