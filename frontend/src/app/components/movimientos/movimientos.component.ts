@@ -2,7 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef, ChangeDetectionStrategy }
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { ApiService } from '../../services/api.service';
+import { TransferenciasService } from '../../services/transferencias.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
@@ -13,7 +13,7 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
   templateUrl: './movimientos.component.html'
 })
 export class MovimientosComponent implements OnInit {
-  apiService = inject(ApiService);
+  apiService = inject(TransferenciasService);
   cdr = inject(ChangeDetectorRef);
 
   filtroAlmacen = localStorage.getItem('sigplast_mov_almacen') || '001';

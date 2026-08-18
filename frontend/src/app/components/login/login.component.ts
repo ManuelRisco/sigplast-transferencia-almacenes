@@ -2,8 +2,8 @@ import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -12,7 +12,6 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.component.html'
 })
 export class LoginComponent {
-  apiService = inject(ApiService);
   authService = inject(AuthService);
   router = inject(Router);
   cdr = inject(ChangeDetectorRef);
@@ -39,7 +38,7 @@ export class LoginComponent {
     this.errorMessage = '';
     this.cdr.detectChanges();
 
-    this.apiService.login({ username: this.username, password: this.password }).subscribe({
+    this.authService.login({ username: this.username, password: this.password }).subscribe({
       next: (res) => {
         this.loading = false;
         if (res && res.success) {
@@ -52,7 +51,7 @@ export class LoginComponent {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = 'Error de conexión con el servidor.';
+        this.errorMessage = err.error?.message || 'Error de conexión con el servidor.';
         this.cdr.detectChanges();
       }
     });

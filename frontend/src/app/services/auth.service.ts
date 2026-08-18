@@ -2,6 +2,8 @@ import { Injectable, signal } from '@angular/core';
 
 import * as CryptoJS from 'crypto-js';
 import { environment } from '../../environments/environment';
+import { BaseApiService } from './base-api.service';
+import { Observable } from 'rxjs';
 
 export interface User {
   id_usuario: string | number;
@@ -19,10 +21,14 @@ export interface User {
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthService extends BaseApiService {
   private readonly USER_KEY = 'sigplast_user';
   private readonly TOKEN_KEY = 'sigplast_token';
   private readonly secretKey = environment.aesSecretKey;
+
+  login(payload: any): Observable<any> {
+    return this.doRequest('post', '/auth/login.php', payload);
+  }
 
   currentUser = signal<User | null>(this.getUserFromStorage());
 

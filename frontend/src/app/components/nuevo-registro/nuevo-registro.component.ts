@@ -2,7 +2,8 @@ import { Component, OnInit, inject, ChangeDetectorRef, ChangeDetectionStrategy, 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ApiService } from '../../services/api.service';
+import { ArticulosService } from '../../services/articulos.service';
+import { TransferenciasService } from '../../services/transferencias.service';
 import { AuthService } from '../../services/auth.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { Subject, Subscription } from 'rxjs';
@@ -17,7 +18,8 @@ import Swal from 'sweetalert2';
   templateUrl: './nuevo-registro.component.html'
 })
 export class NuevoRegistroComponent implements OnInit, OnDestroy {
-  apiService = inject(ApiService);
+  articulosService = inject(ArticulosService);
+  transferenciasService = inject(TransferenciasService);
   authService = inject(AuthService);
   route = inject(ActivatedRoute);
   cdr = inject(ChangeDetectorRef);
@@ -140,7 +142,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
     });
 
     // Cargar tipos de movimiento
-    this.apiService.getTiposMovimiento().subscribe({
+    this.articulosService.getTiposMovimiento().subscribe({
       next: (res) => {
         if (res.success && res.tipos_mov && res.tipos_mov.length > 0) {
           this.tiposMovimiento = res.tipos_mov;
@@ -154,7 +156,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
     });
 
     // Cargar C.Costos
-    this.apiService.getCostCenters().subscribe({
+    this.transferenciasService.getCostCenters().subscribe({
       next: (res) => {
         if (res.success && res.ccostos) {
           this.ccostosTodos = res.ccostos;
@@ -165,7 +167,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
   }
 
   cargarInfoAlmacen() {
-    this.apiService.getMovimientos(this.almOrigen, '', '').subscribe({
+    this.transferenciasService.getMovimientos(this.almOrigen, '', '').subscribe({
       next: (res) => {
         if (res.success && res.almacenes) {
           this.almacenesTodos = res.almacenes;
@@ -296,7 +298,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
       term = term.substring(0, 9).trim();
     }
 
-    this.apiService.buscarArticulos(this.almOrigen, term).subscribe({
+    this.articulosService.buscarArticulos(this.almOrigen, term).subscribe({
       next: (res) => {
         if (res.success && res.articulos && res.articulos.length > 0) {
           const art = res.articulos[0];
@@ -304,7 +306,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
           
           if (loteExtra) {
             const addedItem = this.items[this.items.length - 1]; // Obtener el recién agregado
-            this.apiService.getLotes(this.almOrigen, art.art_codigo, this.fechaEmision).subscribe({
+            this.articulosService.getLotes(this.almOrigen, art.art_codigo, this.fechaEmision).subscribe({
               next: (lotesRes) => {
                 if (lotesRes && lotesRes.success && lotesRes.lotes && lotesRes.lotes.length > 0) {
                   const matchLote = lotesRes.lotes.find((l: any) => 
@@ -384,7 +386,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
     this.cdr.detectChanges();
 
-    this.apiService.buscarArticulos(this.almOrigen, this.searchQuery, this.modalPaginaActual, this.modalItemsPorPagina).subscribe({
+    this.articulosService.buscarArticulos(this.almOrigen, this.searchQuery, this.modalPaginaActual, this.modalItemsPorPagina).subscribe({
       next: (res) => {
         this.buscando = false;
         if (res && res.success) {
@@ -443,7 +445,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
     this.cdr.detectChanges();
 
-    this.apiService.getLotes(this.almOrigen, item.art_codigo, this.fechaEmision).subscribe({
+    this.articulosService.getLotes(this.almOrigen, item.art_codigo, this.fechaEmision).subscribe({
       next: (res) => {
         this.buscandoLotes = false;
         if (res && res.success && res.lotes && res.lotes.length > 0) {
@@ -596,7 +598,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.apiService.guardarTransferencia(payload).subscribe({
+    this.transferenciasService.guardarTransferencia(payload).subscribe({
       next: (res) => {
         if (res.success) {
           Swal.fire({

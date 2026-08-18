@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Si el archivo o directorio existe, servirlo directamente
+  RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
+  RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
+  RewriteRule ^ - [L]
+
+  # Si el recurso no existe (por ejemplo rutas de Angular), servir index.html
+  RewriteRule ^ /index.html
+</IfModule>

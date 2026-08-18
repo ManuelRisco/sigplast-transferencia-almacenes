@@ -7,6 +7,7 @@ $username = trim($data['username'] ?? '');
 $password = trim($data['password'] ?? '');
 
 if (empty($username) || empty($password)) {
+    http_response_code(400);
     echo json_encode(["success" => false, "message" => "Por favor ingresa tu usuario y contraseña."]);
     exit;
 }
@@ -14,6 +15,7 @@ if (empty($username) || empty($password)) {
 $conn = getSqlServerConn();
 
 if (!$conn) {
+    http_response_code(500);
     echo json_encode(["success" => false, "message" => "Error de conexión con el servidor de base de datos TECNOTEST."]);
     exit;
 }
@@ -27,6 +29,7 @@ $sql = "SELECT emp_codigo, usr_codigo, pus_codigo, usr_nombre, usr_clave, usr_st
 $stmt = sqlsrv_query($conn, $sql, array($username));
 
 if (!$stmt) {
+    http_response_code(500);
     echo json_encode(["success" => false, "message" => "Error al consultar la base de datos.", "error" => sqlsrv_errors()]);
     exit;
 }
@@ -36,6 +39,7 @@ $user = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
 if ($user) {
     // Validar estado del usuario (1 = Activo, 0 = Inactivo)
     if ((int)$user['usr_status'] !== 1) {
+        http_response_code(403);
         echo json_encode(["success" => false, "message" => "El usuario se encuentra inactivo."]);
         exit;
     }
@@ -69,10 +73,12 @@ if ($user) {
         ]);
         exit;
     } else {
+        http_response_code(401);
         echo json_encode(["success" => false, "message" => "Contraseña incorrecta."]);
         exit;
     }
 } else {
+    http_response_code(401);
     echo json_encode(["success" => false, "message" => "El usuario ingresado no existe."]);
     exit;
 }
