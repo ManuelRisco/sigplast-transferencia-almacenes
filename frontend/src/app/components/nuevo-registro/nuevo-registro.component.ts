@@ -351,10 +351,10 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
         }
         this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
         Swal.fire({
           title: 'Error',
-          text: 'Error al buscar el código de barras.',
+          text: err.error?.message || 'Error al buscar el código de barras.',
           icon: 'error',
           confirmButtonColor: '#0d9488'
         });
@@ -405,10 +405,11 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
         this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
         this.buscando = false;
         this.articulosEncontrados = [];
         this.modalTotalRegistros = 0;
+        Swal.fire('Error', err.error?.message || 'Error al cargar los artículos.', 'error');
         this.cdr.markForCheck();
         this.cdr.detectChanges();
       }
@@ -465,11 +466,11 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
         this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
         this.buscandoLotes = false;
         Swal.fire({
           title: 'Error',
-          text: 'No se pudieron consultar los lotes del artículo.',
+          text: err.error?.message || 'No se pudieron consultar los lotes del artículo.',
           icon: 'error',
           confirmButtonColor: '#0d9488'
         });
@@ -614,7 +615,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        Swal.fire('Error de conexión', 'Ocurrió un error al conectar con el servidor', 'error');
+        Swal.fire('Error de conexión', err.error?.message || 'Ocurrió un error al conectar con el servidor', 'error');
       }
     });
   }

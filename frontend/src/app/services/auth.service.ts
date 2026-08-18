@@ -4,6 +4,7 @@ import * as CryptoJS from 'crypto-js';
 import { environment } from '../../environments/environment';
 import { BaseApiService } from './base-api.service';
 import { Observable } from 'rxjs';
+import { LoginResponse } from '../models/api.models';
 
 export interface User {
   id_usuario: string | number;
@@ -26,7 +27,7 @@ export class AuthService extends BaseApiService {
   private readonly TOKEN_KEY = 'sigplast_token';
   private readonly secretKey = environment.aesSecretKey;
 
-  login(payload: any): Observable<any> {
+  login(payload: any): Observable<LoginResponse> {
     return this.doRequest('post', '/auth/login.php', payload);
   }
 
