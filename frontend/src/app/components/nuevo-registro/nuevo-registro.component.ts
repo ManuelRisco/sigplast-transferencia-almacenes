@@ -283,13 +283,60 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
   // Escaneo de Código de Barras (funciona directamente con lector USB / Enter)
   buscarCodigoBarras() {
     if (!this.barcodeInput.trim()) return;
-    const term = this.barcodeInput.trim();
+    let term = this.barcodeInput.trim();
+    let loteExtra = '';
+
+    if (term.includes('+')) {
+      const parts = term.split('+');
+      term = parts[0].trim();
+      loteExtra = parts.slice(1).join('+').trim();
+    } else if (term.length > 9 && !term.includes('-') && !term.includes('/')) {
+      // Si viene todo junto (ej: 0101000202025000095), los primeros 9 chars son el código del artículo
+      loteExtra = term.substring(9).trim();
+      term = term.substring(0, 9).trim();
+    }
 
     this.apiService.buscarArticulos(this.almOrigen, term).subscribe({
       next: (res) => {
         if (res.success && res.articulos && res.articulos.length > 0) {
           const art = res.articulos[0];
           this.seleccionarArticulo(art);
+          
+          if (loteExtra) {
+            const addedItem = this.items[this.items.length - 1]; // Obtener el recién agregado
+            this.apiService.getLotes(this.almOrigen, art.art_codigo, this.fechaEmision).subscribe({
+              next: (lotesRes) => {
+                if (lotesRes && lotesRes.success && lotesRes.lotes && lotesRes.lotes.length > 0) {
+                  const matchLote = lotesRes.lotes.find((l: any) => 
+                    (l.lot_id && l.lot_id.toString().toUpperCase() === loteExtra.toUpperCase()) || 
+                    (l.lot_numlote && l.lot_numlote.toString().toUpperCase() === loteExtra.toUpperCase())
+                  );
+                  if (matchLote) {
+                    addedItem.lot_id = matchLote.lot_id || '-';
+                    addedItem.lot_numlote = matchLote.lot_numlote || '-';
+                    addedItem.stock_disponible = matchLote.lot_cantid;
+                    this.guardarEstado();
+                    this.cdr.detectChanges();
+                  } else {
+                    Swal.fire({
+                      title: 'Lote no encontrado', 
+                      text: `El artículo se agregó, pero no se encontró el lote "${loteExtra}" en el almacén ${this.almOrigen}.`, 
+                      icon: 'warning',
+                      confirmButtonColor: '#0d9488'
+                    });
+                  }
+                } else {
+                  Swal.fire({
+                    title: 'Sin Lotes', 
+                    text: `El artículo se agregó, pero no cuenta con lotes disponibles en el almacén ${this.almOrigen}.`, 
+                    icon: 'warning',
+                    confirmButtonColor: '#0d9488'
+                  });
+                }
+              }
+            });
+          }
+
           this.barcodeInput = '';
         } else {
           Swal.fire({

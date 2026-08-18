@@ -488,3 +488,25 @@ html.dark-mode .swal2-loader {
 html.dark-mode .swal2-timer-progress-bar {
   background: #0d9488 !important;
 }
+
+/* =========================================================
+   8. UTILIDADES Y MEJORAS DE RESPONSIVIDAD MÓVIL Y TÁCTIL
+   ========================================================= */
+
+/* Suavizado de desplazamiento inercial en iOS / Android */
+.overflow-x-auto,
+.overflow-y-auto,
+.overflow-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ajustes de usabilidad táctil para pantallas pequeñas */
+@media (max-width: 640px) {
+  input[type="text"],
+  input[type="date"],
+  input[type="tel"],
+  input[type="number"],
+  select {
+    font-size: 13px;
+  }
+}

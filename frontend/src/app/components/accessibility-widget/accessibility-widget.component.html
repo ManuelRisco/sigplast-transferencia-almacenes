@@ -28,21 +28,21 @@
   <!-- Botón del Navbar (Modo Claro / Modo Oscuro) -->
   <button (click)="a11y.toggleMenu()"
           type="button"
-          class="relative px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-cyan-700 border border-gray-300 shadow-sm flex items-center gap-2 transition-all duration-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 cursor-pointer"
+          class="relative px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-cyan-700 border border-gray-300 shadow-sm flex items-center gap-1.5 sm:gap-2 transition-all duration-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 cursor-pointer"
           [class.bg-slate-200]="a11y.isMenuOpen()"
           [class.text-cyan-800]="a11y.isMenuOpen()"
           aria-label="Menú de opciones de accesibilidad visual y de lectura"
           title="Opciones de Accesibilidad">
     
-    <svg class="w-4 h-4 text-cyan-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg class="w-4 h-4 text-cyan-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
     </svg>
-    <span class="hidden sm:inline">Accesibilidad</span>
+    <span class="hidden md:inline">Accesibilidad</span>
 
     <!-- Indicador de Opciones Activas (Punto verde) -->
     @if (!a11y.isDefault) {
-      <span class="w-2 h-2 rounded-full bg-emerald-500" aria-label="Opciones de accesibilidad activadas"></span>
+      <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0" aria-label="Opciones de accesibilidad activadas"></span>
     }
   </button>
 
@@ -53,7 +53,7 @@
 
     <div role="dialog" 
          aria-label="Panel de Ajustes de Accesibilidad" 
-         class="absolute right-0 mt-2 w-72 sm:w-80 bg-white text-slate-800 rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-50 animate-fade-in p-4 space-y-4 transition-colors duration-200">
+         class="fixed sm:absolute right-2 sm:right-0 top-14 sm:top-auto sm:mt-2 w-[calc(100vw-1rem)] sm:w-80 max-w-sm bg-white text-slate-800 rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-50 animate-fade-in p-3.5 sm:p-4 space-y-3 sm:space-y-4 transition-colors duration-200">
       
       <!-- Cabecera Limpia (Título + Restablecer + Cerrar) -->
       <div class="flex items-center justify-between border-b border-gray-200 pb-3">

@@ -6,7 +6,12 @@ import { Observable, catchError } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private primaryUrl = 'http://localhost/transferencia-almacenes/backend/api';
+  private get primaryUrl(): string {
+    if (typeof window !== 'undefined' && window.location) {
+      return `${window.location.protocol}//${window.location.hostname}/transferencia-almacenes/backend/api`;
+    }
+    return 'http://localhost/transferencia-almacenes/backend/api';
+  }
 
   constructor(private http: HttpClient) { }
 

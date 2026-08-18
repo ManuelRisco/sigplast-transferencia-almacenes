@@ -1,21 +1,31 @@
 <div class="flex h-screen w-full bg-slate-100 overflow-hidden transition-colors duration-200 relative">
 
-  <!-- Backdrop para dispositivos móviles / Handhelds industriales -->
-  @if (isOpen) {
-  <div (click)="closeSidebar()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 md:hidden transition-opacity"
+  <!-- Backdrop para dispositivos móviles con fade suave acelerado por hardware -->
+  <div (click)="closeSidebar()"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 md:hidden transition-opacity duration-300 ease-in-out"
+    [class.opacity-100]="isOpen"
+    [class.pointer-events-auto]="isOpen"
+    [class.opacity-0]="!isOpen"
+    [class.pointer-events-none]="!isOpen"
     aria-hidden="true"></div>
-  }
 
-  <!-- Sidebar Izquierdo (Navegación Vertical - Adaptable a Handhelds) -->
-  <aside [class.w-72]="isOpen" [class.w-0]="!isOpen" [class.border-r]="isOpen"
-    class="fixed md:relative inset-y-0 left-0 bg-white transition-all duration-300 ease-in-out overflow-hidden z-50 md:z-40 border-gray-200 shrink-0 shadow-2xl md:shadow-md">
+  <!-- Sidebar Izquierdo: Transform hardware-accelerated 60fps -->
+  <aside
+    class="fixed md:relative inset-y-0 left-0 w-72 bg-white z-50 md:z-40 border-r border-gray-200 shrink-0 shadow-2xl md:shadow-md transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] will-change-transform"
+    [class.-translate-x-full]="!isOpen"
+    [class.translate-x-0]="isOpen"
+    [class.md:translate-x-0]="true"
+    [class.md:w-72]="isOpen"
+    [class.md:w-0]="!isOpen"
+    [class.md:border-r]="isOpen"
+    [class.md:border-r-0]="!isOpen"
+    [class.md:overflow-hidden]="true">
 
     <div class="w-72 flex flex-col justify-between h-full text-slate-800 whitespace-nowrap">
 
       <div>
         <div class="p-4 sm:p-5 border-b border-gray-200 flex items-center justify-between bg-slate-50/80">
           <div class="flex items-center gap-3">
-
             <div>
               <span class="font-bold text-base text-slate-900 block leading-tight">Módulos ERP - Producción</span>
             </div>
