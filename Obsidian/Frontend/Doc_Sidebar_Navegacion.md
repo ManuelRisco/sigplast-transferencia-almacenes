@@ -1,6 +1,6 @@
 # Sidebar y Sistema de Navegación - Frontend Angular 22
 
-La arquitectura de navegación y maquetación de **SIGRIS** se organiza en componentes modulares e independientes sincronizados mediante **Angular Signals**:
+La arquitectura de navegación y maquetación de **SIGPLAST** se organiza en componentes modulares e independientes sincronizados mediante **Angular Signals**:
 
 ---
 
@@ -22,7 +22,7 @@ La arquitectura de navegación y maquetación de **SIGRIS** se organiza en compo
    - El estado es gobernado reactivamente por `sidebarService.isOpen()`.
 
 3. **Persistencia de Posición (LocalStorage):**
-   - El estado abierto/cerrado se almacena bajo la clave `sigris_sidebar_open` en `localStorage`.
+   - El estado abierto/cerrado se almacena bajo la clave `sigplast_sidebar_open` en `localStorage`.
    - Al recargar la página (F5) o cambiar de módulo, el sidebar recuerda y conserva exactamente la posición en la que el usuario lo dejó.
 
 4. **Enlaces y Menús Dinámicos (Sidebar):**

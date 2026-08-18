@@ -1,6 +1,6 @@
 # Documentación de Endpoints RESTful JSON - Backend PHP
 
-El backend de **SIGRIS** opera como un conjunto de endpoints REST independientes en PHP que retornan datos formateados exclusivamente en JSON con cabeceras CORS (`Access-Control-Allow-Origin: *`).
+El backend de **SIGPLAST** opera como un conjunto de endpoints REST independientes en PHP que retornan datos formateados exclusivamente en JSON con cabeceras CORS (`Access-Control-Allow-Origin: *`).
 
 ---
 

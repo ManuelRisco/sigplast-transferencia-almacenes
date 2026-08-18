@@ -1,6 +1,6 @@
 # Esquema de Bases de Datos Híbrido: SQL Server ERP + MySQL
 
-**SIGRIS** se apoya en dos motores de bases de datos complementarios para separar los datos transaccionales del ERP de la gestión de identidades y seguridad.
+**SIGPLAST** se apoya en dos motores de bases de datos complementarios para separar los datos transaccionales del ERP de la gestión de identidades y seguridad.
 
 ---
 

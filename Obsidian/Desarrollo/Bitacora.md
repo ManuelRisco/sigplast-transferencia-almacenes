@@ -1,4 +1,4 @@
-# Bitácora de Desarrollo - Proyecto SIGRIS ERP
+# Bitácora de Desarrollo - Proyecto SIGPALST ERP
 
 ## 📌 Índice de Documentación (Map of Content)
 - **Arquitectura Desacoplada:**
@@ -39,11 +39,11 @@
 
 ---
 
-### 🔹 Fase 3: Cambio Masivo de Arquitectura a SIGRIS (Backend API REST + Frontend Angular 22)
+### 🔹 Fase 3: Cambio Masivo de Arquitectura a SIGPLAST (Backend API REST + Frontend Angular 22)
 Se realizó la reestructuración y migración completa del sistema a la ruta del cliente:
-`C:\Users\manue\OneDrive\Desktop\TRABAJO\PAGINAS\SIGRIS\`
+`C:\Users\manue\OneDrive\Desktop\TRABAJO\PAGINAS\SIGPLAST\`
 
-#### 🟢 Backend REST API (`SIGRIS/backend/`)
+#### 🟢 Backend REST API (`SIGPLAST/backend/`)
 Los scripts PHP se reescribieron como controladores de API puramente RESTful que devuelven JSON e incorporan cabeceras CORS (`Access-Control-Allow-Origin: *`):
 - `config/conexion.php`: Inicialización dual de conexiones MySQL y SQL Server con tratamiento de errores JSON.
 - `api/auth/login.php`: Endpoint POST de autenticación JSON con emisión de token de sesión.
@@ -53,7 +53,7 @@ Los scripts PHP se reescribieron como controladores de API puramente RESTful que
 - `api/erp/articulos.php`: Endpoint GET de búsqueda de catálogo y lotes disponibles.
 - `api/admin/usuarios.php`: Endpoint POST/GET para administración de cuentas de usuario.
 
-#### 🅰️ Frontend Angular 22 (`SIGRIS/frontend/`)
+#### 🅰️ Frontend Angular 22 (`SIGPLAST/frontend/`)
 Proyecto cliente independiente construido con el cliente de Angular 22, utilizando componentes standalone, señales (`Signals`), servicios y Tailwind CSS:
 - **`SidebarComponent`**: Menú de navegación vertical con botón hamburguesa, estado desplegable y perfil del usuario autenticado.
 - **`LoginComponent`**: Formulario de inicio de sesión con alertas y toggle de contraseña.
@@ -83,16 +83,16 @@ Proyecto cliente independiente construido con el cliente de Angular 22, utilizan
 
 ### 🔹 Fase 5: Persistencia Integral con LocalStorage (Resistencia a F5 / Recarga)
 - **Persistencia en Notas de Salida (`MovimientosComponent`)**:
-  - Almacén seleccionado (`sigris_mov_almacen`).
-  - Periodo activo: Año (`sigris_mov_anho`) y Mes (`sigris_mov_mes`).
-  - Filas por página (`sigris_mov_filas`) y Número de página actual (`sigris_mov_pagina`).
+  - Almacén seleccionado (`sigplast_mov_almacen`).
+  - Periodo activo: Año (`sigplast_mov_anho`) y Mes (`sigplast_mov_mes`).
+  - Filas por página (`sigplast_mov_filas`) y Número de página actual (`sigplast_mov_pagina`).
   - Al presionar **F5**, la vista se restaura de inmediato con el filtro, página y datos intactos.
 - **Persistencia en Nuevo Registro (`NuevoRegistroComponent`)**:
-  - Almacén origen (`sigris_nr_almacen`) y Almacén destino (`sigris_nr_alm_destino`).
-  - Tipo de movimiento (`sigris_nr_tipo_mov`) y Fecha de emisión (`sigris_nr_fecha_emision`).
-  - Glosa / Observación (`sigris_nr_glosa`).
-  - **Grilla de Artículos Agregados (`sigris_nr_items`)**: Guarda todos los artículos seleccionados, cantidades editadas y selecciones. Al dar F5, no se pierde ningún ítem cargado.
-  - Paginación del modal de artículos (`sigris_modal_art_filas`).
+  - Almacén origen (`sigplast_nr_almacen`) y Almacén destino (`sigplast_nr_alm_destino`).
+  - Tipo de movimiento (`sigplast_nr_tipo_mov`) y Fecha de emisión (`sigplast_nr_fecha_emision`).
+  - Glosa / Observación (`sigplast_nr_glosa`).
+  - **Grilla de Artículos Agregados (`sigplast_nr_items`)**: Guarda todos los artículos seleccionados, cantidades editadas y selecciones. Al dar F5, no se pierde ningún ítem cargado.
+  - Paginación del modal de artículos (`sigplast_modal_art_filas`).
   - Botón **"🗑️ Limpiar Todo"** para reiniciar el formulario cuando se desee iniciar un nuevo registro en blanco.
 
 ---
@@ -120,7 +120,7 @@ Proyecto cliente independiente construido con el cliente de Angular 22, utilizan
   - Implementación de un `.htaccess` con `mod_deflate` a nivel de API para comprimir los pesados arrays en formato JSON antes de viajar hacia el navegador, reduciendo el peso de la petición en más de un 70%.
 
 > [!WARNING] **Troubleshooting: Sincronización XAMPP**
-> Si el frontend de Angular (al consultar la API en `localhost/sigris` o `localhost/prueba/sigris`) recibe datos masivos ignorando la paginación, asegúrese de que los archivos PHP modificados en el entorno de desarrollo (ej. `Desktop`) hayan sido copiados/sincronizados al directorio activo de XAMPP (`c:\xampp\htdocs\sigris` o `c:\xampp\htdocs\prueba\sigris`). La falta de sincronización provoca que el frontend nuevo reciba la respuesta de la API antigua (sin `total_records`), rompiendo la tabla y mostrando todos los registros en una sola vista.
+> Si el frontend de Angular (al consultar la API en `localhost/sigplast` o `localhost/prueba/sigplast`) recibe datos masivos ignorando la paginación, asegúrese de que los archivos PHP modificados en el entorno de desarrollo (ej. `Desktop`) hayan sido copiados/sincronizados al directorio activo de XAMPP (`c:\xampp\htdocs\sigplast` o `c:\xampp\htdocs\prueba\sigplast`). La falta de sincronización provoca que el frontend nuevo reciba la respuesta de la API antigua (sin `total_records`), rompiendo la tabla y mostrando todos los registros en una sola vista.
 
 ---
 
@@ -135,7 +135,7 @@ Proyecto cliente independiente construido con el cliente de Angular 22, utilizan
 - **Estructura Definitiva del Repositorio Git:**
   - **Corrección de Repositorio Incrustado (Embedded Repo):** Se destruyó la carpeta oculta `.git` que Angular había inicializado por error dentro del frontend, la cual impedía el rastreo de archivos.
   - Se crearon archivos `.gitignore` globales y para el backend, omitiendo cachés de Windows (`Thumbs.db`, `.DS_Store`) y logs de errores PHP.
-  - **Primer Despliegue Oficial:** El repositorio completo fue inicializado de cero en la raíz `SIGRIS` y empujado de manera segura hacia GitHub.
+  - **Primer Despliegue Oficial:** El repositorio completo fue inicializado de cero en la raíz `SIGPLAST` y empujado de manera segura hacia GitHub.
 
 ---
 
@@ -184,7 +184,7 @@ Proyecto cliente independiente construido con el cliente de Angular 22, utilizan
   - Incorporación de la fuente tipográfica de alta legibilidad **Lexend** con formas de letras diferenciadas, espaciado de palabras y tracking optimizado para lectores con dislexia.
   - Opción de mayor espaciado e interlineado para lectura descansada.
 - **Persistencia en LocalStorage**:
-  - El estado se gestiona mediante `AccessibilityService` con Angular Signals y se sincroniza automáticamente bajo la clave `sigris_accessibility`, preservando las preferencias del usuario tras recargar o navegar entre módulos.
+  - El estado se gestiona mediante `AccessibilityService` con Angular Signals y se sincroniza automáticamente bajo la clave `sigplast_accessibility`, preservando las preferencias del usuario tras recargar o navegar entre módulos.
 
 ---
 
@@ -194,7 +194,7 @@ Proyecto cliente independiente construido con el cliente de Angular 22, utilizan
   - Refactorización de `SidebarComponent` (`src/app/components/sidebar/`) para concentrarse en la navegación lateral deslizante y el contenedor de layout.
 - **Servicio Reactivo Centralizado (`SidebarService`)**:
   - Creación de `src/app/services/sidebar.service.ts` con Signal `isOpen`.
-  - Sincronización transparente del botón hamburguesa en el Navbar con la animación del Sidebar y persistencia en `localStorage` (`sigris_sidebar_open`).
+  - Sincronización transparente del botón hamburguesa en el Navbar con la animación del Sidebar y persistencia en `localStorage` (`sigplast_sidebar_open`).
 - **Certificación 100% Accesibilidad Web (Lighthouse / WCAG 2.1 AA/AAA)**:
   - Optimización de todos los ratios de contraste de color en textos y botones de acción.
   - Asignación de `aria-label`s únicos y contextuales en botones de grillas y enlaces de navegación, superando con éxito todas las 22 auditorías automáticas de Lighthouse con puntaje perfecto (**100 / 100**).
@@ -223,7 +223,7 @@ Proyecto cliente independiente construido con el cliente de Angular 22, utilizan
   - **Modo Claro (Por Defecto)**: Navbar, Sidebar y Módulo de Accesibilidad en blanco puro (`bg-white`) con bordes sutiles y textos oscuros de alta definición.
   - **Modo Noche (Oscuro)**: Al activar el botón de luna `🌙`, toda la interfaz (Navbar, Sidebar, desplegable de accesibilidad, filtros, grillas, modales y tarjetas) se transforma fluidamente a una paleta Dark Slate/Navy (`#0b1329`, `#0f172a`, `#131d38`) con textos en blanco puro y acentos cian, garantizando legibilidad total sin deslumbramientos.
   - **Botón Directo en Navbar**: Botón `🌙 / ☀️` colocado externamente en la barra superior al costado de Accesibilidad para alternar el tema con un solo clic.
-  - **Persistencia en `localStorage`**: La preferencia `darkMode` se almacena en el objeto `sigris_accessibility` para conservarse tras recargar o cerrar sesión.
+  - **Persistencia en `localStorage`**: La preferencia `darkMode` se almacena en el objeto `sigplast_accessibility` para conservarse tras recargar o cerrar sesión.
 - **Optimización Integral para Handhelds / Packets Industriales (Zebra, Honeywell, Chainway de 360px a 480px)**:
   - **Sidebar Móvil con Backdrop**: En pantallas pequeñas, el Sidebar funciona como menú lateral flotante con fondo difuminado (backdrop overlay) y cierre automático al pulsar cualquier opción o hacer clic afuera.
   - **Filtros Responsivos**: La barra de filtros de *Notas de Salidas* y la cabecera de *Nuevo Registro* se adaptan en columna/rejilla con controles táctiles optimizados.

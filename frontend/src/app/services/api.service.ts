@@ -6,8 +6,8 @@ import { Observable, catchError } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private primaryUrl = 'http://localhost/sigris/backend/api';
-  private secondaryUrl = 'http://localhost/prueba/sigris/backend/api';
+  private primaryUrl = 'http://localhost/sigplast/backend/api';
+  private secondaryUrl = 'http://localhost/prueba/sigplast/backend/api';
 
   constructor(private http: HttpClient) { }
 

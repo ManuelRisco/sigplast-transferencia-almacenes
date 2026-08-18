@@ -1,6 +1,6 @@
 # Documentación de Componentes - Frontend Angular 22
 
-Los componentes en **SIGRIS** están construidos siguiendo el estándar **Standalone Components** de Angular 22, con inyección moderna `inject()`, Signals reactivas, plantillas físicas separadas (`templateUrl`), alertas estandarizadas con **SweetAlert2** y persistencia de estado con `localStorage`.
+Los componentes en **SIGPLAST** están construidos siguiendo el estándar **Standalone Components** de Angular 22, con inyección moderna `inject()`, Signals reactivas, plantillas físicas separadas (`templateUrl`), alertas estandarizadas con **SweetAlert2** y persistencia de estado con `localStorage`.
 
 ---
 

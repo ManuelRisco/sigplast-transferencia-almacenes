@@ -16,9 +16,9 @@ export class MovimientosComponent implements OnInit {
   apiService = inject(ApiService);
   cdr = inject(ChangeDetectorRef);
 
-  filtroAlmacen = localStorage.getItem('sigris_mov_almacen') || '001';
-  filtroAnho = localStorage.getItem('sigris_mov_anho') || '2026';
-  filtroMes = localStorage.getItem('sigris_mov_mes') || '01';
+  filtroAlmacen = localStorage.getItem('sigplast_mov_almacen') || '001';
+  filtroAnho = localStorage.getItem('sigplast_mov_anho') || '2026';
+  filtroMes = localStorage.getItem('sigplast_mov_mes') || '01';
 
   almacenes = [
     { alm_codigo: '001', alm_nombre: 'ALMACEN VERDE MP' },
@@ -48,8 +48,8 @@ export class MovimientosComponent implements OnInit {
   loading = false;
 
   // Paginación con persistencia
-  paginaActual = Number(localStorage.getItem('sigris_mov_pagina')) || 1;
-  itemsPorPagina = Number(localStorage.getItem('sigris_mov_filas')) || 20;
+  paginaActual = Number(localStorage.getItem('sigplast_mov_pagina')) || 1;
+  itemsPorPagina = Number(localStorage.getItem('sigplast_mov_filas')) || 20;
 
   get totalPaginas(): number {
     return Math.ceil(this.totalRegistros / this.itemsPorPagina) || 1;
@@ -66,7 +66,7 @@ export class MovimientosComponent implements OnInit {
   cambiarPagina(nuevaPagina: number) {
     if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
       this.paginaActual = nuevaPagina;
-      localStorage.setItem('sigris_mov_pagina', this.paginaActual.toString());
+      localStorage.setItem('sigplast_mov_pagina', this.paginaActual.toString());
       this.cargarDatos();
     }
   }
@@ -74,17 +74,17 @@ export class MovimientosComponent implements OnInit {
   cambiarItemsPorPagina(cantidad: any) {
     this.itemsPorPagina = Number(cantidad);
     this.paginaActual = 1;
-    localStorage.setItem('sigris_mov_filas', this.itemsPorPagina.toString());
-    localStorage.setItem('sigris_mov_pagina', '1');
+    localStorage.setItem('sigplast_mov_filas', this.itemsPorPagina.toString());
+    localStorage.setItem('sigplast_mov_pagina', '1');
     this.cargarDatos();
   }
 
   alCambiarFiltro() {
-    localStorage.setItem('sigris_mov_almacen', this.filtroAlmacen);
-    localStorage.setItem('sigris_mov_anho', this.filtroAnho);
-    localStorage.setItem('sigris_mov_mes', this.filtroMes);
+    localStorage.setItem('sigplast_mov_almacen', this.filtroAlmacen);
+    localStorage.setItem('sigplast_mov_anho', this.filtroAnho);
+    localStorage.setItem('sigplast_mov_mes', this.filtroMes);
     this.paginaActual = 1;
-    localStorage.setItem('sigris_mov_pagina', '1');
+    localStorage.setItem('sigplast_mov_pagina', '1');
     this.cargarDatos();
   }
 
@@ -106,21 +106,21 @@ export class MovimientosComponent implements OnInit {
           if (res.anios && res.anios.length > 0) {
             this.anios = res.anios;
           }
-          if (!localStorage.getItem('sigris_mov_anho') && res.filtro_anho) {
+          if (!localStorage.getItem('sigplast_mov_anho') && res.filtro_anho) {
             this.filtroAnho = res.filtro_anho;
-            localStorage.setItem('sigris_mov_anho', this.filtroAnho);
+            localStorage.setItem('sigplast_mov_anho', this.filtroAnho);
           }
-          if (!localStorage.getItem('sigris_mov_mes') && res.filtro_mes) {
+          if (!localStorage.getItem('sigplast_mov_mes') && res.filtro_mes) {
             this.filtroMes = res.filtro_mes;
-            localStorage.setItem('sigris_mov_mes', this.filtroMes);
+            localStorage.setItem('sigplast_mov_mes', this.filtroMes);
           }
-          
+
           this.totalRegistros = res.total_records || 0;
           this.movimientos = res.movimientos.map((m: any) => ({ ...m, expanded: false, detalles: [] }));
-          
+
           if (this.paginaActual > this.totalPaginas && this.totalPaginas > 0) {
             this.paginaActual = 1;
-            localStorage.setItem('sigris_mov_pagina', '1');
+            localStorage.setItem('sigplast_mov_pagina', '1');
             this.cargarDatos(); // Recargar con página válida
             return;
           }

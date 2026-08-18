@@ -1,6 +1,6 @@
 # Seguridad, Autenticación y Criptografía BCRYPT
 
-Este documento describe la arquitectura criptográfica, el ciclo de vida de las contraseñas y las políticas de acceso implementadas en **SIGRIS**.
+Este documento describe la arquitectura criptográfica, el ciclo de vida de las contraseñas y las políticas de acceso implementadas en **SIGPLAST**.
 
 ---
 

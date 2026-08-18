@@ -17,7 +17,6 @@ $alm_destino = $input['alm_destino'] ?? '';
 $fec_emi = $input['fec_emi'] ?? date('Ymd');
 $usuario = $input['usuario'] ?? 'ADMINISTRA';
 $detalles = $input['detalles'] ?? [];
-$cco_codigo = $input['cco_codigo'] ?? '';
 $glosa = $input['glosa'] ?? '';
 
 // Validaciones básicas
@@ -40,7 +39,7 @@ if (!$conn) {
 $detalles_json = json_encode($detalles, JSON_UNESCAPED_UNICODE);
 
 // Ejecutar Procedimiento Almacenado
-$sql = "{CALL sp_registrar_transferencia_almacen(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+$sql = "{CALL sp_registrar_transferencia_almacen(?, ?, ?, ?, ?, ?, ?, ?)}";
 $params = array(
     array($emp_codigo, SQLSRV_PARAM_IN),
     array($suc_codigo, SQLSRV_PARAM_IN),
@@ -49,7 +48,6 @@ $params = array(
     array($fec_emi, SQLSRV_PARAM_IN),
     array($usuario, SQLSRV_PARAM_IN),
     array($detalles_json, SQLSRV_PARAM_IN),
-    array($cco_codigo, SQLSRV_PARAM_IN),
     array($glosa, SQLSRV_PARAM_IN)
 );
 

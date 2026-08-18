@@ -13,7 +13,6 @@ ALTER PROCEDURE [dbo].[sp_registrar_transferencia_almacen]
 @fec_emi datetime,
 @usuario varchar(15),
 @detalles_json nvarchar(max),
-@cco_codigo varchar(5),
 @glosa varchar(200)
 
 AS
@@ -42,34 +41,44 @@ BEGIN
         SET @mes_actual = RIGHT('0' + LTRIM(RTRIM(CONVERT(varchar(2), MONTH(@fec_emi)))), 2)
         SET @anho_2dig = RIGHT(@anho_actual, 2)
 
-        DECLARE @art_sin_stock varchar(50)
-        DECLARE @stock_actual decimal(18,3)
-        DECLARE @cantidad_pedida decimal(18,3)
+        DECLARE @errores_stock varchar(max)
+        
+        SELECT @errores_stock = STUFF((
+            SELECT CHAR(10) + '- ' + ISNULL(agg.art_nombre, agg.art_codigo) + 
+                   ' (Disp: ' + CAST(CAST(ISNULL(stk.stock_real, 0) AS INT) AS VARCHAR) + 
+                   ', Sol: ' + CAST(CAST(agg.total_pedida AS INT) AS VARCHAR) + ')'
+            FROM (
+                SELECT 
+                    JSON_VALUE(item.value, '$.art_codigo') AS art_codigo,
+                    JSON_VALUE(item.value, '$.art_nombre') AS art_nombre,
+                    ISNULL(NULLIF(JSON_VALUE(item.value, '$.lot_codigo'), ''), '') AS lot_codigo,
+                    SUM(CAST(JSON_VALUE(item.value, '$.cantidad') AS DECIMAL(18,3))) AS total_pedida
+                FROM OPENJSON(@detalles_json) AS item
+                GROUP BY 
+                    JSON_VALUE(item.value, '$.art_codigo'),
+                    JSON_VALUE(item.value, '$.art_nombre'),
+                    ISNULL(NULLIF(JSON_VALUE(item.value, '$.lot_codigo'), ''), '')
+            ) agg
+            OUTER APPLY (
+                SELECT 
+                    SUM(CASE WHEN b.mov_tipo = 'I' THEN a.mov_ctdmov ELSE 0 END) -
+                    SUM(CASE WHEN b.mov_tipo = 'S' THEN a.mov_ctdmov ELSE 0 END) AS stock_real
+                FROM log_detmov a
+                INNER JOIN log_cabmov b ON a.mov_id = b.mov_id
+                WHERE b.mov_flag <> 'A' 
+                  AND b.alm_codigo = @alm_origen
+                  AND b.mov_fecemi <= @fec_emi
+                  AND a.art_codigo = agg.art_codigo
+                  AND ISNULL(a.lot_codigo, '') = agg.lot_codigo
+            ) stk
+            WHERE agg.total_pedida > ISNULL(stk.stock_real, 0)
+            FOR XML PATH('')
+        ), 1, 1, '')
 
-        SELECT TOP 1 
-            @art_sin_stock = JSON_VALUE(item.value, '$.art_codigo'),
-            @cantidad_pedida = CAST(JSON_VALUE(item.value, '$.cantidad') AS DECIMAL(18,3)),
-            @stock_actual = ISNULL(stk.stock_real, 0)
-        FROM OPENJSON(@detalles_json) AS item
-        OUTER APPLY (
-            SELECT 
-                SUM(CASE WHEN b.mov_tipo = 'I' THEN a.mov_ctdmov ELSE 0 END) -
-                SUM(CASE WHEN b.mov_tipo = 'S' THEN a.mov_ctdmov ELSE 0 END) AS stock_real
-            FROM log_detmov a
-            INNER JOIN log_cabmov b ON a.mov_id = b.mov_id
-            WHERE b.mov_flag <> 'A' 
-              AND b.alm_codigo = @alm_origen
-              AND b.mov_fecemi <= @fec_emi
-              AND a.art_codigo = JSON_VALUE(item.value, '$.art_codigo')
-        ) stk
-        WHERE CAST(JSON_VALUE(item.value, '$.cantidad') AS DECIMAL(18,3)) > ISNULL(stk.stock_real, 0)
-
-        IF @art_sin_stock IS NOT NULL
+        IF @errores_stock IS NOT NULL AND LEN(@errores_stock) > 0
         BEGIN
             SELECT 0 AS success, 
-                   'Stock insuficiente para ' + @art_sin_stock + 
-                   '. Disponible: ' + CAST(@stock_actual AS VARCHAR) + 
-                   ', Solicitado: ' + CAST(@cantidad_pedida AS VARCHAR) AS message,
+                   'Stock insuficiente para los siguientes artículos:' + @errores_stock AS message,
                    NULL AS mov_id_salida, NULL AS vale_salida, 
                    NULL AS mov_id_ingreso, NULL AS vale_ingreso
             RETURN
@@ -140,7 +149,7 @@ BEGIN
             '', '', 0, '', '', '', '', @glosa, 0, ' ',
             '', '', 0, 0, 1, 0, @mov_id_ingreso, '', @alm_destino, '',
             0, 0, '', 0, 0, 0, 0, '', @usuario, GETDATE(),
-            CONVERT(VARCHAR(8), GETDATE(), 108), 0, 0, '', '', '', @cco_codigo, '', '', 0,
+            CONVERT(VARCHAR(8), GETDATE(), 108), 0, 0, '', '', '', '', '', '', 0,
             0, 0, '', '', '', '', '', '', 0, '',
             '', '', '19000101', '', '', '19000101', '', '', '', '',
             '', '', '', '', '', '', '', '', '', 0,
@@ -168,7 +177,7 @@ BEGIN
             '', '', 0, '', '', '', '', @glosa, 0, ' ',
             '', '', 0, 1, 1, 0, @mov_id_salida, '', @alm_origen, '',
             0, 0, '', 0, 0, 0, 0, '', @usuario, GETDATE(),
-            CONVERT(VARCHAR(8), GETDATE(), 108), 0, 0, '', '', '', @cco_codigo, '', '', 0,
+            CONVERT(VARCHAR(8), GETDATE(), 108), 0, 0, '', '', '', '', '', '', 0,
             0, 0, '', '', '', '', '', '', 0, '',
             '', '', '19000101', '', '', '19000101', '', '', '', '',
             '', '', '', '', '', '', '', '', '', 0,
@@ -195,7 +204,7 @@ BEGIN
             ISNULL(stk.costo_dol, 0.000), ISNULL(stk.costo_dol, 0.000), ISNULL(stk.costo_dol, 0.000),
             0, 0, 0, '', 0, '',
             '', '', 0.000, '', 0.000, 0.00, 0, 0.000, 0.00,
-            '19000101', '19000101', @cco_codigo
+            '19000101', '19000101', ISNULL(JSON_VALUE(item.value, '$.cco_codigo'), '')
         FROM OPENJSON(@detalles_json) AS item
         OUTER APPLY (
             SELECT TOP 1 stk_vfin AS costo_sol, stk_vfind AS costo_dol
@@ -225,7 +234,7 @@ BEGIN
             ISNULL(stk.costo_dol, 0.000), ISNULL(stk.costo_dol, 0.000), ISNULL(stk.costo_dol, 0.000),
             0, 0, 0, '', 0, '',
             '', '', 0.000, '', 0.000, 0.00, 0, 0.000, 0.00,
-            '19000101', '19000101', @cco_codigo
+            '19000101', '19000101', ISNULL(JSON_VALUE(item.value, '$.cco_codigo'), '')
         FROM OPENJSON(@detalles_json) AS item
         OUTER APPLY (
             SELECT TOP 1 stk_vfin AS costo_sol, stk_vfind AS costo_dol

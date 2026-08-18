@@ -4,21 +4,21 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root'
 })
 export class SidebarService {
-  readonly isOpen = signal<boolean>(localStorage.getItem('sigris_sidebar_open') === 'true');
+  readonly isOpen = signal<boolean>(localStorage.getItem('sigplast_sidebar_open') === 'true');
 
   toggle() {
     const nextState = !this.isOpen();
     this.isOpen.set(nextState);
-    localStorage.setItem('sigris_sidebar_open', String(nextState));
+    localStorage.setItem('sigplast_sidebar_open', String(nextState));
   }
 
   open() {
     this.isOpen.set(true);
-    localStorage.setItem('sigris_sidebar_open', 'true');
+    localStorage.setItem('sigplast_sidebar_open', 'true');
   }
 
   close() {
     this.isOpen.set(false);
-    localStorage.setItem('sigris_sidebar_open', 'false');
+    localStorage.setItem('sigplast_sidebar_open', 'false');
   }
 }

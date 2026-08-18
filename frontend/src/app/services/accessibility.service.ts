@@ -14,7 +14,7 @@ export interface AccessibilitySettings {
   providedIn: 'root'
 })
 export class AccessibilityService {
-  private readonly STORAGE_KEY = 'sigris_accessibility';
+  private readonly STORAGE_KEY = 'sigplast_accessibility';
 
   // Signals de estado
   fontSize = signal<number>(100);
@@ -73,10 +73,10 @@ export class AccessibilityService {
 
   get isDefault(): boolean {
     return this.fontSize() === 100 &&
-           this.colorFilter() === 'none' &&
-           !this.dyslexicFont() &&
-           !this.enhancedSpacing() &&
-           !this.darkMode();
+      this.colorFilter() === 'none' &&
+      !this.dyslexicFont() &&
+      !this.enhancedSpacing() &&
+      !this.darkMode();
   }
 
   private applyDOMChanges() {

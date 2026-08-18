@@ -22,7 +22,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
   route = inject(ActivatedRoute);
   cdr = inject(ChangeDetectorRef);
 
-  almOrigen = localStorage.getItem('sigris_nr_almacen') || '001';
+  almOrigen = localStorage.getItem('sigplast_nr_almacen') || '001';
   almNombre = 'ALMACEN VERDE MP';
   anhoActual = new Date().getFullYear().toString();
   mesActualNombre = 'AGOSTO';
@@ -31,11 +31,11 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
   almacenesDestino: any[] = [];
 
   tiposMovimiento: any[] = [];
-  tipoMov = localStorage.getItem('sigris_nr_tipo_mov') || '102';
+  tipoMov = localStorage.getItem('sigplast_nr_tipo_mov') || '102';
   esTransferencia = false;
-  almDestino = localStorage.getItem('sigris_nr_alm_destino') || '';
-  fechaEmision = localStorage.getItem('sigris_nr_fecha_emision') || new Date().toISOString().substring(0, 10);
-  glosa = localStorage.getItem('sigris_nr_glosa') || '';
+  almDestino = localStorage.getItem('sigplast_nr_alm_destino') || '';
+  fechaEmision = localStorage.getItem('sigplast_nr_fecha_emision') || new Date().toISOString().substring(0, 10);
+  glosa = localStorage.getItem('sigplast_nr_glosa') || '';
   barcodeInput = '';
   ccostosTodos: any[] = [];
 
@@ -46,7 +46,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
   get ccostosFiltrados(): any[] {
     if (!this.filtroCcosto.trim()) return this.ccostosTodos;
     const term = this.filtroCcosto.toLowerCase().trim();
-    return this.ccostosTodos.filter(c => 
+    return this.ccostosTodos.filter(c =>
       (c.cco_codigo && c.cco_codigo.toLowerCase().includes(term)) ||
       (c.cco_nombre && c.cco_nombre.toLowerCase().includes(term))
     );
@@ -65,7 +65,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
   private searchSubscription?: Subscription;
 
   modalPaginaActual = 1;
-  modalItemsPorPagina = Number(localStorage.getItem('sigris_modal_art_filas')) || 10;
+  modalItemsPorPagina = Number(localStorage.getItem('sigplast_modal_art_filas')) || 10;
 
   get modalTotalPaginas(): number {
     return Math.ceil(this.modalTotalRegistros / this.modalItemsPorPagina) || 1;
@@ -90,7 +90,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
   get lotesFiltrados(): any[] {
     if (!this.filtroLote.trim()) return this.lotesEncontrados;
     const term = this.filtroLote.toLowerCase().trim();
-    return this.lotesEncontrados.filter(l => 
+    return this.lotesEncontrados.filter(l =>
       (l.lot_id && l.lot_id.toString().toLowerCase().includes(term)) ||
       (l.lot_numlote && l.lot_numlote.toString().toLowerCase().includes(term))
     );
@@ -110,7 +110,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
   cambiarModalItemsPorPagina(cantidad: any) {
     this.modalItemsPorPagina = Number(cantidad);
     this.modalPaginaActual = 1;
-    localStorage.setItem('sigris_modal_art_filas', this.modalItemsPorPagina.toString());
+    localStorage.setItem('sigplast_modal_art_filas', this.modalItemsPorPagina.toString());
     this.buscarArticulos();
   }
 
@@ -124,7 +124,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
     });
 
     // Restaurar items de localStorage si existen
-    const savedItems = localStorage.getItem('sigris_nr_items');
+    const savedItems = localStorage.getItem('sigplast_nr_items');
     if (savedItems) {
       try {
         this.items = JSON.parse(savedItems);
@@ -136,7 +136,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
     this.route.queryParams.subscribe(params => {
       if (params['alm_codigo']) {
         this.almOrigen = params['alm_codigo'];
-        localStorage.setItem('sigris_nr_almacen', this.almOrigen);
+        localStorage.setItem('sigplast_nr_almacen', this.almOrigen);
       }
       this.cargarInfoAlmacen();
     });
@@ -192,7 +192,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
     if (this.almOrigen === this.almDestino) {
       this.almDestino = '';
     }
-    
+
     if (this.items.length > 0) {
       Swal.fire({
         title: 'Almacén cambiado',
@@ -208,7 +208,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
   alCambiarTipoMov(event?: Event) {
     const tipo = this.tiposMovimiento.find(t => t.tmo_codigo === this.tipoMov);
     const nombreTipo = tipo ? tipo.tmo_nombre.toLowerCase() : '';
-    
+
     if (!nombreTipo.includes('transferencia')) {
       Swal.fire({
         title: 'Operación no permitida',
@@ -216,11 +216,11 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
         icon: 'error',
         confirmButtonColor: '#0d9488'
       });
-      
+
       const transferencia = this.tiposMovimiento.find(t => t.tmo_nombre.toLowerCase().includes('transferencia'));
       this.tipoMov = transferencia ? transferencia.tmo_codigo : (this.tiposMovimiento.length > 0 ? this.tiposMovimiento[0].tmo_codigo : '102');
     }
-    
+
     this.verificarDestino();
     this.guardarEstado();
   }
@@ -231,12 +231,12 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
   }
 
   guardarEstado() {
-    localStorage.setItem('sigris_nr_almacen', this.almOrigen);
-    localStorage.setItem('sigris_nr_tipo_mov', this.tipoMov);
-    localStorage.setItem('sigris_nr_fecha_emision', this.fechaEmision);
-    localStorage.setItem('sigris_nr_alm_destino', this.almDestino);
-    localStorage.setItem('sigris_nr_glosa', this.glosa);
-    localStorage.setItem('sigris_nr_items', JSON.stringify(this.items));
+    localStorage.setItem('sigplast_nr_almacen', this.almOrigen);
+    localStorage.setItem('sigplast_nr_tipo_mov', this.tipoMov);
+    localStorage.setItem('sigplast_nr_fecha_emision', this.fechaEmision);
+    localStorage.setItem('sigplast_nr_alm_destino', this.almDestino);
+    localStorage.setItem('sigplast_nr_glosa', this.glosa);
+    localStorage.setItem('sigplast_nr_items', JSON.stringify(this.items));
   }
 
   limpiarFormulario() {
@@ -258,9 +258,9 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
         const transferencia = this.tiposMovimiento.find(t => t.tmo_nombre.toLowerCase().includes('transferencia'));
         this.tipoMov = transferencia ? transferencia.tmo_codigo : (this.tiposMovimiento.length > 0 ? this.tiposMovimiento[0].tmo_codigo : '102');
         this.fechaEmision = new Date().toISOString().substring(0, 10);
-        localStorage.removeItem('sigris_nr_items');
-        localStorage.removeItem('sigris_nr_glosa');
-        localStorage.removeItem('sigris_nr_alm_destino');
+        localStorage.removeItem('sigplast_nr_items');
+        localStorage.removeItem('sigplast_nr_glosa');
+        localStorage.removeItem('sigplast_nr_alm_destino');
         this.verificarDestino();
         this.guardarEstado();
         this.cdr.detectChanges();
@@ -519,7 +519,6 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
       fec_emi: this.fechaEmision,
       usuario: this.authService.currentUser()?.usr_codigo || this.authService.currentUser()?.username || 'ADMINISTRA',
       detalles: detalles,
-      cco_codigo: '', // Ya no es global, se manda vacío
       glosa: this.glosa
     };
 

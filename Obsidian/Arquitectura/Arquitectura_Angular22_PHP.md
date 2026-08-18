@@ -2,7 +2,7 @@
 
 ## 📐 Visión General de la Arquitectura
 
-El sistema **SIGRIS** utiliza un patrón de arquitectura desacoplada SPA (Single Page Application) donde el cliente web y los servicios de backend operan de forma independiente:
+El sistema **SIGPLAST** utiliza un patrón de arquitectura desacoplada SPA (Single Page Application) donde el cliente web y los servicios de backend operan de forma independiente:
 
 ```mermaid
 graph TD

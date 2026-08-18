@@ -16,7 +16,7 @@ Este documento detalla la capa de comunicación HTTP, manejo reactivo del estado
 
 ### 1. `ApiService` (`src/app/services/api.service.ts`)
 Encargado de centralizar todas las peticiones hacia la API REST en PHP.
-- **Mecanismo de Fallback:** Si la URL primaria (`/sigris/backend/api`) falla, conmuta automáticamente a la secundaria (`/prueba/sigris/backend/api`) mediante operadores `RxJS` (`catchError`).
+- **Mecanismo de Fallback:** Si la URL primaria (`/sigplast/backend/api`) falla, conmuta automáticamente a la secundaria (`/prueba/sigplast/backend/api`) mediante operadores `RxJS` (`catchError`).
 - **Métodos Principales:**
   - `login(payload)`: Envío de credenciales a `api/auth/login.php`.
   - `registro(payload)`: Creación de cuentas en `api/auth/registro.php`.
@@ -32,7 +32,7 @@ Encargado de centralizar todas las peticiones hacia la API REST en PHP.
 ### 2. `AuthService` (`src/app/services/auth.service.ts`)
 Gestiona el estado reactivo del usuario conectado utilizando **Angular Signals** y **Encriptación Criptográfica AES**:
 - **Encriptación AES (CryptoJS):**
-  - Los datos del usuario en `localStorage` (`sigris_user`) se almacenan encriptados bajo el algoritmo militar **AES** usando `crypto-js`.
+  - Los datos del usuario en `localStorage` (`sigplast_user`) se almacenan encriptados bajo el algoritmo militar **AES** usando `crypto-js`.
   - La clave secreta privada reside en las variables de entorno de Angular (`src/environments/environment.ts`), archivo que se encuentra protegido y excluido de GitHub mediante `.gitignore`.
   - En el almacenamiento local del navegador, la sesión se observa como un hash indescifrable (`U2FsdGVkX19...`).
 - **Signals y Métodos:**
@@ -56,7 +56,7 @@ Controla de forma reactiva y centralizada todos los ajustes de accesibilidad y t
 - **Efectos DOM Reactivos (`effect`):**
   - Aplica dinámicamente la clase `dark-mode` al root `<html>`, junto con las clases de filtros de daltonismo (`filter-protanopia`, `filter-deuteranopia`, etc.) y fuentes.
 - **Persistencia en `localStorage`:**
-  - Guarda y restaura automáticamente todas las preferencias (incluido `darkMode`) en `sigris_accessibility`.
+  - Guarda y restaura automáticamente todas las preferencias (incluido `darkMode`) en `sigplast_accessibility`.
 
 ---
 
