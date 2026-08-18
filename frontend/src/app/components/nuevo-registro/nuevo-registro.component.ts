@@ -24,8 +24,6 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
 
   almOrigen = localStorage.getItem('sigplast_nr_almacen') || '001';
   almNombre = 'ALMACEN VERDE MP';
-  anhoActual = new Date().getFullYear().toString();
-  mesActualNombre = 'AGOSTO';
 
   almacenesTodos: any[] = [];
   almacenesDestino: any[] = [];
@@ -141,9 +139,6 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
       this.cargarInfoAlmacen();
     });
 
-    const mesesArray = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SETIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
-    this.mesActualNombre = mesesArray[new Date().getMonth()];
-
     // Cargar tipos de movimiento
     this.apiService.getTiposMovimiento().subscribe({
       next: (res) => {
@@ -203,6 +198,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
       this.items = [];
     }
     this.guardarEstado();
+    this.cdr.detectChanges();
   }
 
   alCambiarTipoMov(event?: Event) {
@@ -210,6 +206,9 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
     const nombreTipo = tipo ? tipo.tmo_nombre.toLowerCase() : '';
 
     if (!nombreTipo.includes('transferencia')) {
+      const transferencia = this.tiposMovimiento.find(t => t.tmo_nombre.toLowerCase().includes('transferencia'));
+      const fallback = transferencia ? transferencia.tmo_codigo : (this.tiposMovimiento.length > 0 ? this.tiposMovimiento[0].tmo_codigo : '102');
+
       Swal.fire({
         title: 'Operación no permitida',
         text: 'Por el momento, solo se permite realizar "Transferencia entre almacenes".',
@@ -217,8 +216,13 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
         confirmButtonColor: '#0d9488'
       });
 
-      const transferencia = this.tiposMovimiento.find(t => t.tmo_nombre.toLowerCase().includes('transferencia'));
-      this.tipoMov = transferencia ? transferencia.tmo_codigo : (this.tiposMovimiento.length > 0 ? this.tiposMovimiento[0].tmo_codigo : '102');
+      setTimeout(() => {
+        this.tipoMov = fallback;
+        this.verificarDestino();
+        this.guardarEstado();
+        this.cdr.detectChanges();
+      }, 0);
+      return;
     }
 
     this.verificarDestino();
@@ -239,7 +243,11 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
     localStorage.setItem('sigplast_nr_items', JSON.stringify(this.items));
   }
 
-  limpiarFormulario() {
+  limpiarFormulario(silent: boolean = false) {
+    if (silent) {
+      this.ejecutarLimpieza();
+      return;
+    }
     Swal.fire({
       title: '¿Limpiar formulario?',
       text: '¿Estás seguro de que deseas limpiar el formulario de nuevo registro? Se perderán los datos actuales.',
@@ -251,21 +259,25 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.items = [];
-        this.glosa = '';
-        this.barcodeInput = '';
-        this.almDestino = '';
-        const transferencia = this.tiposMovimiento.find(t => t.tmo_nombre.toLowerCase().includes('transferencia'));
-        this.tipoMov = transferencia ? transferencia.tmo_codigo : (this.tiposMovimiento.length > 0 ? this.tiposMovimiento[0].tmo_codigo : '102');
-        this.fechaEmision = new Date().toISOString().substring(0, 10);
-        localStorage.removeItem('sigplast_nr_items');
-        localStorage.removeItem('sigplast_nr_glosa');
-        localStorage.removeItem('sigplast_nr_alm_destino');
-        this.verificarDestino();
-        this.guardarEstado();
-        this.cdr.detectChanges();
+        this.ejecutarLimpieza();
       }
     });
+  }
+
+  private ejecutarLimpieza() {
+    this.items = [];
+    this.glosa = '';
+    this.barcodeInput = '';
+    this.almDestino = '';
+    const transferencia = this.tiposMovimiento.find(t => t.tmo_nombre.toLowerCase().includes('transferencia'));
+    this.tipoMov = transferencia ? transferencia.tmo_codigo : (this.tiposMovimiento.length > 0 ? this.tiposMovimiento[0].tmo_codigo : '102');
+    this.fechaEmision = new Date().toISOString().substring(0, 10);
+    localStorage.removeItem('sigplast_nr_items');
+    localStorage.removeItem('sigplast_nr_glosa');
+    localStorage.removeItem('sigplast_nr_alm_destino');
+    this.verificarDestino();
+    this.guardarEstado();
+    this.cdr.detectChanges();
   }
 
   // Escaneo de Código de Barras (funciona directamente con lector USB / Enter)
@@ -496,6 +508,12 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const itemsSinLote = this.items.filter(i => !i.lot_id || i.lot_id === '-' || i.lot_id === '');
+    if (itemsSinLote.length > 0) {
+      Swal.fire('Atención', 'Todos los artículos deben tener asignado un Lote válido.', 'warning');
+      return;
+    }
+
     // Validar que las cantidades sean mayores a 0
     const itemsSinCantidad = this.items.filter(i => !i.cantidad || Number(i.cantidad) <= 0);
     if (itemsSinCantidad.length > 0) {
@@ -540,7 +558,7 @@ export class NuevoRegistroComponent implements OnInit, OnDestroy {
             icon: 'success',
             confirmButtonColor: '#0d9488'
           }).then(() => {
-            this.limpiarFormulario(); // Resetear el form despues de guardar
+            this.limpiarFormulario(true); // Resetear el form despues de guardar
           });
         } else {
           Swal.fire('Error', res.message || 'No se pudo guardar la transferencia', 'error');

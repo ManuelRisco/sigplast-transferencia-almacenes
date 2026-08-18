@@ -157,14 +157,4 @@ export class MovimientosComponent implements OnInit {
       this.cdr.detectChanges();
     }
   }
-
-  copiarDatosExcel() {
-    let tsv = "Nro. ID\tNo.Vale\tFec.Emi.\tFec-Trasl\tTipo de Movimiento\tDoc_Ref\tEst\tDst\tDoc.Venta\tN.Pedido\tCliente/Proveedor\tUsuario\n";
-    this.movimientos.forEach(m => {
-      tsv += `${m.nro_id}\t${m.no_vale || '-'}\t${m.fec_emi || '-'}\t${m.fec_trasl || '-'}\t${m.tipo_movimiento || '-'}\t${m.doc_ref || '-'}\t${m.est || '-'}\t${m.dst || '-'}\t${m.doc_venta || '-'}\t${m.n_pedido || '-'}\t${m.cliente_proveedor || '-'}\t${m.usuario || '-'}\n`;
-    });
-    navigator.clipboard.writeText(tsv).then(() => {
-      alert('¡Datos copiados al portapapeles en formato Excel!');
-    });
-  }
 }

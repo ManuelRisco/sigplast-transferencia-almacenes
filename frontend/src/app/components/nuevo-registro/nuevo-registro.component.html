@@ -7,17 +7,30 @@
       <div class="flex items-center gap-3">
         <h2 class="m-0 text-base font-bold text-[#002d5a]">Nuevo Registro</h2>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
         <button type="button" (click)="guardarMovimiento()" title="Guardar Transferencia"
-          class="text-xs text-emerald-600 hover:text-emerald-800 font-bold border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded transition-colors cursor-pointer">
-          💾 Guardar
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm hover:shadow transition-all cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+          </svg>
+          <span>Guardar</span>
         </button>
         <button type="button" (click)="limpiarFormulario()" title="Limpiar y reiniciar formulario"
-          class="text-xs text-red-600 hover:text-red-800 font-bold border border-red-200 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded transition-colors cursor-pointer">
-          🗑️ Limpiar Todo
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold text-xs shadow-sm hover:shadow transition-all cursor-pointer">
+          <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Limpiar Todo</span>
         </button>
         <a routerLink="/erp" [queryParams]="{ alm_codigo: almOrigen }" aria-label="Cerrar y volver a notas de salidas"
-          class="text-brandDark font-bold hover:text-blue-900">✕ Cerrar</a>
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold text-xs shadow-sm hover:shadow transition-all cursor-pointer">
+          <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <span>Cerrar</span>
+        </a>
       </div>
     </div>
 
@@ -25,29 +38,13 @@
     <div
       class="flex flex-col sm:flex-row flex-wrap gap-3 p-3 md:px-4 bg-gray-50 border-b border-gray-400 items-start sm:items-center shadow-sm">
       <div class="flex items-center gap-2 w-full sm:w-auto">
-        <label for="nr-almacen" class="font-bold text-brandDark text-sm w-16 sm:w-auto">Almacen</label>
+        <label for="nr-almacen" class="font-bold text-brandDark text-sm w-16 sm:w-auto">Almacén</label>
         <select id="nr-almacen" [(ngModel)]="almOrigen" (ngModelChange)="alCambiarAlmacenOrigen()"
           class="form-input flex-1 sm:w-80 bg-white border-gray-400 border rounded px-2 py-1 text-sm font-semibold text-gray-900 focus:ring-2 focus:ring-brandTeal outline-none transition-all">
           <option value="">-- Seleccione Almacén --</option>
           @for (a of almacenesTodos; track a.alm_codigo) {
           <option [value]="a.alm_codigo">{{ a.alm_codigo }} - {{ a.alm_nombre }}</option>
           }
-        </select>
-      </div>
-
-      <div class="flex items-center gap-2 w-full sm:w-auto">
-        <label for="nr-anho" class="font-bold text-brandDark text-sm w-16 sm:w-auto">Año</label>
-        <select id="nr-anho"
-          class="form-input flex-1 sm:w-24 bg-white border-gray-400 border rounded px-2 py-1 text-sm font-semibold">
-          <option>{{ anhoActual }}</option>
-        </select>
-      </div>
-
-      <div class="flex items-center gap-2 w-full sm:w-auto">
-        <label for="nr-mes" class="font-bold text-brandDark text-sm w-16 sm:w-auto">Mes</label>
-        <select id="nr-mes"
-          class="form-input flex-1 sm:w-32 bg-white border-gray-400 border rounded px-2 py-1 text-sm font-semibold">
-          <option>{{ mesActualNombre }}</option>
         </select>
       </div>
     </div>
@@ -96,10 +93,14 @@
           <div class="flex items-center gap-2 w-full md:w-auto">
             <label class="w-24 font-bold text-gray-900 text-sm text-left sm:text-right">Trabajador</label>
             <input type="text"
-              class="form-input w-16 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs"
+              [value]="authService.currentUser()?.usr_codigo || authService.currentUser()?.username || ''"
+              aria-label="Código del usuario que realiza la transferencia"
+              class="form-input w-28 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs font-mono font-bold"
               readonly>
             <input type="text"
-              class="form-input flex-1 sm:w-48 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs"
+              [value]="authService.currentUser()?.usr_nombre || authService.currentUser()?.nombre_completo || ''"
+              aria-label="Nombre del usuario que realiza la transferencia"
+              class="form-input flex-1 sm:w-64 bg-gray-100 border border-gray-400 text-gray-900 cursor-not-allowed rounded px-2 py-1 text-xs font-semibold"
               readonly>
           </div>
         </div>
@@ -110,10 +111,6 @@
         <div
           class="px-6 py-2 font-bold text-sm cursor-pointer bg-white text-brandDark border-t-2 border-brandDark border-x border-gray-400 rounded-t-sm -mb-[2px]">
           Detalle</div>
-        <div class="px-6 py-2 font-bold text-sm cursor-pointer text-gray-700 hover:text-gray-900">Datos Adicionales
-        </div>
-        <div class="px-6 py-2 font-bold text-sm cursor-pointer text-gray-700 hover:text-gray-900">Datos de Exportación
-        </div>
       </div>
 
       <!-- Detalle Grid -->
@@ -135,9 +132,20 @@
           </div>
           <div class="flex gap-2 w-full md:w-auto p-1">
             <button type="button" (click)="abrirModalArticulos()"
-              class="px-5 py-1 text-sm text-[#004b87] bg-white border border-gray-300 shadow-sm hover:bg-gray-50 rounded-sm font-bold cursor-pointer"><u>N</u>uevo</button>
+              class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs text-cyan-800 bg-white border border-cyan-300 shadow-sm hover:bg-cyan-50 rounded-lg font-bold cursor-pointer transition-colors">
+              <svg class="w-3.5 h-3.5 text-cyan-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Agregar Artículo</span>
+            </button>
             <button type="button" (click)="eliminarSeleccionados()"
-              class="px-5 py-1 text-sm text-[#004b87] bg-white border border-gray-300 shadow-sm hover:bg-gray-50 rounded-sm font-bold cursor-pointer"><u>E</u>liminar</button>
+              class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs text-rose-700 bg-white border border-rose-300 shadow-sm hover:bg-rose-50 rounded-lg font-bold cursor-pointer transition-colors">
+              <svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              <span>Eliminar</span>
+            </button>
           </div>
         </div>
 
@@ -240,7 +248,12 @@
       <div class="bg-slate-800 text-white px-6 py-4 flex justify-between items-center sticky top-0 z-10 shrink-0">
         <h3 class="font-bold text-base md:text-lg">Catálogo de Artículos ({{ almOrigen }} - {{ almNombre }})</h3>
         <button (click)="modalArticulosVisible = false"
-          class="text-gray-400 hover:text-white font-bold text-xl cursor-pointer">&times;</button>
+          class="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-slate-700 transition-colors cursor-pointer"
+          aria-label="Cerrar catálogo de artículos">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
 
       <div class="p-4 md:p-6 space-y-4 flex-1 overflow-y-auto">
@@ -311,18 +324,24 @@
               <div class="flex items-center gap-1" role="navigation" aria-label="Paginación de catálogo de artículos">
                 <button (click)="cambiarModalPagina(modalPaginaActual - 1)" [disabled]="modalPaginaActual === 1"
                   aria-label="Ir a la página anterior de artículos"
-                  class="px-3 py-1 text-xs font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer text-gray-800">
-                  ‹ Anterior
+                  class="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold rounded-lg border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer text-gray-800 transition-colors">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                  <span>Anterior</span>
                 </button>
-                <span class="px-2.5 py-1 text-xs font-bold text-brandDark bg-blue-50 border border-blue-200 rounded"
+                <span class="px-2.5 py-1 text-xs font-bold text-brandDark bg-blue-50 border border-blue-200 rounded-lg"
                   aria-current="page">
                   {{ modalPaginaActual }} / {{ modalTotalPaginas }}
                 </span>
                 <button (click)="cambiarModalPagina(modalPaginaActual + 1)"
                   [disabled]="modalPaginaActual === modalTotalPaginas"
                   aria-label="Ir a la página siguiente de artículos"
-                  class="px-3 py-1 text-xs font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer text-gray-800">
-                  Siguiente ›
+                  class="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold rounded-lg border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer text-gray-800 transition-colors">
+                  <span>Siguiente</span>
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
                 </button>
               </div>
             </div>
@@ -346,9 +365,15 @@
 
       <!-- Cabecera Ventana Modal -->
       <div class="bg-slate-800 text-white px-6 py-4 flex justify-between items-center sticky top-0 z-10 shrink-0">
-        <h3 class="font-bold text-base md:text-lg">Lotes - {{ itemSeleccionadoParaLote?.art_codigo }} ({{ itemSeleccionadoParaLote?.art_nombre }})</h3>
+        <h3 class="font-bold text-base md:text-lg">Lotes - {{ itemSeleccionadoParaLote?.art_codigo }} ({{
+          itemSeleccionadoParaLote?.art_nombre }})</h3>
         <button (click)="cerrarModalLotes()"
-          class="text-gray-400 hover:text-white font-bold text-xl cursor-pointer">&times;</button>
+          class="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-slate-700 transition-colors cursor-pointer"
+          aria-label="Cerrar modal de lotes">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
 
       <!-- Contenedor Tabla de Lotes -->
@@ -411,14 +436,18 @@
         <!-- Botones de Acción Estilo ERP -->
         <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
           <button (click)="confirmarLote()" aria-label="Confirmar selección de lote"
-            class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg border border-emerald-600 bg-white hover:bg-emerald-50 text-emerald-700 font-bold text-xs shadow-sm hover:shadow transition-all cursor-pointer">
-            <span class="text-emerald-600 font-black text-sm">✔</span>
+            class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm hover:shadow transition-all cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
             <span>Aceptar</span>
           </button>
 
           <button (click)="cerrarModalLotes()" aria-label="Cerrar modal de lotes"
-            class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg border border-rose-400 bg-white hover:bg-rose-50 text-rose-700 font-bold text-xs shadow-sm hover:shadow transition-all cursor-pointer">
-            <span class="text-rose-600 font-black text-sm">🚫</span>
+            class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold text-xs shadow-sm hover:shadow transition-all cursor-pointer">
+            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
             <span>Cerrar</span>
           </button>
         </div>
@@ -438,7 +467,12 @@
       <div class="bg-slate-800 text-white px-6 py-4 flex justify-between items-center sticky top-0 z-10 shrink-0">
         <h3 class="font-bold text-base md:text-lg">Catálogo de Centros de Costo</h3>
         <button (click)="cerrarModalCcostos()"
-          class="text-gray-400 hover:text-white font-bold text-xl cursor-pointer">&times;</button>
+          class="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-slate-700 transition-colors cursor-pointer"
+          aria-label="Cerrar catálogo de centros de costo">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
 
       <!-- Buscador Local -->

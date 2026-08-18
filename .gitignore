@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+frontend/.angular/
+frontend/dist/
+
+# SQL Stored Procedures & Scripts
+sp_update_v3.sql
+*.sql
+
+# Environment & Config
+.env
+.env.*
+backend/config/conexion.php.local
+
+# System & IDE files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
