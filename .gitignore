@@ -21,3 +21,6 @@ Thumbs.db
 *.log
 *.exe
 cloudflared*
+
+# API Documentation
+backend/docs/
