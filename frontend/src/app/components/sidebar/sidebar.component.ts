@@ -32,7 +32,7 @@ export class SidebarComponent {
 
   logout() {
     this.authService.clearSession();
-    this.sidebarService.close();
+    this.closeOnMobile();
     this.router.navigate(['/login']);
   }
 }

@@ -1,0 +1,313 @@
+/* =========================================================
+   MODO NOCHE / TEMA OSCURO (DARK MODE INTEGRAL Y ELEGANTE)
+   ========================================================= */
+
+/* Canvas Global y Fondo Principal */
+html.dark-mode,
+html.dark-mode body,
+html.dark-mode .bg-slate-50,
+html.dark-mode .bg-slate-100 {
+  background-color: #0b1329 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Navbar en Modo Oscuro */
+html.dark-mode header {
+  background-color: #0f172a !important;
+  border-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+html.dark-mode header .text-slate-900,
+html.dark-mode header .text-slate-800 {
+  color: #ffffff !important;
+}
+
+html.dark-mode header .text-cyan-700 {
+  color: #38bdf8 !important;
+}
+
+html.dark-mode header button.bg-slate-100 {
+  background-color: #1e293b !important;
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
+}
+
+html.dark-mode header button.bg-slate-100:hover {
+  background-color: #334155 !important;
+  color: #38bdf8 !important;
+}
+
+/* Sidebar en Modo Oscuro */
+html.dark-mode aside {
+  background-color: #0f172a !important;
+  border-color: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+html.dark-mode aside .bg-slate-50\/80,
+html.dark-mode aside .bg-slate-50\/90 {
+  background-color: #0b1329 !important;
+  border-color: #1e293b !important;
+}
+
+html.dark-mode aside .text-slate-900,
+html.dark-mode aside .text-slate-800 {
+  color: #ffffff !important;
+}
+
+html.dark-mode aside .text-slate-700 {
+  color: #cbd5e1 !important;
+}
+
+html.dark-mode aside .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+html.dark-mode aside nav a:hover {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+html.dark-mode aside nav a.bg-cyan-100 {
+  background-color: rgba(6, 182, 212, 0.18) !important;
+  color: #38bdf8 !important;
+  border-color: rgba(6, 182, 212, 0.35) !important;
+}
+
+html.dark-mode aside .bg-slate-100 {
+  background-color: #1e293b !important;
+  color: #38bdf8 !important;
+}
+
+html.dark-mode aside .bg-white {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark-mode aside .bg-rose-50 {
+  background-color: rgba(244, 63, 94, 0.18) !important;
+  color: #fecdd3 !important;
+  border-color: rgba(244, 63, 94, 0.35) !important;
+}
+
+html.dark-mode aside .bg-rose-50:hover {
+  background-color: rgba(244, 63, 94, 0.28) !important;
+}
+
+/* Dropdown de Accesibilidad en Modo Oscuro */
+html.dark-mode [role="dialog"][aria-label="Panel de Ajustes de Accesibilidad"] {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+html.dark-mode [role="dialog"][aria-label="Panel de Ajustes de Accesibilidad"] .border-gray-200 {
+  border-color: #334155 !important;
+}
+
+html.dark-mode [role="dialog"][aria-label="Panel de Ajustes de Accesibilidad"] .bg-slate-100 {
+  background-color: #0b1329 !important;
+  border-color: #334155 !important;
+}
+
+html.dark-mode [role="dialog"][aria-label="Panel de Ajustes de Accesibilidad"] .bg-slate-50 {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark-mode [role="dialog"][aria-label="Panel de Ajustes de Accesibilidad"] .text-slate-900,
+html.dark-mode [role="dialog"][aria-label="Panel de Ajustes de Accesibilidad"] .text-slate-800,
+html.dark-mode [role="dialog"][aria-label="Panel de Ajustes de Accesibilidad"] .text-slate-700 {
+  color: #f1f5f9 !important;
+}
+
+html.dark-mode [role="dialog"][aria-label="Panel de Ajustes de Accesibilidad"] .text-cyan-700 {
+  color: #38bdf8 !important;
+}
+
+/* Switches de Accesibilidad en Modo Oscuro */
+html.dark-mode .dark-switch {
+  background-color: #334155 !important;
+}
+
+html.dark-mode .peer:checked~.dark-switch {
+  background-color: #0d9488 !important;
+}
+
+html.dark-mode [role="dialog"][aria-label="Panel de Ajustes de Accesibilidad"] button.text-slate-700 {
+  color: #cbd5e1 !important;
+}
+
+/* Contenedores de Tarjetas, Filtros y Ventanas */
+html.dark-mode .bg-white,
+html.dark-mode .bg-gray-50,
+html.dark-mode .bg-gray-100,
+html.dark-mode .bg-\[\#f4f4f4\],
+html.dark-mode .bg-\[\#eef5fa\],
+html.dark-mode .bg-blue-50 {
+  background-color: #131d38 !important;
+  color: #f8fafc !important;
+  border-color: #273656 !important;
+}
+
+html.dark-mode .bg-gray-200 {
+  background-color: #1e293b !important;
+}
+
+/* Tablas y Grillas en Modo Oscuro */
+html.dark-mode table {
+  background-color: #131d38 !important;
+}
+
+html.dark-mode table thead,
+html.dark-mode table thead tr {
+  background-color: #0b1329 !important;
+  color: #38bdf8 !important;
+}
+
+html.dark-mode table thead th {
+  background-color: #0b1329 !important;
+  color: #38bdf8 !important;
+  border-color: #273656 !important;
+}
+
+html.dark-mode table tbody tr {
+  background-color: #131d38 !important;
+  color: #f8fafc !important;
+}
+
+html.dark-mode table tbody td {
+  border-color: #273656 !important;
+}
+
+html.dark-mode table tbody tr:hover,
+html.dark-mode .hover\:bg-blue-50:hover,
+html.dark-mode .hover\:bg-cyan-50\/50:hover {
+  background-color: #1e294b !important;
+}
+
+/* Bordes y Separadores */
+html.dark-mode .border-gray-200,
+html.dark-mode .border-gray-300,
+html.dark-mode .border-gray-400,
+html.dark-mode .border-blue-200,
+html.dark-mode .border-blue-300,
+html.dark-mode .divide-gray-200> :not([hidden])~ :not([hidden]) {
+  border-color: #273656 !important;
+}
+
+/* Inputs, Selects y Textareas en Modo Oscuro */
+html.dark-mode input,
+html.dark-mode select,
+html.dark-mode textarea {
+  background-color: #0b1329 !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+html.dark-mode input:focus,
+html.dark-mode select:focus,
+html.dark-mode textarea:focus {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #38bdf8 !important;
+}
+
+html.dark-mode input::placeholder,
+html.dark-mode textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Autofill de navegadores en Modo Claro (Default) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #0f172a !important;
+  -webkit-box-shadow: 0 0 0px 1000px #f8fafc inset !important;
+  box-shadow: 0 0 0px 1000px #f8fafc inset !important;
+  caret-color: #0f172a !important;
+}
+
+/* Autofill de navegadores en Modo Oscuro (Chrome/Edge/Safari) */
+html.dark-mode input:-webkit-autofill,
+html.dark-mode input:-webkit-autofill:hover,
+html.dark-mode input:-webkit-autofill:focus,
+html.dark-mode textarea:-webkit-autofill,
+html.dark-mode select:-webkit-autofill {
+  -webkit-text-fill-color: #f8fafc !important;
+  -webkit-box-shadow: 0 0 0px 1000px #0b1329 inset !important;
+  box-shadow: 0 0 0px 1000px #0b1329 inset !important;
+  caret-color: #f8fafc !important;
+}
+
+html.dark-mode input[readonly],
+html.dark-mode input:disabled,
+html.dark-mode select:disabled {
+  background-color: #1e293b !important;
+  color: #94a3b8 !important;
+  border-color: #273656 !important;
+}
+
+/* Textos de Etiquetas y Encabezados */
+html.dark-mode .text-gray-900,
+html.dark-mode .text-gray-800,
+html.dark-mode .text-gray-700,
+html.dark-mode .text-slate-800,
+html.dark-mode .text-slate-900 {
+  color: #f1f5f9 !important;
+}
+
+html.dark-mode .text-gray-600,
+html.dark-mode .text-gray-500,
+html.dark-mode .text-slate-600 {
+  color: #94a3b8 !important;
+}
+
+html.dark-mode .text-brandDark,
+html.dark-mode .text-\[\#002d5a\],
+html.dark-mode .text-\[\#004b87\] {
+  color: #38bdf8 !important;
+}
+
+/* Botones de acción (Ver Artículos, Ocultar, Badges) en Modo Oscuro */
+html.dark-mode .bg-cyan-50 {
+  background-color: rgba(6, 182, 212, 0.15) !important;
+  color: #38bdf8 !important;
+  border-color: rgba(56, 189, 248, 0.35) !important;
+}
+
+html.dark-mode .bg-cyan-50:hover,
+html.dark-mode .hover\:bg-cyan-100:hover {
+  background-color: rgba(6, 182, 212, 0.28) !important;
+  color: #7dd3fc !important;
+}
+
+html.dark-mode .bg-rose-50 {
+  background-color: rgba(244, 63, 94, 0.15) !important;
+  color: #fecdd3 !important;
+  border-color: rgba(244, 63, 94, 0.35) !important;
+}
+
+html.dark-mode .bg-rose-50:hover,
+html.dark-mode .hover\:bg-rose-100:hover {
+  background-color: rgba(244, 63, 94, 0.28) !important;
+  color: #ffffff !important;
+}
+
+/* Botones estilo ERP en Modo Oscuro */
+html.dark-mode button.bg-white,
+html.dark-mode a.bg-white {
+  background-color: #1e293b !important;
+  color: #38bdf8 !important;
+  border-color: #334155 !important;
+}
+
+html.dark-mode button.bg-white:hover,
+html.dark-mode a.bg-white:hover {
+  background-color: #334155 !important;
+  color: #7dd3fc !important;
+}

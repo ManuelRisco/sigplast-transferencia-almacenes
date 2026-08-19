@@ -1,0 +1,50 @@
+/* =========================================================
+   PERSONALIZACIÓN DE BARRAS DE DESPLAZAMIENTO (SCROLLBARS)
+   ========================================================= */
+
+/* Estándar W3C para Firefox y navegadores modernos */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+
+/* Motores WebKit / Blink (Chrome, Edge, Safari, Opera, Android WebView en Handhelds) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* Pista / Fondo de la barra de desplazamiento */
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+/* Pulgar / Deslizador de la barra */
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+  border: 2px solid #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Scrollbars en Modo Noche (Dark Mode) */
+html.dark-mode * {
+  scrollbar-color: #334155 #0b1329;
+}
+
+html.dark-mode ::-webkit-scrollbar-track {
+  background: #0b1329 !important;
+}
+
+html.dark-mode ::-webkit-scrollbar-thumb {
+  background: #334155 !important;
+  border: 2px solid #0b1329 !important;
+}
+
+html.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #475569 !important;
+}

@@ -26,162 +26,161 @@
 <div class="relative inline-block text-left select-none font-sans">
 
   <!-- Botón del Navbar (Modo Claro / Modo Oscuro) -->
-  <button (click)="a11y.toggleMenu()"
-          type="button"
-          class="relative px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-cyan-700 border border-gray-300 shadow-sm flex items-center gap-1.5 sm:gap-2 transition-all duration-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 cursor-pointer"
-          [class.bg-slate-200]="a11y.isMenuOpen()"
-          [class.text-cyan-800]="a11y.isMenuOpen()"
-          aria-label="Menú de opciones de accesibilidad visual y de lectura"
-          title="Opciones de Accesibilidad">
-    
+  <button (click)="a11y.toggleMenu()" type="button"
+    class="relative px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-cyan-700 border border-gray-300 shadow-sm flex items-center gap-1.5 sm:gap-2 transition-all duration-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 cursor-pointer"
+    [class.bg-slate-200]="a11y.isMenuOpen()" [class.text-cyan-800]="a11y.isMenuOpen()"
+    aria-label="Menú de opciones de accesibilidad visual y de lectura" title="Opciones de Accesibilidad">
+
     <svg class="w-4 h-4 text-cyan-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
     </svg>
     <span class="hidden md:inline">Accesibilidad</span>
 
-    <!-- Indicador de Opciones Activas (Punto verde) -->
-    @if (!a11y.isDefault) {
-      <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0" aria-label="Opciones de accesibilidad activadas"></span>
-    }
   </button>
 
   <!-- Menú Desplegable Adaptable (Claro / Oscuro) -->
   @if (a11y.isMenuOpen()) {
-    <!-- Backdrop invisible para cerrar al hacer clic afuera -->
-    <div class="fixed inset-0 z-40" (click)="a11y.closeMenu()" aria-hidden="true"></div>
+  <!-- Backdrop invisible para cerrar al hacer clic afuera -->
+  <div class="fixed inset-0 z-40" (click)="a11y.closeMenu()" aria-hidden="true"></div>
 
-    <div role="dialog" 
-         aria-label="Panel de Ajustes de Accesibilidad" 
-         class="fixed sm:absolute right-2 sm:right-0 top-14 sm:top-auto sm:mt-2 w-[calc(100vw-1rem)] sm:w-80 max-w-sm bg-white text-slate-800 rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-50 animate-fade-in p-3.5 sm:p-4 space-y-3 sm:space-y-4 transition-colors duration-200">
-      
-      <!-- Cabecera Limpia (Título + Restablecer + Cerrar) -->
-      <div class="flex items-center justify-between border-b border-gray-200 pb-3">
-        <div class="flex items-center gap-2">
-          <svg class="w-4 h-4 text-cyan-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+  <div role="dialog" aria-label="Panel de Ajustes de Accesibilidad"
+    class="fixed sm:absolute right-2 sm:right-0 top-14 sm:top-auto sm:mt-2 w-[calc(100vw-1rem)] sm:w-80 max-w-sm bg-white text-slate-800 rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-50 animate-fade-in p-3.5 sm:p-4 space-y-3 sm:space-y-4">
+
+    <!-- Cabecera Limpia (Título + Restablecer + Cerrar) -->
+    <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-cyan-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+        <span class="font-bold text-xs text-slate-900">Accesibilidad</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        @if (!a11y.isDefault) {
+        <button (click)="a11y.resetAll()"
+          class="text-[11px] font-bold text-cyan-700 hover:text-cyan-900 transition-colors cursor-pointer"
+          aria-label="Restablecer todas las opciones de accesibilidad" title="Restablecer valores por defecto">
+          Restablecer
+        </button>
+        }
+        <button (click)="a11y.closeMenu()"
+          class="text-slate-500 hover:text-slate-900 p-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+          aria-label="Cerrar panel de accesibilidad">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
-          <span class="font-bold text-xs text-slate-900">Accesibilidad</span>
-        </div>
-
-        <div class="flex items-center gap-2">
-          @if (!a11y.isDefault) {
-            <button (click)="a11y.resetAll()" 
-                    class="text-[11px] font-bold text-cyan-700 hover:text-cyan-900 transition-colors cursor-pointer"
-                    aria-label="Restablecer todas las opciones de accesibilidad"
-                    title="Restablecer valores por defecto">
-              Restablecer
-            </button>
-          }
-          <button (click)="a11y.closeMenu()" 
-                  class="text-slate-500 hover:text-slate-900 p-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
-                  aria-label="Cerrar panel de accesibilidad">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
-        </div>
+        </button>
       </div>
+    </div>
 
-      <!-- SECCIÓN 1: Tamaño de Texto (Control Segmentado Único) -->
-      <div class="space-y-1.5">
-        <div class="flex items-center justify-between text-xs">
-          <span class="font-bold text-slate-800 flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5 text-cyan-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"/>
-            </svg>
-            <span>Tamaño de Texto</span>
-          </span>
-          <span class="font-bold font-mono text-cyan-700 text-[11px]">{{ a11y.fontSize() }}%</span>
-        </div>
-
-        <!-- Barra de selección única y limpia -->
-        <div class="grid grid-cols-4 gap-1 p-1 bg-slate-100 rounded-xl border border-gray-200" role="group" aria-label="Seleccionar tamaño de fuente">
-          @for (preset of fontSizePresets; track preset.value) {
-            <button (click)="a11y.setFontSize(preset.value)"
-                    [class.bg-cyan-600]="a11y.fontSize() === preset.value"
-                    [class.text-white]="a11y.fontSize() === preset.value"
-                    [class.font-bold]="a11y.fontSize() === preset.value"
-                    [class.text-slate-700]="a11y.fontSize() !== preset.value"
-                    [attr.aria-label]="'Cambiar tamaño de texto a ' + preset.label"
-                    class="py-1.5 text-[11px] rounded-lg transition-all hover:bg-cyan-500 hover:text-white text-center cursor-pointer font-medium">
-              {{ preset.label }}
-            </button>
-          }
-        </div>
-      </div>
-
-      <!-- SECCIÓN 2: Filtros de Daltonismo y Visión (Pills Compactos) -->
-      <div class="space-y-1.5">
-        <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+    <!-- SECCIÓN 1: Tamaño de Texto (Control Segmentado Único) -->
+    <div class="space-y-1.5">
+      <div class="flex items-center justify-between text-xs">
+        <span class="font-bold text-slate-800 flex items-center gap-1.5">
           <svg class="w-3.5 h-3.5 text-cyan-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
           </svg>
-          <span>Filtros de Visión</span>
+          <span>Tamaño de Texto</span>
         </span>
+        <span class="font-bold font-mono text-cyan-700 text-[11px]">{{ a11y.fontSize() }}%</span>
+      </div>
 
-        <div class="grid grid-cols-2 gap-1.5" role="group" aria-label="Filtros de color para visión">
-          @for (filter of filterOptions; track filter.id) {
-            <button (click)="a11y.setColorFilter(filter.id)"
-                    [class.bg-cyan-600]="a11y.colorFilter() === filter.id"
-                    [class.text-white]="a11y.colorFilter() === filter.id"
-                    [class.border-cyan-600]="a11y.colorFilter() === filter.id"
-                    [class.font-bold]="a11y.colorFilter() === filter.id"
-                    [class.bg-slate-50]="a11y.colorFilter() !== filter.id"
-                    [class.text-slate-800]="a11y.colorFilter() !== filter.id"
-                    [class.border-gray-200]="a11y.colorFilter() !== filter.id"
-                    [attr.aria-label]="'Activar filtro de visión ' + filter.label"
-                    class="flex items-center gap-2 px-2.5 py-2 rounded-xl border text-xs transition-all hover:border-cyan-500 cursor-pointer">
-              <span class="text-sm" aria-hidden="true">{{ filter.icon }}</span>
-              <span class="truncate">{{ filter.label }}</span>
-            </button>
-          }
+      <!-- Barra de selección única y limpia -->
+      <div class="grid grid-cols-4 gap-1 p-1 bg-slate-100 rounded-xl border border-gray-200" role="group"
+        aria-label="Seleccionar tamaño de fuente">
+        @for (preset of fontSizePresets; track preset.value) {
+        <button (click)="a11y.setFontSize(preset.value)" [class.bg-cyan-600]="a11y.fontSize() === preset.value"
+          [class.text-white]="a11y.fontSize() === preset.value" [class.font-bold]="a11y.fontSize() === preset.value"
+          [class.text-slate-700]="a11y.fontSize() !== preset.value"
+          [attr.aria-label]="'Cambiar tamaño de texto a ' + preset.label"
+          class="py-1.5 text-[11px] rounded-lg transition-all hover:bg-cyan-500 hover:text-white text-center cursor-pointer font-medium">
+          {{ preset.label }}
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- SECCIÓN 2: Filtros de Daltonismo y Visión (Pills Compactos) -->
+    <div class="space-y-1.5">
+      <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 text-cyan-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+        </svg>
+        <span>Filtros de Visión</span>
+      </span>
+
+      <div class="grid grid-cols-2 gap-1.5" role="group" aria-label="Filtros de color para visión">
+        @for (filter of filterOptions; track filter.id) {
+        <button (click)="a11y.setColorFilter(filter.id)" [class.bg-cyan-600]="a11y.colorFilter() === filter.id"
+          [class.text-white]="a11y.colorFilter() === filter.id"
+          [class.border-cyan-600]="a11y.colorFilter() === filter.id"
+          [class.font-bold]="a11y.colorFilter() === filter.id" [class.bg-slate-50]="a11y.colorFilter() !== filter.id"
+          [class.text-slate-800]="a11y.colorFilter() !== filter.id"
+          [class.border-gray-200]="a11y.colorFilter() !== filter.id"
+          [attr.aria-label]="'Activar filtro de visión ' + filter.label"
+          class="flex items-center gap-2 px-2.5 py-2 rounded-xl border text-xs transition-all hover:border-cyan-500 cursor-pointer">
+          <span class="text-sm" aria-hidden="true">{{ filter.icon }}</span>
+          <span class="truncate">{{ filter.label }}</span>
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- SECCIÓN 3: Opciones de Lectura (Switches Modernos) -->
+    <div class="space-y-2 border-t border-gray-200 pt-3">
+
+      <!-- Toggle: Fuente Lexend -->
+      <label
+        class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-gray-200 hover:border-cyan-400 cursor-pointer transition-colors">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-4 h-4 text-cyan-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+          <div>
+            <div class="text-xs font-bold text-slate-900">Fuente para Dislexia</div>
+            <div class="text-[10px] text-cyan-700 font-mono">Tipografía Lexend</div>
+          </div>
         </div>
-      </div>
-
-      <!-- SECCIÓN 3: Opciones de Lectura (Switches Limpios) -->
-      <div class="space-y-2 border-t border-gray-200 pt-3">
-
-        <!-- Toggle: Fuente Lexend -->
-        <label class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-gray-200 hover:border-cyan-400 cursor-pointer transition-colors">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-cyan-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-            </svg>
-            <div>
-              <div class="text-xs font-bold text-slate-900">Fuente para Dislexia</div>
-              <div class="text-[10px] text-cyan-700 font-mono">Tipografía Lexend</div>
-            </div>
+        <div class="relative inline-flex items-center shrink-0">
+          <input type="checkbox" [checked]="a11y.dyslexicFont()" (change)="a11y.toggleDyslexicFont()"
+            aria-label="Activar o desactivar tipografía para dislexia" class="sr-only peer">
+          <div
+            class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600 dark-switch">
           </div>
-          <input type="checkbox" 
-                 [checked]="a11y.dyslexicFont()" 
-                 (change)="a11y.toggleDyslexicFont()" 
-                 aria-label="Activar o desactivar tipografía para dislexia"
-                 class="w-4 h-4 text-cyan-600 rounded border-gray-300 bg-white focus:ring-cyan-500 cursor-pointer">
-        </label>
+        </div>
+      </label>
 
-        <!-- Toggle: Mayor Espaciado -->
-        <label class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-gray-200 hover:border-cyan-400 cursor-pointer transition-colors">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-cyan-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-            </svg>
-            <div>
-              <div class="text-xs font-bold text-slate-900">Mayor Espaciado</div>
-              <div class="text-[10px] text-slate-600">Interlineado ampliado</div>
-            </div>
+      <!-- Toggle: Mayor Espaciado -->
+      <label
+        class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-gray-200 hover:border-cyan-400 cursor-pointer transition-colors">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-4 h-4 text-cyan-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+          </svg>
+          <div>
+            <div class="text-xs font-bold text-slate-900">Mayor Espaciado</div>
+            <div class="text-[10px] text-slate-600">Interlineado ampliado</div>
           </div>
-          <input type="checkbox" 
-                 [checked]="a11y.enhancedSpacing()" 
-                 (change)="a11y.toggleEnhancedSpacing()" 
-                 aria-label="Activar o desactivar mayor espaciado de lectura"
-                 class="w-4 h-4 text-cyan-600 rounded border-gray-300 bg-white focus:ring-cyan-500 cursor-pointer">
-        </label>
-
-      </div>
+        </div>
+        <div class="relative inline-flex items-center shrink-0">
+          <input type="checkbox" [checked]="a11y.enhancedSpacing()" (change)="a11y.toggleEnhancedSpacing()"
+            aria-label="Activar o desactivar mayor espaciado de lectura" class="sr-only peer">
+          <div
+            class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600 dark-switch">
+          </div>
+        </div>
+      </label>
 
     </div>
+
+  </div>
   }
 
 </div>

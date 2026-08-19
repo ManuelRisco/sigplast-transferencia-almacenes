@@ -3,16 +3,18 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import Swal from 'sweetalert2';
+import { AccessibilityService } from '../../services/accessibility.service';
+import { AccessibilityWidgetComponent } from '../accessibility-widget/accessibility-widget.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AccessibilityWidgetComponent],
   templateUrl: './login.component.html'
 })
 export class LoginComponent {
   authService = inject(AuthService);
+  a11y = inject(AccessibilityService);
   router = inject(Router);
   cdr = inject(ChangeDetectorRef);
 

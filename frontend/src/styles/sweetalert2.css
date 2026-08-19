@@ -1,0 +1,106 @@
+/* =========================================================
+   SWEETALERT2 EN MODO NOCHE (DARK MODE ALERTS)
+   ========================================================= */
+
+html.dark-mode .swal2-container {
+  background-color: rgba(11, 19, 41, 0.75) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+html.dark-mode .swal2-popup {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border: 1px solid #273656 !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6) !important;
+}
+
+html.dark-mode .swal2-title {
+  color: #f8fafc !important;
+  font-weight: 700 !important;
+}
+
+html.dark-mode .swal2-html-container {
+  color: #cbd5e1 !important;
+}
+
+html.dark-mode .swal2-icon {
+  background: transparent !important;
+}
+
+html.dark-mode .swal2-icon.swal2-success {
+  border-color: #10b981 !important;
+  color: #10b981 !important;
+}
+
+html.dark-mode .swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: #10b981 !important;
+}
+
+html.dark-mode .swal2-icon.swal2-success .swal2-success-ring {
+  border: 4px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+html.dark-mode .swal2-icon.swal2-warning {
+  border-color: #f59e0b !important;
+  color: #f59e0b !important;
+}
+
+html.dark-mode .swal2-icon.swal2-error {
+  border-color: #f43f5e !important;
+  color: #f43f5e !important;
+}
+
+html.dark-mode .swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+  background-color: #f43f5e !important;
+}
+
+html.dark-mode .swal2-icon.swal2-info {
+  border-color: #0ea5e9 !important;
+  color: #0ea5e9 !important;
+}
+
+html.dark-mode .swal2-icon.swal2-question {
+  border-color: #8b5cf6 !important;
+  color: #8b5cf6 !important;
+}
+
+html.dark-mode .swal2-actions button.swal2-confirm {
+  background-color: #0d9488 !important;
+  color: #ffffff !important;
+  border-radius: 0.75rem !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 6px -1px rgba(13, 148, 136, 0.3) !important;
+}
+
+html.dark-mode .swal2-actions button.swal2-confirm:hover {
+  background-color: #0f766e !important;
+}
+
+html.dark-mode .swal2-actions button.swal2-cancel {
+  background-color: #1e293b !important;
+  color: #f43f5e !important;
+  border: 1px solid #334155 !important;
+  border-radius: 0.75rem !important;
+  font-weight: 700 !important;
+}
+
+html.dark-mode .swal2-actions button.swal2-cancel:hover {
+  background-color: #334155 !important;
+}
+
+html.dark-mode .swal2-close {
+  color: #94a3b8 !important;
+}
+
+html.dark-mode .swal2-close:hover {
+  color: #f8fafc !important;
+}
+
+html.dark-mode .swal2-loader {
+  border-color: #0d9488 transparent #0d9488 transparent !important;
+}
+
+html.dark-mode .swal2-timer-progress-bar {
+  background: #0d9488 !important;
+}

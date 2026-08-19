@@ -1,21 +1,38 @@
-<div
-  class="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center p-4 relative overflow-hidden font-sans">
+<div class="min-h-screen bg-slate-100 text-slate-800 flex items-center justify-center p-4 relative font-sans">
 
-  <!-- Decoración de Fondo Luminoso -->
-  <div class="absolute -top-40 -left-40 w-96 h-96 bg-brandDark/40 rounded-full blur-3xl pointer-events-none"
-    aria-hidden="true"></div>
-  <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none"
-    aria-hidden="true"></div>
+  <!-- Barra Superior Derecha: Modo Noche / Accesibilidad -->
+  <div class="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 flex items-center gap-2">
+    <!-- Botón Modo Noche / Modo Claro -->
+    <button (click)="a11y.toggleDarkMode()" type="button"
+      class="p-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 hover:text-cyan-700 border border-gray-300 shadow-sm flex items-center justify-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400"
+      [attr.aria-label]="a11y.darkMode() ? 'Cambiar a modo claro' : 'Cambiar a modo noche'"
+      [title]="a11y.darkMode() ? 'Cambiar a Modo Claro' : 'Cambiar a Modo Noche'">
+      @if (a11y.darkMode()) {
+      <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+      } @else {
+      <svg class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+      </svg>
+      }
+    </button>
 
-  <!-- Tarjeta Central 404 -->
+    <!-- Widget de Accesibilidad Universal -->
+    <app-accessibility-widget></app-accessibility-widget>
+  </div>
+
+  <!-- Tarjeta Central 404 (Estilo Unificado con Login) -->
   <main
-    class="w-full max-w-lg bg-slate-800/90 backdrop-blur-md border border-slate-700 rounded-3xl shadow-2xl p-8 text-center relative z-10 my-8 space-y-6">
+    class="w-full max-w-lg bg-white border border-gray-200 rounded-2xl shadow-xl p-6 sm:p-8 text-center relative z-10 space-y-6">
 
-    <!-- Icono de Caja / Almacén Extraviado -->
+    <!-- Icono Corporativo -->
     <div
-      class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-tr from-brandDark via-blue-700 to-cyan-600 text-white shadow-xl shadow-cyan-950/50"
+      class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#003a6c] to-[#0d9488] text-white shadow-lg"
       aria-hidden="true">
-      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
           d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
       </svg>
@@ -23,53 +40,50 @@
 
     <!-- Título y Código de Error -->
     <div class="space-y-2">
-      <span
-        class="inline-block px-3 py-1 rounded-full text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/40 uppercase tracking-widest">
-        Error 404
-      </span>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+      <div>
+        <span
+          class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 uppercase tracking-wider">
+          Error 404
+        </span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
         Página No Encontrada
       </h1>
-      <p class="text-slate-300 text-sm max-w-sm mx-auto leading-relaxed">
-        La ruta a la que intentas ingresar no existe en el sistema <span class="font-bold text-cyan-300">SIGPLAST
+      <p class="text-slate-500 text-sm max-w-sm mx-auto leading-relaxed">
+        La ruta a la que intentas ingresar no existe en el sistema <span class="font-bold text-cyan-700">SIGPLAST
           ERP</span>, ha sido reubicada o requiere otros permisos de acceso.
       </p>
     </div>
 
-    <!-- Botones de Acción Accesibles -->
+    <!-- Botones de Acción -->
     <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
       @if (authService.isLoggedIn()) {
       <a routerLink="/erp" aria-label="Volver a la página principal de Notas de Salidas del ERP"
-        class="w-full sm:w-auto px-6 py-3 bg-cyan-700 hover:bg-cyan-800 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm cursor-pointer">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-[#003a6c] to-[#0d9488] hover:from-[#002d54] hover:to-[#0f766e] text-white font-bold rounded-xl shadow-lg shadow-[#003a6c]/25 hover:shadow-[#003a6c]/40 flex items-center justify-center gap-2 text-sm cursor-pointer border-0">
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>
-        <span>Ir al Panel ERP</span>
+        <span class="text-white font-bold">Ir al Panel ERP</span>
       </a>
       } @else {
       <a routerLink="/login" aria-label="Ir a la página de inicio de sesión"
-        class="w-full sm:w-auto px-6 py-3 bg-cyan-700 hover:bg-cyan-800 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm cursor-pointer">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-[#003a6c] to-[#0d9488] hover:from-[#002d54] hover:to-[#0f766e] text-white font-bold rounded-xl shadow-lg shadow-[#003a6c]/25 hover:shadow-[#003a6c]/40 flex items-center justify-center gap-2 text-sm cursor-pointer border-0">
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
         </svg>
-        <span>Iniciar Sesión</span>
+        <span class="text-white font-bold">Iniciar Sesión</span>
       </a>
       }
 
       <button (click)="goBack()" type="button" aria-label="Regresar a la página anterior en el historial"
-        class="w-full sm:w-auto px-5 py-3 bg-slate-700 hover:bg-slate-600 text-slate-100 font-bold rounded-xl border border-slate-600 transition-all flex items-center justify-center gap-2 text-sm cursor-pointer">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        class="w-full sm:w-auto px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl border border-gray-300 flex items-center justify-center gap-2 text-sm cursor-pointer shadow-sm">
+        <svg class="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
         <span>Volver Atrás</span>
       </button>
-    </div>
-
-    <!-- Pie Informativo -->
-    <div class="border-t border-slate-700/80 pt-4 text-xs text-slate-400">
-      Sistema Integrado de Gestión y Registro de Inventarios (SIGPLAST ERP)
     </div>
 
   </main>

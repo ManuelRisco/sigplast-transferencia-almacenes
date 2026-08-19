@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="cubeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#003a6c" />
+      <stop offset="100%" stop-color="#0d9488" />
+    </linearGradient>
+  </defs>
+  <!-- Fondo con gradiente corporativo -->
+  <rect width="32" height="32" rx="8" fill="url(#cubeGradient)" />
+  <!-- Cubo 3D de Almacén SIGPLAST ERP -->
+  <g transform="translate(4, 4)">
+    <path stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+  </g>
+</svg>

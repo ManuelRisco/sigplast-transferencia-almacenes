@@ -1,0 +1,33 @@
+/* =========================================================
+   VARIABLES DE TEMA Y COLORES CORPORATIVOS - SIGPLAST ERP
+   ========================================================= */
+
+@theme {
+  --color-brand-dark: #003a6c;
+  --color-brandDark: #003a6c;
+  --color-brand-teal: #0d9488;
+  --color-brandTeal: #0d9488;
+}
+
+:root {
+  --color-brand-dark: #003a6c;
+  --color-brandDark: #003a6c;
+  --color-brand-teal: #0d9488;
+  --color-brandTeal: #0d9488;
+}
+
+.bg-brandDark {
+  background-color: #003a6c !important;
+}
+
+.bg-brandTeal {
+  background-color: #0d9488 !important;
+}
+
+.text-brandDark {
+  color: #003a6c !important;
+}
+
+.text-brandTeal {
+  color: #0d9488 !important;
+}

@@ -7,8 +7,12 @@ export class SidebarService {
   readonly isOpen = signal<boolean>(this.getInitialState());
 
   private getInitialState(): boolean {
-    if (typeof window !== 'undefined' && localStorage) {
-      return localStorage.getItem('sigplast_sidebar_open') === 'true';
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth < 768) {
+        return false;
+      }
+      const saved = localStorage.getItem('sigplast_sidebar_open');
+      return saved === null ? true : saved === 'true';
     }
     return true; // Default state
   }

@@ -1,4 +1,4 @@
-<div class="flex h-screen w-full bg-slate-100 overflow-hidden transition-colors duration-200 relative">
+<div class="flex h-screen w-full bg-slate-100 overflow-hidden relative">
 
   <!-- Backdrop para dispositivos móviles con fade suave acelerado por hardware -->
   <div (click)="closeSidebar()"
@@ -11,7 +11,7 @@
 
   <!-- Sidebar Izquierdo: Transform hardware-accelerated 60fps -->
   <aside
-    class="fixed md:relative inset-y-0 left-0 w-72 bg-white z-50 md:z-40 border-r border-gray-200 shrink-0 shadow-2xl md:shadow-md transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] will-change-transform"
+    class="fixed md:relative inset-y-0 left-0 w-72 bg-white z-50 md:z-40 border-r border-gray-200 shrink-0 shadow-2xl md:shadow-md transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] will-change-transform"
     [class.-translate-x-full]="!isOpen"
     [class.translate-x-0]="isOpen"
     [class.md:translate-x-0]="true"
@@ -107,7 +107,7 @@
   </aside>
 
   <!-- Contenedor Principal (Navbar + Contenido) -->
-  <div class="flex-1 flex flex-col h-screen overflow-hidden transition-colors duration-200 relative bg-slate-100">
+  <div class="flex-1 flex flex-col h-screen overflow-hidden relative bg-slate-100">
 
     <!-- Componente Navbar Separado -->
     <app-navbar></app-navbar>

@@ -7,8 +7,27 @@ import { userGuard, guestGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'erp', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
-  { path: 'erp', component: MovimientosComponent, canActivate: [userGuard] },
-  { path: 'nuevo-registro', component: NuevoRegistroComponent, canActivate: [userGuard] },
-  { path: '**', component: NotFoundComponent }
+  {
+    path: 'login',
+    component: LoginComponent,
+    canActivate: [guestGuard],
+    title: 'Iniciar Sesión | SIGPLAST ERP'
+  },
+  {
+    path: 'erp',
+    component: MovimientosComponent,
+    canActivate: [userGuard],
+    title: 'Notas de Salidas | SIGPLAST ERP'
+  },
+  {
+    path: 'nuevo-registro',
+    component: NuevoRegistroComponent,
+    canActivate: [userGuard],
+    title: 'Nuevo Registro | SIGPLAST ERP'
+  },
+  {
+    path: '**',
+    component: NotFoundComponent,
+    title: 'Página No Encontrada | SIGPLAST ERP'
+  }
 ];
