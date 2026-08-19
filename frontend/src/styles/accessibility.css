@@ -2,29 +2,101 @@
    ESTILOS Y FILTROS DE ACCESIBILIDAD UNIVERSAL - SIGPLAST ERP
    ========================================================= */
 
-/* 1. Modo Fuente para Dislexia */
+/* 1. MODO FUENTE PARA DISLEXIA (LEXEND + ATKINSON HYPERLEGIBLE) */
 html.font-dyslexic,
 html.font-dyslexic body,
-html.font-dyslexic button,
-html.font-dyslexic input,
-html.font-dyslexic select,
-html.font-dyslexic textarea,
-html.font-dyslexic table,
-html.font-dyslexic th,
-html.font-dyslexic td,
-html.font-dyslexic span,
-html.font-dyslexic p,
+html.font-dyslexic * {
+  font-family: 'Lexend', 'Atkinson Hyperlegible', 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.07em !important;
+  word-spacing: 0.14em !important;
+  line-height: 1.75 !important;
+  text-rendering: optimizeLegibility !important;
+  -webkit-font-smoothing: antialiased;
+}
+
 html.font-dyslexic h1,
 html.font-dyslexic h2,
 html.font-dyslexic h3,
-html.font-dyslexic a {
-  font-family: 'Lexend', 'Comic Sans MS', sans-serif !important;
+html.font-dyslexic h4,
+html.font-dyslexic strong,
+html.font-dyslexic b,
+html.font-dyslexic .font-bold,
+html.font-dyslexic .font-extrabold {
+  font-weight: 750 !important;
+  letter-spacing: 0.08em !important;
+}
+
+html.font-dyslexic button,
+html.font-dyslexic input,
+html.font-dyslexic select,
+html.font-dyslexic textarea {
+  font-family: 'Lexend', 'Atkinson Hyperlegible', sans-serif !important;
   letter-spacing: 0.05em !important;
-  word-spacing: 0.1em !important;
+}
+
+html.font-dyslexic table th,
+html.font-dyslexic table td {
+  letter-spacing: 0.04em !important;
+  word-spacing: 0.08em !important;
+}
+
+/* 2. MODO MAYOR ESPACIADO (ENHANCED SPACING & BREATHING ROOM) */
+html.enhanced-spacing {
+  letter-spacing: 0.10em !important;
+  word-spacing: 0.24em !important;
+  line-height: 1.95 !important;
+}
+
+html.enhanced-spacing * {
+  letter-spacing: inherit !important;
+  word-spacing: inherit !important;
+}
+
+/* Párrafos, etiquetas y textos con respiración visual */
+html.enhanced-spacing p,
+html.enhanced-spacing span,
+html.enhanced-spacing label {
+  line-height: 1.85 !important;
+}
+
+/* Celdas de tablas con mayor área de lectura y separación */
+html.enhanced-spacing table th,
+html.enhanced-spacing table td {
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+  line-height: 1.75 !important;
+}
+
+/* Campos de formulario e inputs con mayor altura y confort táctil */
+html.enhanced-spacing input,
+html.enhanced-spacing select,
+html.enhanced-spacing textarea {
+  padding-top: 0.65rem !important;
+  padding-bottom: 0.65rem !important;
+  padding-left: 0.85rem !important;
+  padding-right: 0.85rem !important;
   line-height: 1.6 !important;
 }
 
-/* 2. Filtros de Daltonismo (Color Blindness Filters) */
+/* Botones y enlaces con mayor área de toque táctil */
+html.enhanced-spacing button,
+html.enhanced-spacing a.cursor-pointer {
+  padding-top: 0.60rem !important;
+  padding-bottom: 0.60rem !important;
+  gap: 0.5rem !important;
+}
+
+/* 3. COMBINACIÓN DISLEXIA + MAYOR ESPACIADO */
+html.font-dyslexic.enhanced-spacing {
+  letter-spacing: 0.12em !important;
+  word-spacing: 0.28em !important;
+  line-height: 2.1 !important;
+}
+
+/* 4. FILTROS DE DALTONISMO (COLOR BLINDNESS FILTERS) */
 html.filter-protanopia {
   filter: url('#protanopia-filter') !important;
 }
@@ -37,7 +109,7 @@ html.filter-tritanopia {
   filter: url('#tritanopia-filter') !important;
 }
 
-/* 3. Filtros de Contraste y Monocromático */
+/* 5. FILTROS DE CONTRASTE Y MONOCROMÁTICO */
 html.filter-monochrome {
   filter: grayscale(100%) !important;
 }
@@ -53,10 +125,4 @@ html.filter-inverted {
 html.filter-inverted img,
 html.filter-inverted video {
   filter: invert(100%) hue-rotate(180deg) !important;
-}
-
-/* 4. Espaciado Adicional de Lectura */
-html.enhanced-spacing * {
-  letter-spacing: 0.08em !important;
-  line-height: 1.8 !important;
 }
