@@ -1,0 +1,7 @@
+{
+  "/transferencia-almacenes/backend": {
+    "target": "http://localhost",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

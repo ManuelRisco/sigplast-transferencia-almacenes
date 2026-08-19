@@ -53,6 +53,10 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json",
+            "allowedHosts": [".trycloudflare.com", "localhost", "127.0.0.1", "0.0.0.0"]
+          },
           "configurations": {
             "production": {
               "buildTarget": "frontend:build:production"

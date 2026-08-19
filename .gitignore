@@ -19,3 +19,5 @@ Thumbs.db
 .idea/
 .vscode/
 *.log
+*.exe
+cloudflared*
